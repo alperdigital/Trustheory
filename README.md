@@ -5,8 +5,10 @@ Bu proje, Nicky Case'in "The Evolution of Trust" oyununun Türkçe çevirisi ve 
 ## Özellikler
 
 - **Türkçe Çeviri**: Tüm metinler Türkçe'ye çevrilmiştir
-- **İstatistiksel Analiz**: Sandbox Mode'da 10 tekrar, 20 tur için detaylı istatistiksel analiz
-- **Geliştirilmiş UI**: Daha büyük ve kullanışlı istatistik paneli
+- **4 Halka Aynı Anda Analiz**: Sandbox Mode'da 4 farklı halka aynı anda 20 tur boyunca çalışır
+- **Detaylı Tablo**: Her halka için hangi stratejinin kaç kişi hayatta kaldığı gösterilir
+- **Renkli Gösterim**: Yeşil = hayatta kalan, Kırmızı = yok olan
+- **Geliştirilmiş UI**: Büyük ve kullanışlı istatistik paneli
 
 ## Nasıl Çalıştırılır
 
@@ -26,10 +28,11 @@ python3 -m http.server 8000
 ## İstatistik Özelliği
 
 Sandbox Mode'da "İSTATİSTİK" butonuna tıklayarak:
-- 10 farklı simülasyon
-- Her simülasyon 20 tur
+- 4 farklı halka aynı anda başlar
+- Her halka 20 tur boyunca çalışır
 - Her turun sonucu tabloda gösterilir
 - Hangi stratejinin kaç kişi hayatta kaldığı görülür
+- Yeşil: hayatta kalan, Kırmızı: yok olan
 
 ## Çeviri Notları
 
