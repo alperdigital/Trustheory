@@ -1,49 +1,98 @@
-# Güvenin Evrimi - Türkçe Versiyon
+# Güven Teorisi (Trust Theory)
 
-Bu proje, Nicky Case'in "The Evolution of Trust" oyununun Türkçe çevirisi ve geliştirilmiş versiyonudur.
+> Güvene bakış açınızı değiştirecek bir düşünce deneyi
 
-## Özellikler
+Bu proje, Nicky Case'in orijinal "The Evolution of Trust" interaktif deneyiminin Türkçe çevirisidir. Oyun teorisi, güven ve işbirliği konularında etkileşimli bir öğrenme deneyimi sunar.
 
-- **Türkçe Çeviri**: Tüm metinler Türkçe'ye çevrilmiştir
-- **4 Halka Aynı Anda Analiz**: Sandbox Mode'da 4 farklı halka aynı anda 20 tur boyunca çalışır
-- **Detaylı Tablo**: Her halka için hangi stratejinin kaç kişi hayatta kaldığı gösterilir
-- **Renkli Gösterim**: Yeşil = hayatta kalan, Kırmızı = yok olan
-- **Geliştirilmiş UI**: Büyük ve kullanışlı istatistik paneli
+## 🎯 Proje Hakkında
 
-## Nasıl Çalıştırılır
+**Güven Teorisi**, insanların neden birbirine güvenmediğini ve bunu nasıl düzeltebileceğimizi keşfetmek için tasarlanmış interaktif bir düşünce deneyidir. Oyun teorisi, evrim ve sosyal psikoloji kavramlarını kullanarak güvenin nasıl oluştuğunu ve yıkıldığını gösterir.
 
-1. Projeyi klonlayın:
+## ✨ Özellikler
+
+- **Tam Türkçe Çeviri**: Tüm metinler ve arayüz Türkçe'ye çevrilmiştir
+- **İnteraktif Deneyim**: Oyun teorisi kavramlarını öğrenmek için etkileşimli simülasyonlar
+- **Sandbox Modu**: Kendi stratejilerinizi test edebileceğiniz özgür deneyim alanı
+- **Eğitici İçerik**: Güven, işbirliği ve oyun teorisi hakkında kapsamlı bilgi
+
+## 🚀 Nasıl Çalıştırılır
+
+### Yerel Geliştirme
+
 ```bash
-git clone https://github.com/abdullahalperbas/trust-turkish.git
-cd trust-turkish
-```
+# Projeyi klonlayın
+git clone https://github.com/alperdigital/trusttheory.git
+cd trusttheory
 
-2. Yerel sunucu başlatın:
-```bash
+# Yerel sunucu başlatın
 python3 -m http.server 8000
+
+# Tarayıcıda açın
+open http://localhost:8000
 ```
 
-3. Tarayıcıda `http://localhost:8000` adresini açın
+### GitHub Pages
 
-## İstatistik Özelliği
+Proje otomatik olarak GitHub Pages'de yayınlanır:
+**https://alperdigital.github.io/trusttheory/**
 
-Sandbox Mode'da "İSTATİSTİK" butonuna tıklayarak:
-- 4 farklı halka aynı anda başlar
-- Her halka 20 tur boyunca çalışır
-- Her turun sonucu tabloda gösterilir
-- Hangi stratejinin kaç kişi hayatta kaldığı görülür
-- Yeşil: hayatta kalan, Kırmızı: yok olan
+## 📚 İçerik
 
-## Çeviri Notları
+1. **Tek Oyun**: Temel mahkum ikilemi
+2. **Tekrarlanan Oyun**: Stratejilerin evrimi
+3. **Turnuva**: Farklı stratejilerin karşılaştırılması
+4. **Evrim**: Başarılı stratejilerin yayılması
+5. **Güvensizlik**: Gürültü ve hataların etkisi
+6. **Sandbox**: Kendi deneyimlerinizi yapın
 
-- Tüm oyuncu isimleri Türkçe'ye çevrilmiştir
-- Butonlar ve arayüz Türkçe'dir
-- Oyun mekaniği aynı kalmıştır
+## 🎮 Nasıl Oynanır
 
-## Orijinal Proje
+1. Her bölümde verilen talimatları takip edin
+2. Butonlara tıklayarak seçimlerinizi yapın
+3. Simülasyonları izleyin ve sonuçları analiz edin
+4. Sandbox modunda kendi stratejilerinizi test edin
 
-Bu proje [Nicky Case'in orijinal "The Evolution of Trust"](http://ncase.me/trust/) projesinin Türkçe çevirisidir.
+## 🛠️ Teknik Detaylar
 
-## Lisans
+- **Frontend**: Vanilla JavaScript, PIXI.js
+- **Stil**: CSS3, özel fontlar
+- **Ses**: Web Audio API
+- **Responsive**: Mobil uyumlu tasarım
 
-Orijinal proje gibi MIT lisansı altındadır.
+## 📝 Çeviri Notları
+
+- Tüm metinler Türkçe'ye çevrilmiştir
+- Orijinal anlam korunarak Türkçe dil yapısına uyarlanmıştır
+- Teknik terimler için uygun Türkçe karşılıklar kullanılmıştır
+- Türkçe karakterler için font optimizasyonu yapılmıştır
+
+## 🤝 Katkıda Bulunma
+
+Bu proje açık kaynaklıdır. Katkılarınızı bekliyoruz:
+
+1. Fork yapın
+2. Feature branch oluşturun (`git checkout -b feature/amazing-feature`)
+3. Commit yapın (`git commit -m 'Add amazing feature'`)
+4. Push yapın (`git push origin feature/amazing-feature`)
+5. Pull Request oluşturun
+
+## 📄 Lisans
+
+Bu proje orijinal "The Evolution of Trust" projesinin Türkçe çevirisidir. Orijinal proje MIT lisansı altındadır.
+
+## 👨‍💻 Geliştirici
+
+**Alper Digital**
+- GitHub: [@alperdigital](https://github.com/alperdigital)
+- Twitter: [@alperdigital](https://x.com/alperdigital)
+- Email: alperdigital@icloud.com
+
+## 🙏 Teşekkürler
+
+- **Nicky Case**: Orijinal "The Evolution of Trust" projesi için
+- **Türkçe Çeviri Topluluğu**: Çeviri önerileri için
+- **Açık Kaynak Topluluğu**: Sürekli destek için
+
+---
+
+**Not**: Bu proje eğitim amaçlıdır ve orijinal içeriğin Türkçe çevirisidir. Ticari kullanım için lütfen orijinal lisans koşullarını kontrol edin.
