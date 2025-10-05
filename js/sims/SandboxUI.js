@@ -39,6 +39,15 @@ function SandboxUI(config){
 	var resetButton = new Button({x:172, y:135+70*2, text_id:"label_reset", message:"tournament/reset", size:"short"});
 	dom.appendChild(resetButton.dom);
 
+	// Statistics Button
+	var statsButton = new Button({
+		x:172, y:135+70*3, text_id:"label_stats", size:"short",
+		onclick: function(){
+			_runStatistics();
+		}
+	});
+	dom.appendChild(statsButton.dom);
+
 	/////////////////////////////////////////
 	// Create TABS & PAGES //////////////////
 	/////////////////////////////////////////
@@ -388,6 +397,128 @@ function SandboxUI(config){
 	publish("rules/turns", [10]);
 	publish("rules/evolution", [5]);
 	publish("rules/noise", [0.05]);
+
+	/////////////////////////////////////////
+	// STATISTICS FUNCTIONALITY ////////////
+	/////////////////////////////////////////
+
+	// Statistics Results Panel
+	var statsPanel = document.createElement("div");
+	statsPanel.id = "stats_panel";
+	statsPanel.style.cssText = `
+		position: absolute;
+		top: 50px;
+		left: 50px;
+		width: 400px;
+		background: rgba(0,0,0,0.9);
+		color: white;
+		padding: 20px;
+		border-radius: 10px;
+		display: none;
+		z-index: 1000;
+		font-family: Arial, sans-serif;
+	`;
+	dom.appendChild(statsPanel);
+
+	// Statistics function
+	var _runStatistics = function(){
+		statsPanel.style.display = "block";
+		statsPanel.innerHTML = "<h3>İstatistiksel Analiz (100 Tekrar)</h3><p>Hesaplanıyor...</p>";
+		
+		// Run 100 simulations
+		var results = [];
+		var totalRuns = 100;
+		
+		// Store original state
+		var originalAgents = JSON.parse(JSON.stringify(Tournament.INITIAL_AGENTS));
+		var originalTurns = Tournament.NUM_TURNS;
+		var originalSelection = Tournament.SELECTION;
+		var originalNoise = PD.NOISE;
+		
+		for(var run = 0; run < totalRuns; run++){
+			// Reset tournament
+			Tournament.resetGlobalVariables();
+			Tournament.INITIAL_AGENTS = JSON.parse(JSON.stringify(originalAgents));
+			Tournament.NUM_TURNS = originalTurns;
+			Tournament.SELECTION = originalSelection;
+			PD.NOISE = originalNoise;
+			
+			// Run simulation
+			var tournament = slideshow.objects.tournament;
+			if(tournament){
+				tournament.populateAgents();
+				
+				// Run for many generations
+				for(var gen = 0; gen < 50; gen++){
+					tournament.step();
+				}
+				
+				// Get final results
+				var finalCounts = {};
+				for(var i = 0; i < tournament.agents.length; i++){
+					var strategy = tournament.agents[i].strategy;
+					finalCounts[strategy] = (finalCounts[strategy] || 0) + 1;
+				}
+				
+				results.push(finalCounts);
+			}
+		}
+		
+		// Calculate statistics
+		var strategyStats = {};
+		var allStrategies = ["tft", "all_d", "all_c", "grudge", "prober", "tf2t", "pavlov", "random"];
+		
+		for(var s = 0; s < allStrategies.length; s++){
+			var strategy = allStrategies[s];
+			strategyStats[strategy] = {
+				wins: 0,
+				avgCount: 0,
+				maxCount: 0,
+				minCount: 100
+			};
+			
+			for(var r = 0; r < results.length; r++){
+				var count = results[r][strategy] || 0;
+				strategyStats[strategy].avgCount += count;
+				strategyStats[strategy].maxCount = Math.max(strategyStats[strategy].maxCount, count);
+				strategyStats[strategy].minCount = Math.min(strategyStats[strategy].minCount, count);
+				
+				if(count > 0){
+					strategyStats[strategy].wins++;
+				}
+			}
+			
+			strategyStats[strategy].avgCount = (strategyStats[strategy].avgCount / results.length).toFixed(1);
+		}
+		
+		// Display results
+		var html = "<h3>100 Tekrar İstatistiksel Analiz Sonuçları</h3>";
+		html += "<div style='max-height: 300px; overflow-y: auto;'>";
+		
+		// Sort by average count
+		var sortedStrategies = allStrategies.sort(function(a, b){
+			return parseFloat(strategyStats[b].avgCount) - parseFloat(strategyStats[a].avgCount);
+		});
+		
+		for(var s = 0; s < sortedStrategies.length; s++){
+			var strategy = sortedStrategies[s];
+			var stats = strategyStats[strategy];
+			var strategyName = Words.get("label_short_" + strategy).toUpperCase();
+			
+			html += "<div style='margin: 10px 0; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 5px;'>";
+			html += "<strong>" + strategyName + "</strong><br>";
+			html += "Ortalama: " + stats.avgCount + " | ";
+			html += "Kazanma: " + stats.wins + "% | ";
+			html += "Min: " + stats.minCount + " | ";
+			html += "Max: " + stats.maxCount;
+			html += "</div>";
+		}
+		
+		html += "</div>";
+		html += "<button onclick='document.getElementById(\"stats_panel\").style.display=\"none\"' style='margin-top: 10px; padding: 10px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;'>Kapat</button>";
+		
+		statsPanel.innerHTML = html;
+	};
 
 	/////////////////////////////////////////
 	// Add & Remove Object //////////////////
