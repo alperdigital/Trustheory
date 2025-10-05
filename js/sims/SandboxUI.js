@@ -407,27 +407,26 @@ function SandboxUI(config){
 	statsPanel.id = "stats_panel";
 	statsPanel.style.cssText = `
 		position: absolute;
-		top: 50px;
-		left: 50px;
-		width: 400px;
-		background: rgba(0,0,0,0.9);
+		top: 20px;
+		left: 20px;
+		width: 90%;
+		max-width: 1200px;
+		height: 80%;
+		background: rgba(0,0,0,0.95);
 		color: white;
 		padding: 20px;
 		border-radius: 10px;
 		display: none;
 		z-index: 1000;
 		font-family: Arial, sans-serif;
+		overflow-y: auto;
 	`;
 	dom.appendChild(statsPanel);
 
 	// Statistics function
 	var _runStatistics = function(){
 		statsPanel.style.display = "block";
-		statsPanel.innerHTML = "<h3>İstatistiksel Analiz (100 Tekrar)</h3><p>Hesaplanıyor...</p>";
-		
-		// Run 100 simulations
-		var results = [];
-		var totalRuns = 100;
+		statsPanel.innerHTML = "<h3>İstatistiksel Analiz (10 Tekrar, 20 Tur)</h3><p>Hesaplanıyor...</p>";
 		
 		// Store original state
 		var originalAgents = JSON.parse(JSON.stringify(Tournament.INITIAL_AGENTS));
@@ -435,7 +434,24 @@ function SandboxUI(config){
 		var originalSelection = Tournament.SELECTION;
 		var originalNoise = PD.NOISE;
 		
-		for(var run = 0; run < totalRuns; run++){
+		// Initialize results table
+		var allStrategies = ["tft", "all_d", "all_c", "grudge", "prober", "tf2t", "pavlov", "random"];
+		var results = [];
+		
+		// Create table header
+		var html = "<h3>İstatistiksel Analiz (10 Tekrar, 20 Tur)</h3>";
+		html += "<table style='width: 100%; border-collapse: collapse; margin: 10px 0;'>";
+		html += "<tr style='background: rgba(255,255,255,0.2);'>";
+		html += "<th style='border: 1px solid #ccc; padding: 5px;'>Tekrar</th>";
+		html += "<th style='border: 1px solid #ccc; padding: 5px;'>Tur</th>";
+		for(var s = 0; s < allStrategies.length; s++){
+			var strategyName = Words.get("label_short_" + allStrategies[s]).toUpperCase();
+			html += "<th style='border: 1px solid #ccc; padding: 5px;'>" + strategyName + "</th>";
+		}
+		html += "</tr>";
+		
+		// Run 10 simulations, 20 turns each
+		for(var run = 0; run < 10; run++){
 			// Reset tournament
 			Tournament.resetGlobalVariables();
 			Tournament.INITIAL_AGENTS = JSON.parse(JSON.stringify(originalAgents));
@@ -448,73 +464,38 @@ function SandboxUI(config){
 			if(tournament){
 				tournament.populateAgents();
 				
-				// Run for many generations
-				for(var gen = 0; gen < 50; gen++){
+				// Run for 20 turns
+				for(var turn = 1; turn <= 20; turn++){
 					tournament.step();
-				}
-				
-				// Get final results
-				var finalCounts = {};
-				for(var i = 0; i < tournament.agents.length; i++){
-					var strategy = tournament.agents[i].strategy;
-					finalCounts[strategy] = (finalCounts[strategy] || 0) + 1;
-				}
-				
-				results.push(finalCounts);
-			}
-		}
-		
-		// Calculate statistics
-		var strategyStats = {};
-		var allStrategies = ["tft", "all_d", "all_c", "grudge", "prober", "tf2t", "pavlov", "random"];
-		
-		for(var s = 0; s < allStrategies.length; s++){
-			var strategy = allStrategies[s];
-			strategyStats[strategy] = {
-				wins: 0,
-				avgCount: 0,
-				maxCount: 0,
-				minCount: 100
-			};
-			
-			for(var r = 0; r < results.length; r++){
-				var count = results[r][strategy] || 0;
-				strategyStats[strategy].avgCount += count;
-				strategyStats[strategy].maxCount = Math.max(strategyStats[strategy].maxCount, count);
-				strategyStats[strategy].minCount = Math.min(strategyStats[strategy].minCount, count);
-				
-				if(count > 0){
-					strategyStats[strategy].wins++;
+					
+					// Get current results
+					var currentCounts = {};
+					for(var i = 0; i < tournament.agents.length; i++){
+						var strategy = tournament.agents[i].strategy;
+						currentCounts[strategy] = (currentCounts[strategy] || 0) + 1;
+					}
+					
+					// Add to table
+					html += "<tr style='background: rgba(255,255,255,0.05);'>";
+					html += "<td style='border: 1px solid #ccc; padding: 5px; text-align: center;'>" + (run + 1) + "</td>";
+					html += "<td style='border: 1px solid #ccc; padding: 5px; text-align: center;'>" + turn + "</td>";
+					
+					for(var s = 0; s < allStrategies.length; s++){
+						var strategy = allStrategies[s];
+						var count = currentCounts[strategy] || 0;
+						html += "<td style='border: 1px solid #ccc; padding: 5px; text-align: center;'>" + count + "</td>";
+					}
+					html += "</tr>";
+					
+					// Update display every few turns
+					if(turn % 5 === 0 || turn === 20){
+						statsPanel.innerHTML = html + "</table><p>Hesaplanıyor... " + run + "/10 tekrar, " + turn + "/20 tur</p>";
+					}
 				}
 			}
-			
-			strategyStats[strategy].avgCount = (strategyStats[strategy].avgCount / results.length).toFixed(1);
 		}
 		
-		// Display results
-		var html = "<h3>100 Tekrar İstatistiksel Analiz Sonuçları</h3>";
-		html += "<div style='max-height: 300px; overflow-y: auto;'>";
-		
-		// Sort by average count
-		var sortedStrategies = allStrategies.sort(function(a, b){
-			return parseFloat(strategyStats[b].avgCount) - parseFloat(strategyStats[a].avgCount);
-		});
-		
-		for(var s = 0; s < sortedStrategies.length; s++){
-			var strategy = sortedStrategies[s];
-			var stats = strategyStats[strategy];
-			var strategyName = Words.get("label_short_" + strategy).toUpperCase();
-			
-			html += "<div style='margin: 10px 0; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 5px;'>";
-			html += "<strong>" + strategyName + "</strong><br>";
-			html += "Ortalama: " + stats.avgCount + " | ";
-			html += "Kazanma: " + stats.wins + "% | ";
-			html += "Min: " + stats.minCount + " | ";
-			html += "Max: " + stats.maxCount;
-			html += "</div>";
-		}
-		
-		html += "</div>";
+		html += "</table>";
 		html += "<button onclick='document.getElementById(\"stats_panel\").style.display=\"none\"' style='margin-top: 10px; padding: 10px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;'>Kapat</button>";
 		
 		statsPanel.innerHTML = html;
