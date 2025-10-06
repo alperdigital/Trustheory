@@ -2,8 +2,6 @@
 
 > Güvene bakış açınızı değiştirecek bir düşünce deneyi
 
-Bu proje, Nicky Case'in orijinal "The Evolution of Trust" interaktif deneyiminin Türkçe çevirisidir. Oyun teorisi, güven ve işbirliği konularında etkileşimli bir öğrenme deneyimi sunar.
-
 ## 🎯 Proje Hakkında
 
 **Güven Teorisi**, insanların neden birbirine güvenmediğini ve bunu nasıl düzeltebileceğimizi keşfetmek için tasarlanmış interaktif bir düşünce deneyidir. Oyun teorisi, evrim ve sosyal psikoloji kavramlarını kullanarak güvenin nasıl oluştuğunu ve yıkıldığını gösterir.
@@ -90,9 +88,5 @@ Bu proje orijinal "The Evolution of Trust" projesinin Türkçe çevirisidir. Ori
 ## 🙏 Teşekkürler
 
 - **Nicky Case**: Orijinal "The Evolution of Trust" projesi için
-- **Türkçe Çeviri Topluluğu**: Çeviri önerileri için
-- **Açık Kaynak Topluluğu**: Sürekli destek için
 
 ---
-
-**Not**: Bu proje eğitim amaçlıdır ve orijinal içeriğin Türkçe çevirisidir. Ticari kullanım için lütfen orijinal lisans koşullarını kontrol edin.
