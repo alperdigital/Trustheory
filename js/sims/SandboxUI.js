@@ -320,12 +320,6 @@ function SandboxUI(config){
 	var payoffsUI = new PayoffsUI({x:84, y:41, scale:0.9, slideshow:self});
 	page.appendChild(payoffsUI.dom);
 
-	// Reset
-	var resetPayoffs = new Button({
-		x:240, y:300, text_id:"sandbox_reset_payoffs",
-		message:"pd/defaultPayoffs"
-	});
-	page.appendChild(resetPayoffs.dom);
 
 	/////////////////////////////////////////
 	// PAGE 2: RULES ////////////////////////
