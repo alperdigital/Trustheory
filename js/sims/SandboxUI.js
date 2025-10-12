@@ -39,14 +39,6 @@ function SandboxUI(config){
 	var resetButton = new Button({x:172, y:135+70*2, text_id:"label_reset", message:"tournament/reset", size:"short"});
 	dom.appendChild(resetButton.dom);
 
-	// Statistics Button
-	var statsButton = new Button({
-		x:172, y:135+70*3, text_id:"label_stats", size:"short",
-		onclick: function(){
-			_runStatistics();
-		}
-	});
-	dom.appendChild(statsButton.dom);
 
 	/////////////////////////////////////////
 	// Create TABS & PAGES //////////////////
@@ -398,116 +390,6 @@ function SandboxUI(config){
 	publish("rules/evolution", [5]);
 	publish("rules/noise", [0.05]);
 
-	/////////////////////////////////////////
-	// STATISTICS FUNCTIONALITY ////////////
-	/////////////////////////////////////////
-
-	// Statistics Results Panel
-	var statsPanel = document.createElement("div");
-	statsPanel.id = "stats_panel";
-	statsPanel.style.cssText = `
-		position: absolute;
-		top: 20px;
-		left: 20px;
-		width: 90%;
-		max-width: 1200px;
-		height: 80%;
-		background: rgba(0,0,0,0.95);
-		color: white;
-		padding: 20px;
-		border-radius: 10px;
-		display: none;
-		z-index: 1000;
-		font-family: Arial, sans-serif;
-		overflow-y: auto;
-	`;
-	dom.appendChild(statsPanel);
-
-	// Statistics function
-	var _runStatistics = function(){
-		statsPanel.style.display = "block";
-		statsPanel.innerHTML = "<h3>4 Halka Aynı Anda Analiz</h3><p>Başlatılıyor...</p>";
-		
-		// Store original state
-		var originalAgents = JSON.parse(JSON.stringify(Tournament.INITIAL_AGENTS));
-		var originalTurns = Tournament.NUM_TURNS;
-		var originalSelection = Tournament.SELECTION;
-		var originalNoise = PD.NOISE;
-		
-		// Create 4 different tournaments
-		var tournaments = [];
-		var allStrategies = ["tft", "all_d", "all_c", "grudge", "prober", "tf2t", "pavlov", "random"];
-		
-		// Initialize 4 tournaments
-		for(var i = 0; i < 4; i++){
-			Tournament.resetGlobalVariables();
-			Tournament.INITIAL_AGENTS = JSON.parse(JSON.stringify(originalAgents));
-			Tournament.NUM_TURNS = originalTurns;
-			Tournament.SELECTION = originalSelection;
-			PD.NOISE = originalNoise;
-			
-			// Create new tournament instance
-			var tournament = new Tournament({id: "stats_" + i, x: 0, y: 0});
-			tournament.populateAgents();
-			tournaments.push(tournament);
-		}
-		
-		// Create results table
-		var html = "<h3>4 Halka Aynı Anda Analiz Sonuçları</h3>";
-		html += "<table style='width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 12px;'>";
-		html += "<tr style='background: rgba(255,255,255,0.3);'>";
-		html += "<th style='border: 1px solid #ccc; padding: 5px;'>Halka</th>";
-		html += "<th style='border: 1px solid #ccc; padding: 5px;'>Tur</th>";
-		for(var s = 0; s < allStrategies.length; s++){
-			var strategyName = Words.get("label_short_" + allStrategies[s]).toUpperCase();
-			html += "<th style='border: 1px solid #ccc; padding: 5px;'>" + strategyName + "</th>";
-		}
-		html += "</tr>";
-		
-		// Run 20 turns for all 4 tournaments
-		for(var turn = 1; turn <= 20; turn++){
-			for(var halka = 0; halka < 4; halka++){
-				var tournament = tournaments[halka];
-				tournament.step();
-				
-				// Get current results
-				var currentCounts = {};
-				for(var i = 0; i < tournament.agents.length; i++){
-					var strategy = tournament.agents[i].strategy;
-					currentCounts[strategy] = (currentCounts[strategy] || 0) + 1;
-				}
-				
-				// Add to table
-				html += "<tr style='background: rgba(255,255,255,0.1);'>";
-				html += "<td style='border: 1px solid #ccc; padding: 3px; text-align: center; font-weight: bold;'>" + (halka + 1) + "</td>";
-				html += "<td style='border: 1px solid #ccc; padding: 3px; text-align: center;'>" + turn + "</td>";
-				
-				for(var s = 0; s < allStrategies.length; s++){
-					var strategy = allStrategies[s];
-					var count = currentCounts[strategy] || 0;
-					var color = count > 0 ? "color: #4CAF50;" : "color: #f44336;";
-					html += "<td style='border: 1px solid #ccc; padding: 3px; text-align: center; " + color + "'>" + count + "</td>";
-				}
-				html += "</tr>";
-			}
-			
-			// Update display every 5 turns
-			if(turn % 5 === 0 || turn === 20){
-				statsPanel.innerHTML = html + "</table><p>Hesaplanıyor... " + turn + "/20 tur</p>";
-			}
-		}
-		
-		html += "</table>";
-		html += "<div style='margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 5px;'>";
-		html += "<h4>Özet:</h4>";
-		html += "<p>• 4 farklı halka aynı anda 20 tur boyunca çalıştırıldı</p>";
-		html += "<p>• Her halka için hangi stratejinin kaç kişi hayatta kaldığı gösterildi</p>";
-		html += "<p>• Yeşil: Hayatta kalan, Kırmızı: Yok olan</p>";
-		html += "</div>";
-		html += "<button onclick='document.getElementById(\"stats_panel\").style.display=\"none\"' style='margin-top: 10px; padding: 10px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;'>Kapat</button>";
-		
-		statsPanel.innerHTML = html;
-	};
 
 	/////////////////////////////////////////
 	// Add & Remove Object //////////////////
