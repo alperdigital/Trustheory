@@ -141,63 +141,26 @@ PD.playOneTournament = function(agents, turns, context){
  * @returns {string} Decision: PD.COOPERATE or PD.CHEAT
  */
 function decideWithGroup(player, opponent, context) {
-    // If group mode is disabled, use individual decision
-    if (!context || !context.settings || !context.settings.groupMode) {
-        return player.logic.play();
-    }
-    
-    // Get the group for this player
-    const groups = context.groups;
-    if (!groups || !player.groupId) {
-        return player.logic.play(); // Fallback to individual
-    }
-    
-    const group = groups.get(player.groupId);
-    if (!group || !group.members || group.members.length === 0) {
-        return player.logic.play(); // Fallback to individual
-    }
-    
-    // Collect votes from all group members
-    const votes = [];
-    for (const member of group.members) {
-        let vote;
-        
-        if (context.settings.groupVoteSource === 'focalHistory') {
-            // All members use focal player's history
-            const focalLogic = new (window["Logic_" + player.strategyName])();
-            // Copy focal player's memory to this logic
-            if (player.logic.remember) {
-                // This is a simplified approach - in a real implementation,
-                // we'd need to properly transfer the memory state
-                vote = focalLogic.play();
-            } else {
-                vote = focalLogic.play();
-            }
-        } else {
-            // Each member uses their own history (perMemberHistory)
-            vote = member.logic.play();
-        }
-        
-        votes.push(vote);
-    }
-    
-    // Count cooperation votes
-    const cooperateVotes = votes.filter(vote => vote === PD.COOPERATE).length;
-    const decision = (cooperateVotes >= 2) ? PD.COOPERATE : PD.CHEAT;
-    
-    // Debug logging
-    if (window.__GROUP_DEBUG__) {
-        console.debug({
-            player: player.strategyName,
-            opponent: opponent.strategyName,
-            groupId: player.groupId,
-            votes: votes,
-            cooperateVotes: cooperateVotes,
-            decision: decision,
-            groupSize: group.members.length
-        });
-    }
-    
+    const s = context?.settings || {};
+    if (!s.groupMode) return player.logic.play();
+
+    const groups = context.groups; // onInit'te set edilecek
+    const group = groups?.get?.(player.groupId);
+    if (!group) return player.logic.play();
+
+    // 3 üyenin oyu — recursion YOK
+    const votes = group.members.map(m => {
+        const hist = (s.groupVoteSource === "focalHistory")
+            ? context.getHistory(player.id, opponent.id)
+            : context.getHistory(m.id, opponent.id);
+        return m.logic.play(); // Basit: her üye kendi logic'ini kullan
+    });
+
+    const decision = votes.filter(v => v === PD.COOPERATE).length >= 2 ? PD.COOPERATE : PD.CHEAT;
+
+    if (window.__GROUP_DEBUG__)
+        console.debug({ player: player.strategyName, groupId: player.groupId, votes, decision });
+
     return decision;
 };
 

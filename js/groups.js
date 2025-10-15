@@ -238,6 +238,30 @@ function toggleGroupDebug() {
     console.log('Group debug mode:', window.__GROUP_DEBUG__ ? 'ON' : 'OFF');
 }
 
+/**
+ * Debug function to show current groups
+ */
+window.debugGroups = function() {
+    console.log("=== CURRENT GROUPS ===");
+    if (window.slideshow && window.slideshow.objects && window.slideshow.objects.tournament_env) {
+        const tournament = window.slideshow.objects.tournament_env;
+        if (tournament.groups) {
+            for (const [groupId, group] of tournament.groups) {
+                console.log(`Group ${groupId}:`, {
+                    strategy: group.strategy,
+                    members: group.members.length,
+                    color: group.color,
+                    memberStrategies: group.members.map(m => m.strategyName)
+                });
+            }
+        } else {
+            console.log("No groups found");
+        }
+    } else {
+        console.log("Tournament not found");
+    }
+};
+
 // Export functions for use in other modules
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {

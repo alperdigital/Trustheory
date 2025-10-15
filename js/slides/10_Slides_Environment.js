@@ -30,20 +30,27 @@ SLIDES.push({
 			}
 		}
 
-		// Add explanation text
+		// Layout constants
+		const PANEL_W = 500;
+		const GAP = 24;
+		const PADDING = 24;
+		const rightPanelX = 460; // Sandbox panel left position
+		const leftWrapW = Math.max(300, rightPanelX - (PADDING + GAP));
+
+		// Add explanation text with proper layout
 		self.add({
 			id:"environment_title", type:"TextBox",
-			x:55, y:20, width:535, align:"center",
+			x:PADDING, y:PADDING, width:leftWrapW, align:"center",
 			text_id: "environment_title"
 		});
 		self.add({
 			id:"environment_intro", type:"TextBox",
-			x:55, y:60, width:535, align:"left",
+			x:PADDING, y:PADDING+40, width:leftWrapW, align:"left",
 			text_id: "environment_intro"
 		});
 		self.add({
 			id:"environment_explanation", type:"TextBox",
-			x:55, y:100, width:535, align:"left",
+			x:PADDING, y:PADDING+80, width:leftWrapW, align:"left",
 			text_id: "environment_explanation"
 		});
 
@@ -53,15 +60,16 @@ SLIDES.push({
 		// Add Sandbox UI
 		self.add({id:"sandbox_env", type:"SandboxUI"});
 
-		// Label & Button for next...
+		// Label & Button for next... positioned after text
+		var textHeight = PADDING + 80 + 60; // Approximate text height
 		self.add({
 			id:"label_next_env", type:"TextBox",
-			x:55, y:481, width:535, align:"right",
+			x:PADDING, y:textHeight, width:leftWrapW, align:"right",
 			text_id: "environment_end"
 		});
 		self.add({
 			id:"button_next_env", type:"Button",
-			x:605, y:485, size:"long",
+			x:PADDING + leftWrapW - 100, y:textHeight + 4, size:"long",
 			text_id:"environment_end_btn",
 			message: "slideshow/scratch"
 		});
