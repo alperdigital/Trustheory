@@ -3,9 +3,9 @@ SLIDES.push({
 	id: "environment",
 	onstart: function(self){
 
-		// The tournament simulation
-		Tournament.resetGlobalVariables();
-		self.add({id:"tournament_env", type:"Tournament", x:-20, y:-20});
+		// The group tournament simulation
+		GroupTournament.resetGlobalVariables();
+		self.add({id:"grouptournament", type:"GroupTournament", x:-20, y:-20});
 
 		// Screw it, just ALL of the Sandbox UI
 		self.add({id:"sandbox_env", type:"SandboxUI"});

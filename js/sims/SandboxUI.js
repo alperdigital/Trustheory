@@ -16,11 +16,19 @@ function SandboxUI(config){
 	var playButton = new Button({
 		x:172, y:135, text_id:"label_start", size:"short",
 		onclick: function(){
-			var tournament = slideshow.objects.tournament || slideshow.objects.tournament_env;
+			var tournament = slideshow.objects.tournament || slideshow.objects.tournament_env || slideshow.objects.grouptournament;
 			if(tournament && tournament.isAutoPlaying){
-				publish("tournament/autoplay/stop");
+				if(tournament.id === "grouptournament"){
+					publish("grouptournament/autoplay/stop");
+				} else {
+					publish("tournament/autoplay/stop");
+				}
 			}else{
-				publish("tournament/autoplay/start");
+				if(tournament && tournament.id === "grouptournament"){
+					publish("grouptournament/autoplay/start");
+				} else {
+					publish("tournament/autoplay/start");
+				}
 			}
 		}
 	});
@@ -30,14 +38,40 @@ function SandboxUI(config){
 	listen(self, "tournament/autoplay/start",function(){
 		playButton.setText("label_stop");
 	});
+	listen(self, "grouptournament/autoplay/stop",function(){
+		playButton.setText("label_start");
+	});
+	listen(self, "grouptournament/autoplay/start",function(){
+		playButton.setText("label_stop");
+	});
 	dom.appendChild(playButton.dom);
 
 	var stepButton = new Button({
-		x:172, y:135+70, text_id:"label_step", message:"tournament/step", size:"short"
+		x:172, y:135+70, text_id:"label_step", 
+		onclick: function(){
+			var tournament = slideshow.objects.tournament || slideshow.objects.tournament_env || slideshow.objects.grouptournament;
+			if(tournament && tournament.id === "grouptournament"){
+				publish("grouptournament/step");
+			} else {
+				publish("tournament/step");
+			}
+		},
+		size:"short"
 	});
 	dom.appendChild(stepButton.dom);
 	
-	var resetButton = new Button({x:172, y:135+70*2, text_id:"label_reset", message:"tournament/reset", size:"short"});
+	var resetButton = new Button({
+		x:172, y:135+70*2, text_id:"label_reset", 
+		onclick: function(){
+			var tournament = slideshow.objects.tournament || slideshow.objects.tournament_env || slideshow.objects.grouptournament;
+			if(tournament && tournament.id === "grouptournament"){
+				publish("grouptournament/reset");
+			} else {
+				publish("tournament/reset");
+			}
+		},
+		size:"short"
+	});
 	dom.appendChild(resetButton.dom);
 
 
