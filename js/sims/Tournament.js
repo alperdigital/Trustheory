@@ -16,6 +16,13 @@ Tournament.resetGlobalVariables = function(){
 
 	Tournament.FLOWER_CONNECTIONS = false;
 
+	// Group settings
+	Tournament.GROUP_MODE = false;
+	Tournament.GROUP_SIZE = 3;
+	Tournament.HOMOGENEOUS_GROUPS = true;
+	Tournament.GROUP_VOTE_SOURCE = "perMemberHistory";
+	Tournament.GROUP_FITNESS_METRIC = "avg_payoff";
+
 	publish("pd/defaultPayoffs");
 
 	PD.NOISE = 0;
@@ -81,6 +88,16 @@ function Tournament(config){
 
 	self.agents = [];
 	self.connections = [];
+	self.groups = new Map(); // Group management
+
+	// Group settings
+	self.settings = {
+		groupMode: Tournament.GROUP_MODE,
+		groupSize: Tournament.GROUP_SIZE,
+		homogeneousGroups: Tournament.HOMOGENEOUS_GROUPS,
+		groupVoteSource: Tournament.GROUP_VOTE_SOURCE,
+		groupFitnessMetric: Tournament.GROUP_FITNESS_METRIC
+	};
 
 	self.networkContainer = new PIXI.Container();
 	self.agentsContainer = new PIXI.Container();
@@ -94,6 +111,14 @@ function Tournament(config){
 		
 		// Convert to an array
 		self.agents = _convertCountToArray(AGENTS);
+
+		// Form groups if group mode is enabled
+		if (self.settings.groupMode) {
+			self.groups = formGroups(self.agents, {
+				groupSize: self.settings.groupSize,
+				homogeneous: self.settings.homogeneousGroups
+			});
+		}
 
 		// Put 'em in a ring
 		var count = 0;
@@ -228,7 +253,11 @@ function Tournament(config){
 	// Play one tournament
 	self.agentsSorted = null;
 	self.playOneTournament = function(){
-		PD.playOneTournament(self.agents, Tournament.NUM_TURNS);
+		var context = {
+			settings: self.settings,
+			groups: self.groups
+		};
+		PD.playOneTournament(self.agents, Tournament.NUM_TURNS, context);
 		self.agentsSorted = _shuffleArray(self.agents.slice());
 		self.agentsSorted.sort(function(a,b){ return a.coins-b.coins; });
 	};
@@ -236,6 +265,13 @@ function Tournament(config){
 	// Get rid of X worst
 	self.eliminateBottom = function(X){
 
+		// Use group selection if group mode is enabled
+		if (self.settings.groupMode) {
+			// Group selection is handled in reproduceTop
+			return;
+		}
+
+		// Original individual elimination logic
 		// The worst X
 		var worst = self.agentsSorted.slice(0,X);
 
@@ -258,6 +294,17 @@ function Tournament(config){
 	// Reproduce the top X
 	self.reproduceTop = function(X){
 
+		// Use group selection if group mode is enabled
+		if (self.settings.groupMode) {
+			self.groups = applyGroupSelection(self.agents, self.groups, self.settings);
+			
+			// Re-populate agents with new groups
+			self.populateAgents();
+			self.createNetwork();
+			return;
+		}
+
+		// Original individual selection logic
 		// The top X
 		var best = self.agentsSorted.slice(self.agentsSorted.length-X, self.agentsSorted.length);
 
