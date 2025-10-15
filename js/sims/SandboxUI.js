@@ -166,21 +166,31 @@ function SandboxUI(config){
 		popName.style.color = PEEP_METADATA[peepID].color;
 		popDOM.appendChild(popName);
 
-		// Label: Amount
+		// Label: Group Amount (instead of individual count)
 		var popAmount = document.createElement("div");
 		popAmount.className = "sandbox_pop_label";
 		popAmount.style.textAlign = "right";
 		popAmount.style.color = PEEP_METADATA[peepID].color;
 		popDOM.appendChild(popAmount);
+		
+		// Sub-label: "×3 kişi" in small gray text
+		var popSubLabel = document.createElement("div");
+		popSubLabel.className = "sandbox_pop_label";
+		popSubLabel.style.textAlign = "right";
+		popSubLabel.style.color = "#888";
+		popSubLabel.style.fontSize = "14px";
+		popSubLabel.innerHTML = "×3 kişi";
+		popDOM.appendChild(popSubLabel);
+		
 		listen(self, message, function(value){
-			popAmount.innerHTML = value;
+			popAmount.innerHTML = value + " grup";
 		});
 
-		// Slider
+		// Slider (now controls groups, not individuals)
 		(function(peepID){
 			var popSlider = new Slider({
 				x:0, y:35, width:200,
-				min:0, max:25, step:1,
+				min:0, max:8, step:1, // Max 8 groups = 24 individuals
 				message: message,
 				onselect: function(){
 					_anchorPopulation(peepID);
@@ -201,14 +211,47 @@ function SandboxUI(config){
 	var xDiff = 220;
 	var yDiff = 80;
 	var yOff = 40;
-	_makePopulationControl(    0, yOff+0,       "tft",		3);
-	_makePopulationControl(xDiff, yOff+0,       "all_d",	3);
-	_makePopulationControl(    0, yOff+yDiff,   "all_c",	3);
-	_makePopulationControl(xDiff, yOff+yDiff,   "grudge",	3);
-	_makePopulationControl(    0, yOff+yDiff*2, "prober",	3);
-	_makePopulationControl(xDiff, yOff+yDiff*2, "tf2t",		3);
-	_makePopulationControl(    0, yOff+yDiff*3, "pavlov",	3);
-	_makePopulationControl(xDiff, yOff+yDiff*3, "random",	4);
+	_makePopulationControl(    0, yOff+0,       "tft",		1); // 1 grup = 3 kişi
+	_makePopulationControl(xDiff, yOff+0,       "all_d",	1); // 1 grup = 3 kişi
+	_makePopulationControl(    0, yOff+yDiff,   "all_c",	1); // 1 grup = 3 kişi
+	_makePopulationControl(xDiff, yOff+yDiff,   "grudge",	1); // 1 grup = 3 kişi
+	_makePopulationControl(    0, yOff+yDiff*2, "prober",	1); // 1 grup = 3 kişi
+	_makePopulationControl(xDiff, yOff+yDiff*2, "tf2t",		1); // 1 grup = 3 kişi
+	_makePopulationControl(    0, yOff+yDiff*3, "pavlov",	1); // 1 grup = 3 kişi
+	_makePopulationControl(xDiff, yOff+yDiff*3, "random",	2); // 2 grup = 6 kişi
+
+	// Total display
+	var totalDisplay = document.createElement("div");
+	totalDisplay.className = "sandbox_pop_label";
+	totalDisplay.style.position = "absolute";
+	totalDisplay.style.left = "0px";
+	totalDisplay.style.top = (yOff+yDiff*4+20) + "px";
+	totalDisplay.style.width = "433px";
+	totalDisplay.style.textAlign = "center";
+	totalDisplay.style.fontSize = "18px";
+	totalDisplay.style.color = "#333";
+	totalDisplay.style.fontWeight = "bold";
+	page.appendChild(totalDisplay);
+
+	// Update total display function
+	var updateTotalDisplay = function() {
+		var totalGroups = 0;
+		var totalIndividuals = 0;
+		for(var i=0; i<Tournament.INITIAL_AGENTS.length; i++) {
+			var conf = Tournament.INITIAL_AGENTS[i];
+			var groups = Math.floor(conf.count / 3);
+			totalGroups += groups;
+			totalIndividuals += conf.count;
+		}
+		totalDisplay.innerHTML = "Toplam: " + totalGroups + " grup = " + totalIndividuals + " kişi";
+	};
+
+	// Listen to all population changes to update total
+	for(var i=0; i<Tournament.INITIAL_AGENTS.length; i++) {
+		var conf = Tournament.INITIAL_AGENTS[i];
+		listen(self, "sandbox/pop/"+conf.strategy, updateTotalDisplay);
+	}
+	updateTotalDisplay(); // Initial update
 
 	// Adjust the WHOLE population...
 	/******************************
@@ -228,21 +271,21 @@ function SandboxUI(config){
 		});
 		var initValue = Tournament.INITIAL_AGENTS[_anchoredIndex].count;
 
-		// SPECIAL CASE: THIS IS ALREADY FULL
-		if(initValue==25){
+		// SPECIAL CASE: THIS IS ALREADY FULL (24 individuals = 8 groups)
+		if(initValue==24){
 
-			// Pretend it was 1 for all seven others, 25-7 for this.
+			// Pretend it was 1 for all seven others, 24-7*3 for this.
 			_population = [];
 			for(var i=0; i<Tournament.INITIAL_AGENTS.length; i++){
 				if(i==_anchoredIndex){
-					_population.push(18);
+					_population.push(3); // 1 group = 3 individuals
 				}else{
-					_population.push(1);
+					_population.push(3); // 1 group = 3 individuals
 				}
 			}
 
-			// Remainder is 7
-			_remainder = 7;
+			// Remainder is 7*3 = 21
+			_remainder = 21;
 
 		}else{
 
@@ -253,21 +296,22 @@ function SandboxUI(config){
 				_population.push(conf.count);
 			}
 
-			// Remainder sum of those NOT anchored (25-anchor.count)
-			_remainder = 25-initValue;
+			// Remainder sum of those NOT anchored (24-anchor.count)
+			_remainder = 24-initValue;
 
 		}
 
 	};
 	var _adjustPopulation = function(peepID, value){
 
-		// Change the anchored one
+		// Change the anchored one (value is now groups, convert to individuals)
 		Tournament.INITIAL_AGENTS.find(function(config){
 			return config.strategy==peepID;
-		}).count = value;
+		}).count = value * 3; // Convert groups to individuals
 		
 		// What's the scale for the rest of 'em?
-		var newRemainder = 25-value;
+		// Total should be 24 individuals (8 groups * 3) for group mode
+		var newRemainder = 24 - (value * 3);
 		var scale = newRemainder/_remainder;
 
 		// Adjust everyone to scale, ROUNDING.
@@ -286,10 +330,10 @@ function SandboxUI(config){
 			total += newCount;
 
 		}
-		total += value; // total
+		total += (value * 3); // total
 
 		// Difference... 
-		var diff = 25-total;
+		var diff = 24-total;
 		// If negative, remove one starting from BOTTOM, skipping anchor.
 		// (UNLESS IT'S ZERO)
 		if(diff<0){
@@ -311,7 +355,7 @@ function SandboxUI(config){
 				var conf = Tournament.INITIAL_AGENTS[i];
 				if(conf.strategy==peepID) continue;
 				if(conf.count==0) continue; // DO NOT ADD IF ZERO
-				everyoneWasZero = false;
+				everyoneElseWasZero = false;
 				conf.count++; // ADD
 				diff--; // yay
 			}
@@ -329,12 +373,12 @@ function SandboxUI(config){
 			}
 		}
 
-		// NOW adjust UI
+		// NOW adjust UI (convert individuals back to groups for display)
 		for(var i=0; i<Tournament.INITIAL_AGENTS.length; i++){
 			// do NOT adjust anchor.
 			var conf = Tournament.INITIAL_AGENTS[i];
 			if(conf.strategy==peepID) continue;
-			publish("sandbox/pop/"+conf.strategy, [conf.count]);
+			publish("sandbox/pop/"+conf.strategy, [Math.floor(conf.count / 3)]);
 		}
 
 		// Reset!
