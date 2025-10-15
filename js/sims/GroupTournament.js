@@ -1,5 +1,31 @@
 // Group Tournament - 3'lü gruplar halinde çoğunluk kararı sistemi
 
+// PEEP_METADATA tanımı (PD.js'den kopyalandı)
+var PEEP_METADATA = {
+	   tft: {frame:0, color:"#4089DD"}, 
+	 all_d: {frame:1, color:"#52537F"},
+	 all_c: {frame:2, color:"#FF75FF"},
+	grudge: {frame:3, color:"#efc701"},
+	prober: {frame:4, color:"#f6b24c"},
+	  tf2t: {frame:5, color:"#88A8CE"},
+	pavlov: {frame:6, color:"#86C448"},
+	random: {frame:7, color:"#FF5E5E"}
+};
+
+// PD sabitleri
+var PD = {};
+PD.COOPERATE = "COOPERATE";
+PD.CHEAT = "CHEAT";
+
+PD.PAYOFFS_DEFAULT = {
+	P: 0, // punishment: neither of you get anything
+	S: -1, // sucker: you put in coin, other didn't.
+	R: 2, // reward: you both put 1 coin in, both got 3 back
+	T: 3 // temptation: you put no coin, got 3 coins anyway
+};
+
+PD.PAYOFFS = JSON.parse(JSON.stringify(PD.PAYOFFS_DEFAULT));
+
 // Utility function
 function _shuffleArray(array) {
 	for (var i = array.length - 1; i > 0; i--) {
@@ -27,8 +53,6 @@ GroupTournament.resetGlobalVariables = function(){
 	];
 
 	GroupTournament.FLOWER_CONNECTIONS = false;
-
-	publish("pd/defaultPayoffs");
 
 	PD.NOISE = 0;
 };
