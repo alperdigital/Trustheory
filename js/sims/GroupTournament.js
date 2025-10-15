@@ -1,4 +1,16 @@
 // Group Tournament - 3'lü gruplar halinde çoğunluk kararı sistemi
+
+// Utility function
+function _shuffleArray(array) {
+	for (var i = array.length - 1; i > 0; i--) {
+		var j = Math.floor(Math.random() * (i + 1));
+		var temp = array[i];
+		array[i] = array[j];
+		array[j] = temp;
+	}
+	return array;
+}
+
 GroupTournament.resetGlobalVariables = function(){
 	GroupTournament.SELECTION = 5;
 	GroupTournament.NUM_TURNS = 10;
@@ -64,12 +76,7 @@ function GroupTournament(config){
 		}
 
 		// Stratejileri karıştır
-		for (var i = strategies.length - 1; i > 0; i--) {
-			var j = Math.floor(Math.random() * (i + 1));
-			var temp = strategies[i];
-			strategies[i] = strategies[j];
-			strategies[j] = temp;
-		}
+		strategies = _shuffleArray(strategies);
 
 		// 3'lü gruplar oluştur
 		for(var i=0; i<strategies.length; i+=GroupTournament.GROUP_SIZE){
@@ -164,11 +171,21 @@ function GroupTournament(config){
 		}
 	};
 
+	// PD.getPayoffs fonksiyonu
+	self.getPayoffs = function(move1, move2){
+		var payoffs = PD.PAYOFFS;
+		if(move1==PD.CHEAT && move2==PD.CHEAT) return [payoffs.P, payoffs.P]; // both punished
+		if(move1==PD.CHEAT && move2==PD.COOPERATE) return [payoffs.T, payoffs.S]; // temptation & sucker
+		if(move1==PD.COOPERATE && move2==PD.CHEAT) return [payoffs.S, payoffs.T]; // sucker & temptation
+		if(move1==PD.COOPERATE && move2==PD.COOPERATE) return [payoffs.R, payoffs.R]; // both rewarded
+		return [0, 0]; // fallback
+	};
+
 	self.playGroupGame = function(groupA, groupB){
 		var decisionA = self.makeGroupDecision(groupA, groupB);
 		var decisionB = self.makeGroupDecision(groupB, groupA);
 
-		var payoffs = PD.getPayoffs(decisionA, decisionB);
+		var payoffs = self.getPayoffs(decisionA, decisionB);
 
 		groupA.addPayoff(payoffs[0]);
 		groupB.addPayoff(payoffs[1]);
@@ -215,6 +232,10 @@ function GroupTournament(config){
 
 			// En kötü grubu kaldır
 			var worstGroup = sortedGroups[0];
+			var worstIndex = self.groups.indexOf(worstGroup);
+			if(worstIndex > -1) {
+				self.groups.splice(worstIndex, 1);
+			}
 			worstGroup.eliminate();
 
 			// En iyi grubu çoğalt
