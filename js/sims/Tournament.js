@@ -1,3 +1,21 @@
+// Debug counters for loop diagnosis
+window.__DBG__ = window.__DBG__ || {};
+__DBG__.rounds = (__DBG__.rounds||0);
+__DBG__.decisions = 0;
+
+function dbgOnRoundStart(sim){ 
+	__DBG__.rounds++; 
+	__DBG__.decisions = 0; 
+	console.debug("=== ROUND START #", __DBG__.rounds, "===");
+}
+function dbgOnDecision(){ 
+	__DBG__.decisions++; 
+}
+function dbgOnRoundEnd(sim){
+	console.debug("ROUND#", __DBG__.rounds, " decisions:", __DBG__.decisions,
+	              " players:", sim.agents.length, " groups:", sim.groups?.size);
+}
+
 Tournament.resetGlobalVariables = function(){
 
 	Tournament.SELECTION = 5;
@@ -97,6 +115,12 @@ function Tournament(config){
 		homogeneousGroups: Tournament.HOMOGENEOUS_GROUPS,
 		groupVoteSource: Tournament.GROUP_VOTE_SOURCE,
 		groupFitnessMetric: Tournament.GROUP_FITNESS_METRIC
+	};
+
+	// Context for group decisions
+	self.context = {
+		settings: self.settings,
+		groups: self.groups
 	};
 
 	// Debug logging for group decisions
@@ -273,10 +297,10 @@ function Tournament(config){
 	// Play one tournament
 	self.agentsSorted = null;
 	self.playOneTournament = function(){
-		var context = {
-			settings: self.settings,
-			groups: self.groups
-		};
+		dbgOnRoundStart(self);
+		
+		// Update context with current groups
+		self.context.groups = self.groups;
 		
 		// Log group decisions if debug mode is on
 		if (window.__GROUP_DEBUG__ && self.settings.groupMode) {
@@ -284,7 +308,7 @@ function Tournament(config){
 			self.logGroupDecisions();
 		}
 		
-		PD.playOneTournament(self.agents, Tournament.NUM_TURNS, context);
+		PD.playOneTournament(self.agents, Tournament.NUM_TURNS, self.context);
 		self.agentsSorted = _shuffleArray(self.agents.slice());
 		self.agentsSorted.sort(function(a,b){ return a.coins-b.coins; });
 		
@@ -294,6 +318,8 @@ function Tournament(config){
 			const scores = computeGroupScores(self.groups, self.settings.groupFitnessMetric);
 			console.log("Group Scores:", scores);
 		}
+		
+		dbgOnRoundEnd(self);
 	};
 
 	// Get rid of X worst
@@ -330,11 +356,18 @@ function Tournament(config){
 
 		// Use group selection if group mode is enabled
 		if (self.settings.groupMode) {
+			console.debug("=== GROUP SELECTION START ===");
 			self.groups = applyGroupSelection(self.agents, self.groups, self.settings);
+			
+			// Update context reference to new groups
+			if (self.context) {
+				self.context.groups = self.groups;
+			}
 			
 			// Re-populate agents with new groups
 			self.populateAgents();
 			self.createNetwork();
+			console.debug("=== GROUP SELECTION END ===");
 			return;
 		}
 

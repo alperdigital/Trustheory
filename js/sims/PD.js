@@ -59,10 +59,14 @@ PD.playOneGame = function(playerA, playerB, context){
 	var A, B;
 	if (context && context.settings && context.settings.groupMode) {
 		A = decideWithGroup(playerA, playerB, context);
+		dbgOnDecision(); // Debug: count decisions
 		B = decideWithGroup(playerB, playerA, context);
+		dbgOnDecision(); // Debug: count decisions
 	} else {
 		A = playerA.play();
+		dbgOnDecision(); // Debug: count decisions
 		B = playerB.play();
+		dbgOnDecision(); // Debug: count decisions
 	}
 
 	// Noise: random mistakes, flip around!
@@ -137,31 +141,25 @@ PD.playOneTournament = function(agents, turns, context){
  * Otherwise, uses individual agent decision
  * @param {Object} player - The focal player making the decision
  * @param {Object} opponent - The opponent player
- * @param {Object} context - Game context (contains groups, settings, etc.)
+ * @param {Object} sim - Game simulation context (contains groups, settings, etc.)
  * @returns {string} Decision: PD.COOPERATE or PD.CHEAT
  */
-function decideWithGroup(player, opponent, context) {
-    const s = context?.settings || {};
+function decideWithGroup(player, opponent, sim) {
+    const s = sim?.settings || {};
     if (!s.groupMode) return player.logic.play();
 
-    const groups = context.groups; // onInit'te set edilecek
-    const group = groups?.get?.(player.groupId);
+    const group = sim.groups?.get?.(player.groupId);
     if (!group) return player.logic.play();
 
-    // 3 üyenin oyu — recursion YOK
+    // HER ÜYE, AYNI RAKİBE karşı oy verir; recursion YOK
     const votes = group.members.map(m => {
         const hist = (s.groupVoteSource === "focalHistory")
-            ? context.getHistory(player.id, opponent.id)
-            : context.getHistory(m.id, opponent.id);
+            ? sim.getHistory(player.id, opponent.id)
+            : sim.getHistory(m.id, opponent.id);
         return m.logic.play(); // Basit: her üye kendi logic'ini kullan
     });
-
-    const decision = votes.filter(v => v === PD.COOPERATE).length >= 2 ? PD.COOPERATE : PD.CHEAT;
-
-    if (window.__GROUP_DEBUG__)
-        console.debug({ player: player.strategyName, groupId: player.groupId, votes, decision });
-
-    return decision;
+    
+    return votes.filter(v => v === PD.COOPERATE).length >= 2 ? PD.COOPERATE : PD.CHEAT;
 };
 
 ///////////////////////////////////////////////////////

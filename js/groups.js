@@ -128,9 +128,17 @@ function cloneAgent(agent) {
         groupId: null // Will be assigned when grouped
     };
     
+    // Create new logic instance
+    if (agent.strategyName) {
+        const LogicClass = window["Logic_" + agent.strategyName];
+        if (LogicClass) {
+            cloned.logic = new LogicClass();
+        }
+    }
+    
     // Copy any additional properties
     for (const key in agent) {
-        if (!cloned.hasOwnProperty(key)) {
+        if (!cloned.hasOwnProperty(key) && key !== 'logic') {
             cloned[key] = agent[key];
         }
     }
