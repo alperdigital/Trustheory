@@ -99,6 +99,21 @@ function Tournament(config){
 		groupFitnessMetric: Tournament.GROUP_FITNESS_METRIC
 	};
 
+	// Debug logging for group decisions
+	self.logGroupDecisions = function(){
+		if (window.__GROUP_DEBUG__ && self.settings.groupMode) {
+			console.log("=== GROUP DECISION LOG ===");
+			console.log("Groups:", self.groups.size);
+			for (const [groupId, group] of self.groups) {
+				console.log(`Group ${groupId}:`, {
+					strategy: group.strategy,
+					members: group.members.length,
+					color: group.color
+				});
+			}
+		}
+	};
+
 	self.networkContainer = new PIXI.Container();
 	self.agentsContainer = new PIXI.Container();
 	app.stage.addChild(self.networkContainer);
@@ -131,6 +146,11 @@ function Tournament(config){
 			var strategy = self.agents[i];
 			var agent = new TournamentAgent({angle:angle, strategy:strategy, tournament:self});
 			self.agentsContainer.addChild(agent.graphics);
+
+			// Update group badge if in group mode
+			if (self.settings.groupMode) {
+				agent.updateGroupBadge();
+			}
 
 			// Remember me!
 			self.agents[i] = agent;
@@ -257,9 +277,23 @@ function Tournament(config){
 			settings: self.settings,
 			groups: self.groups
 		};
+		
+		// Log group decisions if debug mode is on
+		if (window.__GROUP_DEBUG__ && self.settings.groupMode) {
+			console.log("=== TOURNAMENT START ===");
+			self.logGroupDecisions();
+		}
+		
 		PD.playOneTournament(self.agents, Tournament.NUM_TURNS, context);
 		self.agentsSorted = _shuffleArray(self.agents.slice());
 		self.agentsSorted.sort(function(a,b){ return a.coins-b.coins; });
+		
+		// Log group scores after tournament
+		if (window.__GROUP_DEBUG__ && self.settings.groupMode) {
+			console.log("=== TOURNAMENT END ===");
+			const scores = computeGroupScores(self.groups, self.settings.groupFitnessMetric);
+			console.log("Group Scores:", scores);
+		}
 	};
 
 	// Get rid of X worst
@@ -648,6 +682,33 @@ function TournamentAgent(config){
 	body.anchor.x = 0.5;
 	body.anchor.y = 0.75;
 	g.addChild(body);
+
+	// Group badge (if in group mode)
+	var groupBadge = null;
+	self.updateGroupBadge = function(){
+		if (groupBadge) {
+			g.removeChild(groupBadge);
+		}
+		
+		if (self.groupId !== undefined && self.groupId !== null) {
+			groupBadge = new PIXI.Graphics();
+			groupBadge.beginFill(parseInt(pickGroupColor(self.groupId).replace("#", "0x")), 0.8);
+			groupBadge.drawCircle(0, -30, 8);
+			groupBadge.endFill();
+			
+			// Add group ID text
+			var groupText = new PIXI.Text(self.groupId.toString(), {
+				fontFamily: "Arial",
+				fontSize: 10,
+				fill: "#FFFFFF",
+				align: "center"
+			});
+			groupText.anchor.set(0.5);
+			groupBadge.addChild(groupText);
+			
+			g.addChild(groupBadge);
+		}
+	};
 
 	// Score!
 	var textStyle = new PIXI.TextStyle({
