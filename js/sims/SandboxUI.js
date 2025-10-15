@@ -173,14 +173,6 @@ function SandboxUI(config){
 		popAmount.style.color = PEEP_METADATA[peepID].color;
 		popDOM.appendChild(popAmount);
 		
-		// Sub-label: "×3 kişi" in small gray text
-		var popSubLabel = document.createElement("div");
-		popSubLabel.className = "sandbox_pop_label";
-		popSubLabel.style.textAlign = "right";
-		popSubLabel.style.color = "#888";
-		popSubLabel.style.fontSize = "14px";
-		popSubLabel.innerHTML = "×3 kişi";
-		popDOM.appendChild(popSubLabel);
 		
 		listen(self, message, function(value){
 			popAmount.innerHTML = value + " grup";
