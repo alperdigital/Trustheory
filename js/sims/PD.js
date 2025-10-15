@@ -153,10 +153,8 @@ function decideWithGroup(player, opponent, sim) {
 
     // HER ÜYE, AYNI RAKİBE karşı oy verir; recursion YOK
     const votes = group.members.map(m => {
-        const hist = (s.groupVoteSource === "focalHistory")
-            ? sim.getHistory(player.id, opponent.id)
-            : sim.getHistory(m.id, opponent.id);
-        return m.logic.play(); // Basit: her üye kendi logic'ini kullan
+        // Basit: her üye kendi logic'ini kullan (geçmiş kontrolü olmadan)
+        return m.logic.play();
     });
     
     return votes.filter(v => v === PD.COOPERATE).length >= 2 ? PD.COOPERATE : PD.CHEAT;
