@@ -18,7 +18,7 @@ function dbgOnRoundEnd(sim){
 
 Tournament.resetGlobalVariables = function(){
 
-	Tournament.SELECTION = 5;
+	Tournament.SELECTION = 3; // 1 grup = 3 kişi
 	Tournament.NUM_TURNS = 10;
 
 	Tournament.INITIAL_AGENTS = [
