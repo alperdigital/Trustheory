@@ -35,10 +35,10 @@ SLIDES.push({
 		// Screw it, just ALL of the Sandbox UI
 		self.add({id:"sandbox", type:"SandboxUI"});
 
-		// Expanded explanation text (no button) - 1.5x wider
+		// Expanded explanation text (no button) - 1.5x wider, moved down one line
 		self.add({
 			id:"label_next", type:"TextBox",
-			x:55, y:450, width:900, align:"left",
+			x:55, y:470, width:900, align:"left",
 			text_id: "sandbox_end"
 		});
 		
