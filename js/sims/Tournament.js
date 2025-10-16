@@ -327,7 +327,18 @@ function Tournament(config){
 
 		// Use group selection if group mode is enabled
 		if (self.settings.groupMode) {
-			// Group selection is handled in reproduceTop
+			console.debug("=== GROUP SELECTION START (eliminateBottom) ===");
+			self.groups = applyGroupSelection(self.agents, self.groups, self.settings);
+			
+			// Update context reference to new groups
+			if (self.context) {
+				self.context.groups = self.groups;
+			}
+			
+			// Re-populate agents with new groups
+			self.populateAgents();
+			self.createNetwork();
+			console.debug("=== GROUP SELECTION END (eliminateBottom) ===");
 			return;
 		}
 
@@ -356,18 +367,7 @@ function Tournament(config){
 
 		// Use group selection if group mode is enabled
 		if (self.settings.groupMode) {
-			console.debug("=== GROUP SELECTION START ===");
-			self.groups = applyGroupSelection(self.agents, self.groups, self.settings);
-			
-			// Update context reference to new groups
-			if (self.context) {
-				self.context.groups = self.groups;
-			}
-			
-			// Re-populate agents with new groups
-			self.populateAgents();
-			self.createNetwork();
-			console.debug("=== GROUP SELECTION END ===");
+			// Group selection is handled in eliminateBottom
 			return;
 		}
 
