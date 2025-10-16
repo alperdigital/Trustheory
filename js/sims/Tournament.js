@@ -328,7 +328,13 @@ function Tournament(config){
 		// Use group selection if group mode is enabled
 		if (self.settings.groupMode) {
 			console.debug("=== GROUP SELECTION START (eliminateBottom) ===");
-			self.groups = applyGroupSelection(self.agents, self.groups, self.settings);
+			
+			// Create a copy of agents to avoid mutation during iteration
+			const agentsCopy = self.agents.slice();
+			self.groups = applyGroupSelection(agentsCopy, self.groups, self.settings);
+			
+			// Update agents array with the modified copy
+			self.agents = agentsCopy;
 			
 			// Update context reference to new groups
 			if (self.context) {
