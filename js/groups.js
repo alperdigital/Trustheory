@@ -224,14 +224,17 @@ function applyGroupSelection(agents, groups, settings) {
     console.log("Worst group ID:", worstGroupId, "Score:", scores[0].fitness);
     console.log("Best group ID:", bestGroupId, "Score:", scores[scores.length - 1].fitness);
     
-    // Remove worst group members from agents array
+    // Create a new agents array to avoid mutating the original during iteration
+    const newAgents = agents.slice();
+    
+    // Remove worst group members from new agents array
     const worstGroup = groups.get(worstGroupId);
     if (worstGroup) {
         console.log("Removing worst group with", worstGroup.members.length, "members");
         for (const member of worstGroup.members) {
-            const index = agents.indexOf(member);
+            const index = newAgents.indexOf(member);
             if (index >= 0) {
-                agents.splice(index, 1);
+                newAgents.splice(index, 1);
             }
         }
         groups.delete(worstGroupId);
@@ -242,11 +245,15 @@ function applyGroupSelection(agents, groups, settings) {
     if (bestGroup) {
         console.log("Cloning best group with", bestGroup.members.length, "members");
         const clones = bestGroup.members.map(member => cloneAgent(member));
-        agents.push(...clones);
+        newAgents.push(...clones);
         console.log("Added", clones.length, "clones to agents array");
     }
     
-    console.log("New agents count:", agents.length);
+    console.log("New agents count:", newAgents.length);
+    
+    // Update the original agents array
+    agents.length = 0;
+    agents.push(...newAgents);
     
     // Re-form groups with updated population
     const newGroups = formGroups(agents, {

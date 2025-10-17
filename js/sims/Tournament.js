@@ -345,12 +345,8 @@ function Tournament(config){
 		if (self.settings.groupMode) {
 			console.debug("=== GROUP SELECTION START (eliminateBottom) ===");
 			
-			// Create a copy of agents to avoid mutation during iteration
-			const agentsCopy = self.agents.slice();
-			self.groups = applyGroupSelection(agentsCopy, self.groups, self.settings);
-			
-			// Update agents array with the modified copy
-			self.agents = agentsCopy;
+			// Apply group selection (elimination and reproduction)
+			self.groups = applyGroupSelection(self.agents, self.groups, self.settings);
 			
 			// Update context reference to new groups
 			if (self.context) {
@@ -392,7 +388,8 @@ function Tournament(config){
 
 		// Use group selection if group mode is enabled
 		if (self.settings.groupMode) {
-			// Group selection is handled in eliminateBottom
+			// Group selection (both elimination and reproduction) is handled in eliminateBottom
+			console.debug("=== GROUP SELECTION: reproduceTop skipped (handled in eliminateBottom) ===");
 			return;
 		}
 
