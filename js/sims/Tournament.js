@@ -167,13 +167,7 @@ function Tournament(config){
 		while(self.agents.length>0) self.agents[0].kill();
 		
 		// Convert to an array
-		if (self.settings.groupMode) {
-			// In group mode, use existing agents array (already updated by group selection)
-			console.log("populateAgents: Using existing agents array in group mode, count:", self.agents.length);
-		} else {
-			// In individual mode, convert from AGENTS global
-			self.agents = _convertCountToArray(AGENTS);
-		}
+		self.agents = _convertCountToArray(AGENTS);
 
 		// Form groups if group mode is enabled
 		if (self.settings.groupMode) {
