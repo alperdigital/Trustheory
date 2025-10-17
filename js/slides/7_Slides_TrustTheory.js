@@ -8,6 +8,7 @@ SLIDES.push({
 	id: "trusttheory",
 	onstart: function(self){
 
+		alert("TrustTheory bölümü yüklendi!");
 		console.log("=== TrustTheory Bölümü Başlatılıyor ===");
 		console.log("Tournament objesi mevcut mu?", typeof Tournament !== 'undefined');
 		console.log("ensurePopulationMultipleOf3 fonksiyonu mevcut mu?", typeof ensurePopulationMultipleOf3 !== 'undefined');
