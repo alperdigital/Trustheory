@@ -163,15 +163,15 @@ function computeGroupScores(groups, metric = 'avg_payoff') {
         
         if (members.length === 0) continue;
         
-        // Calculate average payoff
-        const totalPayoff = members.reduce((sum, member) => sum + (member.coins || 0), 0);
+        // Calculate average payoff (use roundScore if available, otherwise total coins)
+        const totalPayoff = members.reduce((sum, member) => sum + (member.roundScore !== undefined ? member.roundScore : member.coins || 0), 0);
         const avgPayoff = totalPayoff / members.length;
         
         // Calculate agreement (simplified - based on recent decisions)
         let agreement = 0;
         if (members.length > 1) {
             // For now, use a simple metric based on payoff variance
-            const payoffs = members.map(m => m.coins || 0);
+            const payoffs = members.map(m => m.roundScore !== undefined ? m.roundScore : m.coins || 0);
             const avg = payoffs.reduce((s, p) => s + p, 0) / payoffs.length;
             const variance = payoffs.reduce((s, p) => s + Math.pow(p - avg, 2), 0) / payoffs.length;
             agreement = Math.max(0, 1 - (variance / 100)); // Normalize variance

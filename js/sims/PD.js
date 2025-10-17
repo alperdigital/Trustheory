@@ -153,11 +153,24 @@ function decideWithGroup(player, opponent, sim) {
 
     // HER ÜYE, AYNI RAKİBE karşı oy verir; recursion YOK
     const votes = group.members.map(m => {
-        // Basit: her üye kendi logic'ini kullan (geçmiş kontrolü olmadan)
+        // Her üye kendi logic'ini kullan (geçmiş kontrolü olmadan)
         return m.logic.play();
     });
     
-    return votes.filter(v => v === PD.COOPERATE).length >= 2 ? PD.COOPERATE : PD.CHEAT;
+    const cooperators = votes.filter(v => v === PD.COOPERATE).length;
+    const decision = cooperators >= 2 ? PD.COOPERATE : PD.CHEAT;
+    
+    // Debug log
+    if (window.__GROUP_DEBUG__) {
+        console.debug(`Group ${player.groupId} decision:`, {
+            votes: votes,
+            cooperators: cooperators,
+            decision: decision,
+            against: opponent.strategyName
+        });
+    }
+    
+    return decision;
 };
 
 ///////////////////////////////////////////////////////
