@@ -9,9 +9,16 @@ SLIDES.push({
 	onstart: function(self){
 
 		console.log("=== TrustTheory Bölümü Başlatılıyor ===");
+		console.log("Tournament objesi mevcut mu?", typeof Tournament !== 'undefined');
+		console.log("ensurePopulationMultipleOf3 fonksiyonu mevcut mu?", typeof ensurePopulationMultipleOf3 !== 'undefined');
 		
-		// The tournament simulation
-		Tournament.resetGlobalVariables();
+		try {
+			// The tournament simulation
+			Tournament.resetGlobalVariables();
+			console.log("Tournament.resetGlobalVariables() başarılı");
+		} catch (error) {
+			console.error("Tournament.resetGlobalVariables() hatası:", error);
+		}
 		
 		// Enable group mode for TrustTheory - grup bazlı seçilim
 		Tournament.GROUP_MODE = true;
@@ -40,15 +47,21 @@ SLIDES.push({
 			}
 		}
 		
-		self.add({id:"tournament", type:"Tournament", x:-20, y:-20});
-		
-		console.log("Tournament objesi oluşturuldu:", self.objects.tournament);
-		console.log("Tournament ID:", self.objects.tournament ? self.objects.tournament.id : "undefined");
+		try {
+			self.add({id:"tournament", type:"Tournament", x:-20, y:-20});
+			console.log("Tournament objesi oluşturuldu:", self.objects.tournament);
+			console.log("Tournament ID:", self.objects.tournament ? self.objects.tournament.id : "undefined");
+		} catch (error) {
+			console.error("Tournament objesi oluşturma hatası:", error);
+		}
 
 		// Screw it, just ALL of the Sandbox UI
-		self.add({id:"sandbox", type:"SandboxUI"});
-		
-		console.log("SandboxUI objesi oluşturuldu:", self.objects.sandbox);
+		try {
+			self.add({id:"sandbox", type:"SandboxUI"});
+			console.log("SandboxUI objesi oluşturuldu:", self.objects.sandbox);
+		} catch (error) {
+			console.error("SandboxUI objesi oluşturma hatası:", error);
+		}
 		
 		// Ensure Tournament is properly initialized for group mode
 		setTimeout(function() {
