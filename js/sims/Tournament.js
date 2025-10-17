@@ -47,7 +47,7 @@ Tournament.resetGlobalVariables = function(){
 		{strategy:"prober", count:3},  // 1 grup = 3 kişi
 		{strategy:"tf2t", count:3},    // 1 grup = 3 kişi
 		{strategy:"pavlov", count:3},  // 1 grup = 3 kişi
-		{strategy:"random", count:3}   // 1 grup = 3 kişi (toplam 24 kişi = 8 grup)
+		{strategy:"random", count:6}   // 2 grup = 6 kişi (toplam 27 kişi = 9 grup)
 	];
 
 	Tournament.FLOWER_CONNECTIONS = false;
