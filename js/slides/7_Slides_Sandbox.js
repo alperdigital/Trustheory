@@ -34,9 +34,13 @@ SLIDES.push({
 		}
 		
 		self.add({id:"tournament", type:"Tournament", x:-20, y:-20});
+		console.log("=== Tournament objesi oluşturuldu ===");
+		console.log("self.objects.tournament:", self.objects.tournament);
 
 		// Screw it, just ALL of the Sandbox UI
 		self.add({id:"sandbox", type:"SandboxUI"});
+		console.log("=== SandboxUI objesi oluşturuldu ===");
+		console.log("self.objects.sandbox:", self.objects.sandbox);
 
 		// Expanded explanation text (no button) - 1.5x wider, moved down one line
 		self.add({
