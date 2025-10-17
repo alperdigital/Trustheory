@@ -65,13 +65,23 @@ SLIDES.push({
 		
 		// Ensure Tournament is properly initialized for group mode
 		setTimeout(function() {
+			console.log("=== Tournament Objesi Kontrolü ===");
+			console.log("self.objects:", self.objects);
+			console.log("self.objects.tournament:", self.objects.tournament);
+			
 			if (self.objects.tournament) {
 				console.log("Tournament objesi bulundu, grup modu kontrol ediliyor...");
 				console.log("Tournament GROUP_MODE:", self.objects.tournament.GROUP_MODE);
 				console.log("Tournament agents count:", self.objects.tournament.agents ? self.objects.tournament.agents.length : "undefined");
 				console.log("Tournament groups count:", self.objects.tournament.groups ? self.objects.tournament.groups.size : "undefined");
+				
+				// Test buton functionality
+				console.log("=== Buton Testi ===");
+				console.log("Tournament objesi butonlara yanıt verebilir mi?", typeof self.objects.tournament._startAutoPlay === 'function');
+				console.log("Tournament objesi step yapabilir mi?", typeof self.objects.tournament._nextStep === 'function');
 			} else {
 				console.log("HATA: Tournament objesi bulunamadı!");
+				console.log("Mevcut objeler:", Object.keys(self.objects));
 			}
 		}, 1000);
 
