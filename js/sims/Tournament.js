@@ -30,6 +30,8 @@ function _updateAGENTSFromAgents(agents){
 	for(var i=0; i<AGENTS.length; i++){
 		AGENTS[i].count = strategyCounts[AGENTS[i].strategy] || 0;
 	}
+	
+	console.log("_updateAGENTSFromAgents: Updated AGENTS counts:", AGENTS.map(a => `${a.strategy}:${a.count}`).join(", "));
 }
 
 Tournament.resetGlobalVariables = function(){
@@ -45,7 +47,7 @@ Tournament.resetGlobalVariables = function(){
 		{strategy:"prober", count:3},  // 1 grup = 3 kişi
 		{strategy:"tf2t", count:3},    // 1 grup = 3 kişi
 		{strategy:"pavlov", count:3},  // 1 grup = 3 kişi
-		{strategy:"random", count:6}   // 2 grup = 6 kişi
+		{strategy:"random", count:3}   // 1 grup = 3 kişi (toplam 24 kişi = 8 grup)
 	];
 
 	Tournament.FLOWER_CONNECTIONS = false;
@@ -165,7 +167,13 @@ function Tournament(config){
 		while(self.agents.length>0) self.agents[0].kill();
 		
 		// Convert to an array
-		self.agents = _convertCountToArray(AGENTS);
+		if (self.settings.groupMode) {
+			// In group mode, use existing agents array (already updated by group selection)
+			console.log("populateAgents: Using existing agents array in group mode, count:", self.agents.length);
+		} else {
+			// In individual mode, convert from AGENTS global
+			self.agents = _convertCountToArray(AGENTS);
+		}
 
 		// Form groups if group mode is enabled
 		if (self.settings.groupMode) {

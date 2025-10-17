@@ -107,11 +107,12 @@ function ensurePopulationMultipleOf3(n) {
         adjusted++;
     }
     
-    // Make it odd
+    // Make it odd (but keep it divisible by 3)
     if (adjusted % 2 === 0) {
         adjusted += 3;
     }
     
+    console.log(`ensurePopulationMultipleOf3: ${n} -> ${adjusted} (${adjusted/3} groups)`);
     return adjusted;
 }
 
