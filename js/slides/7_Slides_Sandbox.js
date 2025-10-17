@@ -36,7 +36,7 @@ SLIDES.push({
 		self.add({id:"tournament", type:"Tournament", x:-20, y:-20});
 
 		// Screw it, just ALL of the Sandbox UI
-		self.add({id:"sandbox", type:"SandboxUI", slideshow: self});
+		self.add({id:"sandbox", type:"SandboxUI"});
 
 		// Expanded explanation text (no button) - 1.5x wider, moved down one line
 		self.add({
