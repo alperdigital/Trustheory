@@ -29,7 +29,7 @@ SLIDES.push({
 			totalAgents += Tournament.INITIAL_AGENTS[i].count;
 		}
 		
-		var adjustedTotal = ensurePopulationMultipleOf3(totalAgents);
+		var adjustedTotal = window.ensurePopulationMultipleOf3 ? window.ensurePopulationMultipleOf3(totalAgents) : ensurePopulationMultipleOf3(totalAgents);
 		if (adjustedTotal !== totalAgents) {
 			// Adjust the random strategy count to reach target
 			var randomConfig = Tournament.INITIAL_AGENTS.find(function(config) {
@@ -49,6 +49,18 @@ SLIDES.push({
 		self.add({id:"sandbox", type:"SandboxUI"});
 		
 		console.log("SandboxUI objesi oluşturuldu:", self.objects.sandbox);
+		
+		// Ensure Tournament is properly initialized for group mode
+		setTimeout(function() {
+			if (self.objects.tournament) {
+				console.log("Tournament objesi bulundu, grup modu kontrol ediliyor...");
+				console.log("Tournament GROUP_MODE:", self.objects.tournament.GROUP_MODE);
+				console.log("Tournament agents count:", self.objects.tournament.agents ? self.objects.tournament.agents.length : "undefined");
+				console.log("Tournament groups count:", self.objects.tournament.groups ? self.objects.tournament.groups.size : "undefined");
+			} else {
+				console.log("HATA: Tournament objesi bulunamadı!");
+			}
+		}, 1000);
 
 		// Expanded explanation text (no button) - 1.5x wider, moved down one line
 		self.add({
