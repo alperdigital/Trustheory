@@ -17,12 +17,12 @@ function SandboxUI(config){
 		x:172, y:135, text_id:"label_start", size:"short",
 		onclick: function(){
 			console.log("=== SandboxUI Play Button Tıklandı ===");
-			console.log("slideshow.objects:", slideshow.objects);
-			console.log("slideshow.objects.tournament:", slideshow.objects.tournament);
-			console.log("slideshow.objects.tournament_env:", slideshow.objects.tournament_env);
-			console.log("slideshow.objects.grouptournament:", slideshow.objects.grouptournament);
+			console.log("self.slideshow.objects:", self.slideshow.objects);
+			console.log("self.slideshow.objects.tournament:", self.slideshow.objects.tournament);
+			console.log("self.slideshow.objects.tournament_env:", self.slideshow.objects.tournament_env);
+			console.log("self.slideshow.objects.grouptournament:", self.slideshow.objects.grouptournament);
 			
-			var tournament = slideshow.objects.tournament || slideshow.objects.tournament_env || slideshow.objects.grouptournament;
+			var tournament = self.slideshow.objects.tournament || self.slideshow.objects.tournament_env || self.slideshow.objects.grouptournament;
 			console.log("Bulunan tournament objesi:", tournament);
 			console.log("Tournament objesi var mı?", !!tournament);
 			console.log("Tournament isAutoPlaying:", tournament ? tournament.isAutoPlaying : "undefined");
@@ -60,10 +60,10 @@ function SandboxUI(config){
 		x:172, y:135+70, text_id:"label_step", 
 		onclick: function(){
 			console.log("=== SandboxUI Step Button Tıklandı ===");
-			console.log("slideshow.objects:", slideshow.objects);
-			console.log("slideshow.objects.tournament:", slideshow.objects.tournament);
+			console.log("self.slideshow.objects:", self.slideshow.objects);
+			console.log("self.slideshow.objects.tournament:", self.slideshow.objects.tournament);
 			
-			var tournament = slideshow.objects.tournament || slideshow.objects.tournament_env || slideshow.objects.grouptournament;
+			var tournament = self.slideshow.objects.tournament || self.slideshow.objects.tournament_env || self.slideshow.objects.grouptournament;
 			console.log("Bulunan tournament objesi:", tournament);
 			console.log("Tournament objesi var mı?", !!tournament);
 			
@@ -82,7 +82,7 @@ function SandboxUI(config){
 	var resetButton = new Button({
 		x:172, y:135+70*2, text_id:"label_reset", 
 		onclick: function(){
-			var tournament = slideshow.objects.tournament || slideshow.objects.tournament_env || slideshow.objects.grouptournament;
+			var tournament = self.slideshow.objects.tournament || self.slideshow.objects.tournament_env || self.slideshow.objects.grouptournament;
 			if(tournament && tournament.id === "grouptournament"){
 				publish("grouptournament/reset");
 			} else {
