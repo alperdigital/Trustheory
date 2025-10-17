@@ -16,6 +16,22 @@ function dbgOnRoundEnd(sim){
 	              " players:", sim.agents.length, " groups:", sim.groups?.size);
 }
 
+// Helper function to update AGENTS global variable from agents array
+function _updateAGENTSFromAgents(agents){
+	// Count each strategy type
+	var strategyCounts = {};
+	for(var i=0; i<agents.length; i++){
+		var strategyName = agents[i].strategyName || agents[i].strategy;
+		if(!strategyCounts[strategyName]) strategyCounts[strategyName] = 0;
+		strategyCounts[strategyName]++;
+	}
+	
+	// Update AGENTS array
+	for(var i=0; i<AGENTS.length; i++){
+		AGENTS[i].count = strategyCounts[AGENTS[i].strategy] || 0;
+	}
+}
+
 Tournament.resetGlobalVariables = function(){
 
 	Tournament.SELECTION = 3; // 1 grup = 3 kişi
@@ -340,6 +356,9 @@ function Tournament(config){
 			if (self.context) {
 				self.context.groups = self.groups;
 			}
+			
+			// Update AGENTS global variable based on new agent list
+			_updateAGENTSFromAgents(self.agents);
 			
 			// Re-populate agents with new groups
 			self.populateAgents();
