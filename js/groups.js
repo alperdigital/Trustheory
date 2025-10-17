@@ -155,6 +155,8 @@ function cloneAgent(agent) {
 function computeGroupScores(groups, metric = 'avg_payoff') {
     const scores = [];
     
+    console.log("Computing group scores for", groups.size, "groups with metric:", metric);
+    
     for (const group of groups.values()) {
         const members = group.members || [];
         
@@ -181,6 +183,8 @@ function computeGroupScores(groups, metric = 'avg_payoff') {
             fitness = 0.7 * avgPayoff + 0.3 * agreement;
         }
         
+        console.log(`Group ${group.id}: ${members.length} members, total payoff: ${totalPayoff}, avg: ${avgPayoff.toFixed(2)}, fitness: ${fitness.toFixed(2)}`);
+        
         scores.push({
             id: group.id,
             fitness: fitness,
@@ -189,7 +193,10 @@ function computeGroupScores(groups, metric = 'avg_payoff') {
         });
     }
     
-    return scores.sort((a, b) => a.fitness - b.fitness);
+    const sortedScores = scores.sort((a, b) => a.fitness - b.fitness);
+    console.log("Sorted scores:", sortedScores.map(s => `Group ${s.id}: ${s.fitness.toFixed(2)}`));
+    
+    return sortedScores;
 }
 
 /**
@@ -202,16 +209,25 @@ function computeGroupScores(groups, metric = 'avg_payoff') {
 function applyGroupSelection(agents, groups, settings) {
     const scores = computeGroupScores(groups, settings.groupFitnessMetric || 'avg_payoff');
     
+    console.log("=== GROUP SELECTION DEBUG ===");
+    console.log("Total groups:", groups.size);
+    console.log("Group scores:", scores);
+    
     if (scores.length <= 1) {
+        console.log("Not enough groups for selection");
         return groups; // Can't select if only one or no groups
     }
     
     const worstGroupId = scores[0].id;
     const bestGroupId = scores[scores.length - 1].id;
     
+    console.log("Worst group ID:", worstGroupId, "Score:", scores[0].fitness);
+    console.log("Best group ID:", bestGroupId, "Score:", scores[scores.length - 1].fitness);
+    
     // Remove worst group members from agents array
     const worstGroup = groups.get(worstGroupId);
     if (worstGroup) {
+        console.log("Removing worst group with", worstGroup.members.length, "members");
         for (const member of worstGroup.members) {
             const index = agents.indexOf(member);
             if (index >= 0) {
@@ -224,19 +240,28 @@ function applyGroupSelection(agents, groups, settings) {
     // Clone best group
     const bestGroup = groups.get(bestGroupId);
     if (bestGroup) {
+        console.log("Cloning best group with", bestGroup.members.length, "members");
         const clones = bestGroup.members.map(member => cloneAgent(member));
         agents.push(...clones);
+        console.log("Added", clones.length, "clones to agents array");
     }
     
+    console.log("New agents count:", agents.length);
+    
     // Re-form groups with updated population
-    return formGroups(agents, {
+    const newGroups = formGroups(agents, {
         groupSize: settings.groupSize || 3,
         homogeneous: settings.homogeneousGroups !== false
     });
+    
+    console.log("New groups count:", newGroups.size);
+    console.log("=== END GROUP SELECTION ===");
+    
+    return newGroups;
 }
 
 // Debug flag for group decisions
-window.__GROUP_DEBUG__ = false;
+window.__GROUP_DEBUG__ = true;
 
 /**
  * Toggles group debug mode
