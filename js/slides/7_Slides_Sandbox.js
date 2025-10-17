@@ -2,9 +2,6 @@ SLIDES.push({
 
 	id: "sandbox",
 	onstart: function(self){
-
-		console.log("=== Sandbox Bölümü Başlatılıyor ===");
-		console.log("Tournament objesi mevcut mu?", typeof Tournament !== 'undefined');
 		
 		// The tournament simulation
 		Tournament.resetGlobalVariables();
@@ -33,17 +30,10 @@ SLIDES.push({
 			}
 		}
 		
-		self.add({id:"tournament", type:"Tournament", x:-20, y:-20});
-		console.log("=== Tournament objesi oluşturuldu ===");
-		console.log("self.objects.tournament:", self.objects.tournament);
-
+		var tournament = self.add({id:"tournament", type:"Tournament", x:-20, y:-20});
+		
 		// Screw it, just ALL of the Sandbox UI
-		// Tournament objesi oluşturulduktan SONRA SandboxUI oluştur
-		setTimeout(function(){
-			self.add({id:"sandbox", type:"SandboxUI"});
-			console.log("=== SandboxUI objesi oluşturuldu ===");
-			console.log("self.objects.sandbox:", self.objects.sandbox);
-		}, 100);
+		self.add({id:"sandbox", type:"SandboxUI"});
 
 		// Expanded explanation text (no button) - 1.5x wider, moved down one line
 		self.add({
