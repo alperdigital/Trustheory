@@ -3,6 +3,9 @@ SLIDES.push({
 	id: "sandbox",
 	onstart: function(self){
 
+		console.log("=== Sandbox Bölümü Başlatılıyor ===");
+		console.log("Tournament objesi mevcut mu?", typeof Tournament !== 'undefined');
+		
 		// The tournament simulation
 		Tournament.resetGlobalVariables();
 		
