@@ -8,6 +8,8 @@ SLIDES.push({
 	id: "trusttheory",
 	onstart: function(self){
 
+		console.log("=== TrustTheory Bölümü Başlatılıyor ===");
+		
 		// The tournament simulation
 		Tournament.resetGlobalVariables();
 		
@@ -17,6 +19,9 @@ SLIDES.push({
 		Tournament.HOMOGENEOUS_GROUPS = true;
 		Tournament.GROUP_VOTE_SOURCE = "perMemberHistory";
 		Tournament.GROUP_FITNESS_METRIC = "avg_payoff";
+		
+		console.log("Group mode enabled:", Tournament.GROUP_MODE);
+		console.log("Group size:", Tournament.GROUP_SIZE);
 		
 		// Adjust population to be odd multiple of 3
 		var totalAgents = 0;
@@ -36,9 +41,14 @@ SLIDES.push({
 		}
 		
 		self.add({id:"tournament", type:"Tournament", x:-20, y:-20});
+		
+		console.log("Tournament objesi oluşturuldu:", self.objects.tournament);
+		console.log("Tournament ID:", self.objects.tournament ? self.objects.tournament.id : "undefined");
 
 		// Screw it, just ALL of the Sandbox UI
 		self.add({id:"sandbox", type:"SandboxUI"});
+		
+		console.log("SandboxUI objesi oluşturuldu:", self.objects.sandbox);
 
 		// Expanded explanation text (no button) - 1.5x wider, moved down one line
 		self.add({
