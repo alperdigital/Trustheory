@@ -878,9 +878,14 @@ function TournamentAgent(config){
 	self.updateScore = function(){
 		scoreText.visible = true;
 		scoreText.text = self.coins;
+		console.log("updateScore called for agent", self.strategyName, "coins:", self.coins, "visible:", scoreText.visible);
 	};
 	self.updateScore();
-	scoreText.visible = false;
+	// Keep score text visible during tournament
+	scoreText.visible = true;
+	listen(self, "tournament/play", function(){
+		scoreText.visible = true;
+	});
 	listen(self, "tournament/reproduce",function(){
 		scoreText.visible = false;
 	});
