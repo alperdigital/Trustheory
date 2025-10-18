@@ -116,6 +116,17 @@ var debugListeners = function(){
 	console.log("there are currently "+count+" listeners!");
 };
 
+// Publish function to work with listen
+var publish = function(message, args){
+	args = args || [];
+	var listeners = c_[message];
+	if(listeners){
+		for(var i=0; i<listeners.length; i++){
+			listeners[i].apply(null, args);
+		}
+	}
+};
+
 /*******
 
 Make a Sprite. e.g:
