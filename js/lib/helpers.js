@@ -119,7 +119,7 @@ var debugListeners = function(){
 // Publish function to work with listen
 var publish = function(message, args){
     args = args || [];
-    var listeners = c_[message];
+    var listeners = window.c_[message];
     if(listeners){
         for(var i=0; i<listeners.length; i++){
             listeners[i].apply(null, args);
