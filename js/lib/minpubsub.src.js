@@ -90,6 +90,10 @@
     context.publish = MinPubSub.publish;
     context.subscribe = MinPubSub.subscribe;
     context.unsubscribe = MinPubSub.unsubscribe;
+    // Also make them globally available
+    window.publish = MinPubSub.publish;
+    window.subscribe = MinPubSub.subscribe;
+    window.unsubscribe = MinPubSub.unsubscribe;
   }
 
 })(window);
