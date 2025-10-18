@@ -109,22 +109,22 @@ var unlisten = function(object){
 }
 
 var debugListeners = function(){
-	var count = 0;
-	for(var sub in c_){
-		count += c_[sub].length;
-	}
-	console.log("there are currently "+count+" listeners!");
+    var count = 0;
+    for(var sub in c_){
+        count += c_[sub].length;
+    }
+    console.log("there are currently "+count+" listeners!");
 };
 
 // Publish function to work with listen
 var publish = function(message, args){
-	args = args || [];
-	var listeners = c_[message];
-	if(listeners){
-		for(var i=0; i<listeners.length; i++){
-			listeners[i].apply(null, args);
-		}
-	}
+    args = args || [];
+    var listeners = c_[message];
+    if(listeners){
+        for(var i=0; i<listeners.length; i++){
+            listeners[i].apply(null, args);
+        }
+    }
 };
 
 /*******
