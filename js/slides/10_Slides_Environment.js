@@ -2,11 +2,11 @@ SLIDES.push({
 
 	id: "environment",
 	onstart: function(self){
-
-		// Configure Tournament for group mode
+		
+		// The tournament simulation
 		Tournament.resetGlobalVariables();
 		
-		// Set group mode settings
+		// Enable group mode for Bölüm 10 - Çevre (Environment)
 		Tournament.GROUP_MODE = true;
 		Tournament.GROUP_SIZE = 3;
 		Tournament.HOMOGENEOUS_GROUPS = true;
@@ -29,27 +29,16 @@ SLIDES.push({
 				randomConfig.count += (adjustedTotal - totalAgents);
 			}
 		}
+		
+		var tournament = self.add({id:"environment_tournament", type:"Tournament", x:-20, y:-20});
+		
+		// Environment UI (copy of SandboxUI but with different ID)
+		self.add({id:"environment_ui", type:"SandboxUI"});
 
-		// Create the tournament with group settings (positioned like Bölüm 7)
-		self.add({id:"tournament_env", type:"Tournament", x:-20, y:-20});
-
-		// Add Sandbox UI
-		self.add({id:"sandbox_env", type:"SandboxUI"});
-
-		// Add explanation text with better positioning (similar to other sections)
-		var title = self.add({
-			id:"environment_title", type:"TextBox",
-			x:55, y:20, width:400, align:"center",
-			text_id: "environment_title"
-		});
-		var intro = self.add({
-			id:"environment_intro", type:"TextBox",
-			x:55, y:60, width:400, align:"left",
-			text_id: "environment_intro"
-		});
-		var explanation = self.add({
-			id:"environment_explanation", type:"TextBox",
-			x:55, y:100, width:400, align:"left",
+		// Expanded explanation text (no button) - 1.5x wider, moved down one line
+		self.add({
+			id:"label_environment", type:"TextBox",
+			x:55, y:470, width:900, align:"left",
 			text_id: "environment_explanation"
 		});
 		
