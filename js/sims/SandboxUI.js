@@ -16,34 +16,19 @@ function SandboxUI(config){
 	var playButton = new Button({
 		x:172, y:135, text_id:"label_start", size:"short",
 		onclick: function(){
-			// Check for different tournament types based on current slide
-			var tournament = null;
-			var eventPrefix = "tournament";
-			
-			// Check for Environment tournament first
-			if(slideshow.objects.environment_tournament){
-				tournament = slideshow.objects.environment_tournament;
-				eventPrefix = "tournament"; // Use same event prefix as regular tournament
-			}
-			// Then check for regular tournament
-			else if(slideshow.objects.tournament){
-				tournament = slideshow.objects.tournament;
-				eventPrefix = "tournament";
-			}
-			// Then check for other tournament types
-			else if(slideshow.objects.tournament_env){
-				tournament = slideshow.objects.tournament_env;
-				eventPrefix = "tournament";
-			}
-			else if(slideshow.objects.grouptournament){
-				tournament = slideshow.objects.grouptournament;
-				eventPrefix = "grouptournament";
-			}
-			
+			var tournament = slideshow.objects.tournament || slideshow.objects.tournament_env || slideshow.objects.grouptournament;
 			if(tournament && tournament.isAutoPlaying){
-				publish(eventPrefix + "/autoplay/stop");
+				if(tournament.id === "grouptournament"){
+					publish("grouptournament/autoplay/stop");
+				} else {
+					publish("tournament/autoplay/stop");
+				}
 			}else{
-				publish(eventPrefix + "/autoplay/start");
+				if(tournament && tournament.id === "grouptournament"){
+					publish("grouptournament/autoplay/start");
+				} else {
+					publish("tournament/autoplay/start");
+				}
 			}
 		}
 	});
@@ -53,7 +38,6 @@ function SandboxUI(config){
 	listen(self, "tournament/autoplay/start",function(){
 		playButton.setText("label_stop");
 	});
-	
 	listen(self, "grouptournament/autoplay/stop",function(){
 		playButton.setText("label_start");
 	});
@@ -65,31 +49,12 @@ function SandboxUI(config){
 	var stepButton = new Button({
 		x:172, y:135+70, text_id:"label_step", 
 		onclick: function(){
-			// Check for different tournament types based on current slide
-			var tournament = null;
-			var eventPrefix = "tournament";
-			
-			// Check for Environment tournament first
-			if(slideshow.objects.environment_tournament){
-				tournament = slideshow.objects.environment_tournament;
-				eventPrefix = "tournament"; // Use same event prefix as regular tournament
+			var tournament = slideshow.objects.tournament || slideshow.objects.tournament_env || slideshow.objects.grouptournament;
+			if(tournament && tournament.id === "grouptournament"){
+				publish("grouptournament/step");
+			} else {
+				publish("tournament/step");
 			}
-			// Then check for regular tournament
-			else if(slideshow.objects.tournament){
-				tournament = slideshow.objects.tournament;
-				eventPrefix = "tournament";
-			}
-			// Then check for other tournament types
-			else if(slideshow.objects.tournament_env){
-				tournament = slideshow.objects.tournament_env;
-				eventPrefix = "tournament";
-			}
-			else if(slideshow.objects.grouptournament){
-				tournament = slideshow.objects.grouptournament;
-				eventPrefix = "grouptournament";
-			}
-			
-			publish(eventPrefix + "/step");
 		},
 		size:"short"
 	});
@@ -98,31 +63,12 @@ function SandboxUI(config){
 	var resetButton = new Button({
 		x:172, y:135+70*2, text_id:"label_reset", 
 		onclick: function(){
-			// Check for different tournament types based on current slide
-			var tournament = null;
-			var eventPrefix = "tournament";
-			
-			// Check for Environment tournament first
-			if(slideshow.objects.environment_tournament){
-				tournament = slideshow.objects.environment_tournament;
-				eventPrefix = "tournament"; // Use same event prefix as regular tournament
+			var tournament = slideshow.objects.tournament || slideshow.objects.tournament_env || slideshow.objects.grouptournament;
+			if(tournament && tournament.id === "grouptournament"){
+				publish("grouptournament/reset");
+			} else {
+				publish("tournament/reset");
 			}
-			// Then check for regular tournament
-			else if(slideshow.objects.tournament){
-				tournament = slideshow.objects.tournament;
-				eventPrefix = "tournament";
-			}
-			// Then check for other tournament types
-			else if(slideshow.objects.tournament_env){
-				tournament = slideshow.objects.tournament_env;
-				eventPrefix = "tournament";
-			}
-			else if(slideshow.objects.grouptournament){
-				tournament = slideshow.objects.grouptournament;
-				eventPrefix = "grouptournament";
-			}
-			
-			publish(eventPrefix + "/reset");
 		},
 		size:"short"
 	});
@@ -220,23 +166,21 @@ function SandboxUI(config){
 		popName.style.color = PEEP_METADATA[peepID].color;
 		popDOM.appendChild(popName);
 
-		// Label: Group Amount (instead of individual count)
+		// Label: Amount
 		var popAmount = document.createElement("div");
 		popAmount.className = "sandbox_pop_label";
 		popAmount.style.textAlign = "right";
 		popAmount.style.color = PEEP_METADATA[peepID].color;
 		popDOM.appendChild(popAmount);
-		
-		
 		listen(self, message, function(value){
-			popAmount.innerHTML = value + " grup";
+			popAmount.innerHTML = value;
 		});
 
-		// Slider (now controls groups, not individuals)
+		// Slider
 		(function(peepID){
 			var popSlider = new Slider({
 				x:0, y:35, width:200,
-				min:0, max:8, step:1, // Max 8 groups = 24 individuals
+				min:0, max:25, step:1,
 				message: message,
 				onselect: function(){
 					_anchorPopulation(peepID);
@@ -257,47 +201,14 @@ function SandboxUI(config){
 	var xDiff = 220;
 	var yDiff = 80;
 	var yOff = 40;
-	_makePopulationControl(    0, yOff+0,       "tft",		1); // 1 grup = 3 kişi
-	_makePopulationControl(xDiff, yOff+0,       "all_d",	1); // 1 grup = 3 kişi
-	_makePopulationControl(    0, yOff+yDiff,   "all_c",	1); // 1 grup = 3 kişi
-	_makePopulationControl(xDiff, yOff+yDiff,   "grudge",	1); // 1 grup = 3 kişi
-	_makePopulationControl(    0, yOff+yDiff*2, "prober",	1); // 1 grup = 3 kişi
-	_makePopulationControl(xDiff, yOff+yDiff*2, "tf2t",		1); // 1 grup = 3 kişi
-	_makePopulationControl(    0, yOff+yDiff*3, "pavlov",	1); // 1 grup = 3 kişi
-	_makePopulationControl(xDiff, yOff+yDiff*3, "random",	2); // 2 grup = 6 kişi
-
-	// Total display
-	var totalDisplay = document.createElement("div");
-	totalDisplay.className = "sandbox_pop_label";
-	totalDisplay.style.position = "absolute";
-	totalDisplay.style.left = "0px";
-	totalDisplay.style.top = (yOff+yDiff*4+20) + "px";
-	totalDisplay.style.width = "433px";
-	totalDisplay.style.textAlign = "center";
-	totalDisplay.style.fontSize = "18px";
-	totalDisplay.style.color = "#333";
-	totalDisplay.style.fontWeight = "bold";
-	page.appendChild(totalDisplay);
-
-	// Update total display function
-	var updateTotalDisplay = function() {
-		var totalGroups = 0;
-		var totalIndividuals = 0;
-		for(var i=0; i<Tournament.INITIAL_AGENTS.length; i++) {
-			var conf = Tournament.INITIAL_AGENTS[i];
-			var groups = Math.floor(conf.count / 3);
-			totalGroups += groups;
-			totalIndividuals += conf.count;
-		}
-		totalDisplay.innerHTML = "Toplam: " + totalGroups + " grup = " + totalIndividuals + " kişi";
-	};
-
-	// Listen to all population changes to update total
-	for(var i=0; i<Tournament.INITIAL_AGENTS.length; i++) {
-		var conf = Tournament.INITIAL_AGENTS[i];
-		listen(self, "sandbox/pop/"+conf.strategy, updateTotalDisplay);
-	}
-	updateTotalDisplay(); // Initial update
+	_makePopulationControl(    0, yOff+0,       "tft",		3);
+	_makePopulationControl(xDiff, yOff+0,       "all_d",	3);
+	_makePopulationControl(    0, yOff+yDiff,   "all_c",	3);
+	_makePopulationControl(xDiff, yOff+yDiff,   "grudge",	3);
+	_makePopulationControl(    0, yOff+yDiff*2, "prober",	3);
+	_makePopulationControl(xDiff, yOff+yDiff*2, "tf2t",		3);
+	_makePopulationControl(    0, yOff+yDiff*3, "pavlov",	3);
+	_makePopulationControl(xDiff, yOff+yDiff*3, "random",	4);
 
 	// Adjust the WHOLE population...
 	/******************************
@@ -317,21 +228,21 @@ function SandboxUI(config){
 		});
 		var initValue = Tournament.INITIAL_AGENTS[_anchoredIndex].count;
 
-		// SPECIAL CASE: THIS IS ALREADY FULL (24 individuals = 8 groups)
-		if(initValue==24){
+		// SPECIAL CASE: THIS IS ALREADY FULL
+		if(initValue==25){
 
-			// Pretend it was 1 for all seven others, 24-7*3 for this.
+			// Pretend it was 1 for all seven others, 25-7 for this.
 			_population = [];
 			for(var i=0; i<Tournament.INITIAL_AGENTS.length; i++){
 				if(i==_anchoredIndex){
-					_population.push(3); // 1 group = 3 individuals
+					_population.push(18);
 				}else{
-					_population.push(3); // 1 group = 3 individuals
+					_population.push(1);
 				}
 			}
 
-			// Remainder is 7*3 = 21
-			_remainder = 21;
+			// Remainder is 7
+			_remainder = 7;
 
 		}else{
 
@@ -342,22 +253,21 @@ function SandboxUI(config){
 				_population.push(conf.count);
 			}
 
-			// Remainder sum of those NOT anchored (24-anchor.count)
-			_remainder = 24-initValue;
+			// Remainder sum of those NOT anchored (25-anchor.count)
+			_remainder = 25-initValue;
 
 		}
 
 	};
 	var _adjustPopulation = function(peepID, value){
 
-		// Change the anchored one (value is now groups, convert to individuals)
+		// Change the anchored one
 		Tournament.INITIAL_AGENTS.find(function(config){
 			return config.strategy==peepID;
-		}).count = value * 3; // Convert groups to individuals
+		}).count = value;
 		
 		// What's the scale for the rest of 'em?
-		// Total should be 24 individuals (8 groups * 3) for group mode
-		var newRemainder = 24 - (value * 3);
+		var newRemainder = 25-value;
 		var scale = newRemainder/_remainder;
 
 		// Adjust everyone to scale, ROUNDING.
@@ -376,10 +286,10 @@ function SandboxUI(config){
 			total += newCount;
 
 		}
-		total += (value * 3); // total
+		total += value; // total
 
 		// Difference... 
-		var diff = 24-total;
+		var diff = 25-total;
 		// If negative, remove one starting from BOTTOM, skipping anchor.
 		// (UNLESS IT'S ZERO)
 		if(diff<0){
@@ -401,7 +311,7 @@ function SandboxUI(config){
 				var conf = Tournament.INITIAL_AGENTS[i];
 				if(conf.strategy==peepID) continue;
 				if(conf.count==0) continue; // DO NOT ADD IF ZERO
-				everyoneElseWasZero = false;
+				everyoneWasZero = false;
 				conf.count++; // ADD
 				diff--; // yay
 			}
@@ -419,12 +329,12 @@ function SandboxUI(config){
 			}
 		}
 
-		// NOW adjust UI (convert individuals back to groups for display)
+		// NOW adjust UI
 		for(var i=0; i<Tournament.INITIAL_AGENTS.length; i++){
 			// do NOT adjust anchor.
 			var conf = Tournament.INITIAL_AGENTS[i];
 			if(conf.strategy==peepID) continue;
-			publish("sandbox/pop/"+conf.strategy, [Math.floor(conf.count / 3)]);
+			publish("sandbox/pop/"+conf.strategy, [conf.count]);
 		}
 
 		// Reset!
