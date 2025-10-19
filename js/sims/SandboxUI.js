@@ -23,7 +23,7 @@ function SandboxUI(config){
 			// Check for Environment tournament first
 			if(slideshow.objects.environment_tournament){
 				tournament = slideshow.objects.environment_tournament;
-				eventPrefix = "environment_tournament";
+				eventPrefix = "tournament"; // Use same event prefix as regular tournament
 			}
 			// Then check for regular tournament
 			else if(slideshow.objects.tournament){
@@ -54,13 +54,6 @@ function SandboxUI(config){
 		playButton.setText("label_stop");
 	});
 	
-	// Environment-specific event listeners
-	listen(self, "environment_tournament/autoplay/stop",function(){
-		playButton.setText("label_start");
-	});
-	listen(self, "environment_tournament/autoplay/start",function(){
-		playButton.setText("label_stop");
-	});
 	listen(self, "grouptournament/autoplay/stop",function(){
 		playButton.setText("label_start");
 	});
@@ -79,7 +72,7 @@ function SandboxUI(config){
 			// Check for Environment tournament first
 			if(slideshow.objects.environment_tournament){
 				tournament = slideshow.objects.environment_tournament;
-				eventPrefix = "environment_tournament";
+				eventPrefix = "tournament"; // Use same event prefix as regular tournament
 			}
 			// Then check for regular tournament
 			else if(slideshow.objects.tournament){
@@ -112,7 +105,7 @@ function SandboxUI(config){
 			// Check for Environment tournament first
 			if(slideshow.objects.environment_tournament){
 				tournament = slideshow.objects.environment_tournament;
-				eventPrefix = "environment_tournament";
+				eventPrefix = "tournament"; // Use same event prefix as regular tournament
 			}
 			// Then check for regular tournament
 			else if(slideshow.objects.tournament){

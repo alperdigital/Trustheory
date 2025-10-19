@@ -3,24 +3,37 @@ SLIDES.push({
 	id: "environment",
 	onstart: function(self){
 		
-		// Create independent tournament instance for Environment
-		// This ensures complete separation from Bölüm 7
-		var environmentTournament = new Tournament();
+		// The tournament simulation - same as 7. bölüm but with different ID
+		Tournament.resetGlobalVariables();
 		
-		// Configure Environment-specific settings
-		environmentTournament.GROUP_MODE = true;
-		environmentTournament.GROUP_SIZE = 3;
-		environmentTournament.HOMOGENEOUS_GROUPS = true;
-		environmentTournament.GROUP_VOTE_SOURCE = "perMemberHistory";
-		environmentTournament.GROUP_FITNESS_METRIC = "avg_payoff";
+		// Enable group mode for Bölüm 11 - Çevre (Environment)
+		Tournament.GROUP_MODE = true;
+		Tournament.GROUP_SIZE = 3;
+		Tournament.HOMOGENEOUS_GROUPS = true;
+		Tournament.GROUP_VOTE_SOURCE = "perMemberHistory";
+		Tournament.GROUP_FITNESS_METRIC = "avg_payoff";
 		
-		// Store in slideshow objects with unique ID
-		self.objects.environment_tournament = environmentTournament;
+		// Adjust population to be odd multiple of 3
+		var totalAgents = 0;
+		for(var i = 0; i < Tournament.INITIAL_AGENTS.length; i++) {
+			totalAgents += Tournament.INITIAL_AGENTS[i].count;
+		}
 		
-		// Add tournament to scene
-		var tournamentSprite = self.add({id:"environment_tournament", type:"Tournament", x:-20, y:-20});
+		var adjustedTotal = ensurePopulationMultipleOf3(totalAgents);
+		if (adjustedTotal !== totalAgents) {
+			// Adjust the random strategy count to reach target
+			var randomConfig = Tournament.INITIAL_AGENTS.find(function(config) {
+				return config.strategy === "random";
+			});
+			if (randomConfig) {
+				randomConfig.count += (adjustedTotal - totalAgents);
+			}
+		}
 		
-		// Create independent UI for Environment
+		// Use different ID to avoid conflicts with 7. bölüm
+		var tournament = self.add({id:"environment_tournament", type:"Tournament", x:-20, y:-20});
+		
+		// Environment UI (copy of SandboxUI but with different ID)
 		self.add({id:"environment_ui", type:"SandboxUI"});
 
 		// Environment-specific explanation text
@@ -32,10 +45,8 @@ SLIDES.push({
 		
 	},
 	onend: function(self){
-		// Clean up Environment-specific objects
-		if (self.objects.environment_tournament) {
-			self.objects.environment_tournament = null;
-		}
+		// Reset to normal mode
+		Tournament.resetGlobalVariables();
 		self.clear();
 	}
 
