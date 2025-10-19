@@ -16,29 +16,34 @@ function SandboxUI(config){
 	var playButton = new Button({
 		x:172, y:135, text_id:"label_start", size:"short",
 		onclick: function(){
-			console.log("=== SandboxUI Play Button Tıklandı ===");
-			console.log("slideshow.objects:", slideshow.objects);
-			console.log("slideshow.objects.tournament:", slideshow.objects.tournament);
-			console.log("slideshow.objects.tournament_env:", slideshow.objects.tournament_env);
-			console.log("slideshow.objects.grouptournament:", slideshow.objects.grouptournament);
+			// Check for different tournament types based on current slide
+			var tournament = null;
+			var eventPrefix = "tournament";
 			
-			var tournament = slideshow.objects.tournament || slideshow.objects.tournament_env || slideshow.objects.grouptournament;
-			console.log("Bulunan tournament objesi:", tournament);
-			console.log("Tournament objesi var mı?", !!tournament);
-			console.log("Tournament isAutoPlaying:", tournament ? tournament.isAutoPlaying : "undefined");
+			// Check for Environment tournament first
+			if(slideshow.objects.environment_tournament){
+				tournament = slideshow.objects.environment_tournament;
+				eventPrefix = "environment_tournament";
+			}
+			// Then check for regular tournament
+			else if(slideshow.objects.tournament){
+				tournament = slideshow.objects.tournament;
+				eventPrefix = "tournament";
+			}
+			// Then check for other tournament types
+			else if(slideshow.objects.tournament_env){
+				tournament = slideshow.objects.tournament_env;
+				eventPrefix = "tournament";
+			}
+			else if(slideshow.objects.grouptournament){
+				tournament = slideshow.objects.grouptournament;
+				eventPrefix = "grouptournament";
+			}
 			
 			if(tournament && tournament.isAutoPlaying){
-				if(tournament.id === "grouptournament"){
-					publish("grouptournament/autoplay/stop");
-				} else {
-					publish("tournament/autoplay/stop");
-				}
+				publish(eventPrefix + "/autoplay/stop");
 			}else{
-				if(tournament && tournament.id === "grouptournament"){
-					publish("grouptournament/autoplay/start");
-				} else {
-					publish("tournament/autoplay/start");
-				}
+				publish(eventPrefix + "/autoplay/start");
 			}
 		}
 	});
@@ -46,6 +51,14 @@ function SandboxUI(config){
 		playButton.setText("label_start");
 	});
 	listen(self, "tournament/autoplay/start",function(){
+		playButton.setText("label_stop");
+	});
+	
+	// Environment-specific event listeners
+	listen(self, "environment_tournament/autoplay/stop",function(){
+		playButton.setText("label_start");
+	});
+	listen(self, "environment_tournament/autoplay/start",function(){
 		playButton.setText("label_stop");
 	});
 	listen(self, "grouptournament/autoplay/stop",function(){
@@ -59,21 +72,31 @@ function SandboxUI(config){
 	var stepButton = new Button({
 		x:172, y:135+70, text_id:"label_step", 
 		onclick: function(){
-			console.log("=== SandboxUI Step Button Tıklandı ===");
-			console.log("slideshow.objects:", slideshow.objects);
-			console.log("slideshow.objects.tournament:", slideshow.objects.tournament);
+			// Check for different tournament types based on current slide
+			var tournament = null;
+			var eventPrefix = "tournament";
 			
-			var tournament = slideshow.objects.tournament || slideshow.objects.tournament_env || slideshow.objects.grouptournament;
-			console.log("Bulunan tournament objesi:", tournament);
-			console.log("Tournament objesi var mı?", !!tournament);
-			
-			if(tournament && tournament.id === "grouptournament"){
-				console.log("Grouptournament step eventi gönderiliyor");
-				publish("grouptournament/step");
-			} else {
-				console.log("Tournament step eventi gönderiliyor");
-				publish("tournament/step");
+			// Check for Environment tournament first
+			if(slideshow.objects.environment_tournament){
+				tournament = slideshow.objects.environment_tournament;
+				eventPrefix = "environment_tournament";
 			}
+			// Then check for regular tournament
+			else if(slideshow.objects.tournament){
+				tournament = slideshow.objects.tournament;
+				eventPrefix = "tournament";
+			}
+			// Then check for other tournament types
+			else if(slideshow.objects.tournament_env){
+				tournament = slideshow.objects.tournament_env;
+				eventPrefix = "tournament";
+			}
+			else if(slideshow.objects.grouptournament){
+				tournament = slideshow.objects.grouptournament;
+				eventPrefix = "grouptournament";
+			}
+			
+			publish(eventPrefix + "/step");
 		},
 		size:"short"
 	});
@@ -82,12 +105,31 @@ function SandboxUI(config){
 	var resetButton = new Button({
 		x:172, y:135+70*2, text_id:"label_reset", 
 		onclick: function(){
-			var tournament = slideshow.objects.tournament || slideshow.objects.tournament_env || slideshow.objects.grouptournament;
-			if(tournament && tournament.id === "grouptournament"){
-				publish("grouptournament/reset");
-			} else {
-				publish("tournament/reset");
+			// Check for different tournament types based on current slide
+			var tournament = null;
+			var eventPrefix = "tournament";
+			
+			// Check for Environment tournament first
+			if(slideshow.objects.environment_tournament){
+				tournament = slideshow.objects.environment_tournament;
+				eventPrefix = "environment_tournament";
 			}
+			// Then check for regular tournament
+			else if(slideshow.objects.tournament){
+				tournament = slideshow.objects.tournament;
+				eventPrefix = "tournament";
+			}
+			// Then check for other tournament types
+			else if(slideshow.objects.tournament_env){
+				tournament = slideshow.objects.tournament_env;
+				eventPrefix = "tournament";
+			}
+			else if(slideshow.objects.grouptournament){
+				tournament = slideshow.objects.grouptournament;
+				eventPrefix = "grouptournament";
+			}
+			
+			publish(eventPrefix + "/reset");
 		},
 		size:"short"
 	});

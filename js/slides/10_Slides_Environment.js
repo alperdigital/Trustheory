@@ -3,39 +3,27 @@ SLIDES.push({
 	id: "environment",
 	onstart: function(self){
 		
-		// The tournament simulation
-		Tournament.resetGlobalVariables();
+		// Create independent tournament instance for Environment
+		// This ensures complete separation from Bölüm 7
+		var environmentTournament = new Tournament();
 		
-		// Enable group mode for Bölüm 10 - Çevre (Environment)
-		Tournament.GROUP_MODE = true;
-		Tournament.GROUP_SIZE = 3;
-		Tournament.HOMOGENEOUS_GROUPS = true;
-		Tournament.GROUP_VOTE_SOURCE = "perMemberHistory";
-		Tournament.GROUP_FITNESS_METRIC = "avg_payoff";
+		// Configure Environment-specific settings
+		environmentTournament.GROUP_MODE = true;
+		environmentTournament.GROUP_SIZE = 3;
+		environmentTournament.HOMOGENEOUS_GROUPS = true;
+		environmentTournament.GROUP_VOTE_SOURCE = "perMemberHistory";
+		environmentTournament.GROUP_FITNESS_METRIC = "avg_payoff";
 		
-		// Adjust population to be odd multiple of 3
-		var totalAgents = 0;
-		for(var i = 0; i < Tournament.INITIAL_AGENTS.length; i++) {
-			totalAgents += Tournament.INITIAL_AGENTS[i].count;
-		}
+		// Store in slideshow objects with unique ID
+		self.objects.environment_tournament = environmentTournament;
 		
-		var adjustedTotal = ensurePopulationMultipleOf3(totalAgents);
-		if (adjustedTotal !== totalAgents) {
-			// Adjust the random strategy count to reach target
-			var randomConfig = Tournament.INITIAL_AGENTS.find(function(config) {
-				return config.strategy === "random";
-			});
-			if (randomConfig) {
-				randomConfig.count += (adjustedTotal - totalAgents);
-			}
-		}
+		// Add tournament to scene
+		var tournamentSprite = self.add({id:"environment_tournament", type:"Tournament", x:-20, y:-20});
 		
-		var tournament = self.add({id:"environment_tournament", type:"Tournament", x:-20, y:-20});
-		
-		// Environment UI (copy of SandboxUI but with different ID)
+		// Create independent UI for Environment
 		self.add({id:"environment_ui", type:"SandboxUI"});
 
-		// Expanded explanation text (no button) - 1.5x wider, moved down one line
+		// Environment-specific explanation text
 		self.add({
 			id:"label_environment", type:"TextBox",
 			x:55, y:470, width:900, align:"left",
@@ -44,8 +32,10 @@ SLIDES.push({
 		
 	},
 	onend: function(self){
-		// Reset to normal mode
-		Tournament.resetGlobalVariables();
+		// Clean up Environment-specific objects
+		if (self.objects.environment_tournament) {
+			self.objects.environment_tournament = null;
+		}
 		self.clear();
 	}
 
