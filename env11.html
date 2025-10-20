@@ -78,12 +78,16 @@
     <script src="js/main.js?v11"></script>
 
     <script>
-    // Auto-jump to isolated environment slide inside iframe context
+    // Jump AFTER core finishes preloading & slideshow is ready
     window.addEventListener('load', function(){
         try {
-            publish("slideshow/goto", ["environment_inner"]);
+            subscribe("preloader/done", function(){
+                publish("slideshow/goto", ["environment_inner"]);
+            });
         } catch(e) {
             console.error(e);
+            // Fallback: try shortly after
+            setTimeout(function(){ publish("slideshow/goto", ["environment_inner"]); }, 300);
         }
     });
     </script>
