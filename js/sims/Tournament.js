@@ -288,6 +288,11 @@ function Tournament(config){
 
 	// Group mode tournament
 	self.playGroupTournament = function(){
+		// Reset group scores
+		for(var i=0; i<self.groups.length; i++){
+			self.groups[i].groupScore = 0;
+		}
+		
 		// Play matches between groups
 		for(var g1=0; g1<self.groups.length; g1++){
 			for(var g2=g1+1; g2<self.groups.length; g2++){
@@ -307,8 +312,8 @@ function Tournament(config){
 			}
 		}
 		
-		// Sort groups by score
-		self.groups.sort(function(a,b){ return a.groupScore - b.groupScore; });
+		// Sort groups by score (highest first)
+		self.groups.sort(function(a,b){ return b.groupScore - a.groupScore; });
 	};
 
 	// Get rid of X worst
@@ -334,9 +339,11 @@ function Tournament(config){
 
 	// Group mode: eliminate worst groups
 	self.eliminateWorstGroups = function(X){
-		// Eliminate worst X groups
-		for(var i=0; i<X && i<self.groups.length; i++){
-			var worstGroup = self.groups[i];
+		// Eliminate worst X groups (they are at the end after sorting)
+		var groupsToEliminate = self.groups.slice(self.groups.length-X, self.groups.length);
+		
+		for(var i=0; i<groupsToEliminate.length; i++){
+			var worstGroup = groupsToEliminate[i];
 			
 			// Remove group members from AGENTS
 			for(var j=0; j<worstGroup.members.length; j++){
@@ -346,11 +353,10 @@ function Tournament(config){
 				});
 				if(config) config.count--;
 			}
-			
-			// Remove group from groups array
-			self.groups.splice(i, 1);
-			i--; // Adjust index after removal
 		}
+		
+		// Remove eliminated groups from groups array
+		self.groups.splice(self.groups.length-X, X);
 	};
 	self.actuallyRemoveAgent = function(agent){
 		var index = self.agents.indexOf(agent);
@@ -407,8 +413,8 @@ function Tournament(config){
 
 	// Group mode: reproduce best groups
 	self.reproduceBestGroups = function(X){
-		// Get best X groups
-		var bestGroups = self.groups.slice(self.groups.length-X, self.groups.length);
+		// Get best X groups (they are at the beginning after sorting)
+		var bestGroups = self.groups.slice(0, X);
 		
 		// For each best group, add members to AGENTS
 		for(var i=0; i<bestGroups.length; i++){
