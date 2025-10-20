@@ -2,24 +2,34 @@ SLIDES.push({
 
 	id: "environment",
 	onstart: function(self){
-		// Isolated iframe for Environment (fully sandboxed)
-		var iframe = document.createElement("iframe");
-		iframe.src = "env11.html";
-		iframe.width = 500;
-		iframe.height = 500;
-		iframe.style.border = "0";
-		iframe.style.position = "absolute";
-		iframe.style.left = (-20)+"px";
-		iframe.style.top = (-20)+"px";
-		iframe.setAttribute("allowtransparency","true");
-		self.dom.appendChild(iframe);
-		self.objects.environment_iframe = { remove: function(){ self.dom.removeChild(iframe); } };
+		// Restore in-slide Tournament + UI so visuals appear on normal navigation
+		Tournament.resetGlobalVariables();
+		Tournament.GROUP_MODE = true;
+		Tournament.GROUP_SIZE = 3;
+		Tournament.HOMOGENEOUS_GROUPS = true;
+		Tournament.GROUP_VOTE_SOURCE = "perMemberHistory";
+		Tournament.GROUP_FITNESS_METRIC = "avg_payoff";
 		
-		// Environment explanation text (kept outside iframe)
+		// Adjust population to be odd multiple of 3
+		var totalAgents = 0;
+		for(var i = 0; i < Tournament.INITIAL_AGENTS.length; i++) {
+			totalAgents += Tournament.INITIAL_AGENTS[i].count;
+		}
+		var adjustedTotal = ensurePopulationMultipleOf3(totalAgents);
+		if (adjustedTotal !== totalAgents) {
+			var randomConfig = Tournament.INITIAL_AGENTS.find(function(config) {
+				return config.strategy === "random";
+			});
+			if (randomConfig) randomConfig.count += (adjustedTotal - totalAgents);
+		}
+		
+		self.add({id:"environment_tournament", type:"Tournament", x:-20, y:-20});
+		self.add({id:"environment_ui", type:"SandboxUI"});
 		self.add({ id:"label_environment", type:"TextBox", x:55, y:470, width:900, align:"left", text_id: "environment_explanation" });
 		
 	},
 	onend: function(self){
+		Tournament.resetGlobalVariables();
 		self.clear();
 	}
 
