@@ -82,12 +82,13 @@
     window.addEventListener('load', function(){
         try {
             subscribe("preloader/done", function(){
-                publish("slideshow/goto", ["environment_inner"]);
+                // Go to environment slide with full UI
+                publish("slideshow/goto", ["environment"]);
             });
         } catch(e) {
             console.error(e);
             // Fallback: try shortly after
-            setTimeout(function(){ publish("slideshow/goto", ["environment_inner"]); }, 300);
+            setTimeout(function(){ publish("slideshow/goto", ["environment"]); }, 300);
         }
     });
     </script>
