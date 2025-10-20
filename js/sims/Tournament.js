@@ -275,27 +275,82 @@ function Tournament(config){
 	// Play one tournament
 	self.agentsSorted = null;
 	self.playOneTournament = function(){
-		PD.playOneTournament(self.agents, Tournament.NUM_TURNS);
-		self.agentsSorted = _shuffleArray(self.agents.slice());
-		self.agentsSorted.sort(function(a,b){ return a.coins-b.coins; });
+		if(Tournament.GROUP_MODE){
+			// Group mode: play group-based tournament
+			self.playGroupTournament();
+		} else {
+			// Individual mode: play individual tournament
+			PD.playOneTournament(self.agents, Tournament.NUM_TURNS);
+			self.agentsSorted = _shuffleArray(self.agents.slice());
+			self.agentsSorted.sort(function(a,b){ return a.coins-b.coins; });
+		}
+	};
+
+	// Group mode tournament
+	self.playGroupTournament = function(){
+		// Play matches between groups
+		for(var g1=0; g1<self.groups.length; g1++){
+			for(var g2=g1+1; g2<self.groups.length; g2++){
+				var group1 = self.groups[g1];
+				var group2 = self.groups[g2];
+				
+				// Play match between groups
+				var scores = PD.playRepeatedGame(
+					{strategyName: group1.groupStrategy, coins: 0},
+					{strategyName: group2.groupStrategy, coins: 0},
+					Tournament.NUM_TURNS
+				);
+				
+				// Add scores to group totals
+				group1.groupScore += scores.totalA;
+				group2.groupScore += scores.totalB;
+			}
+		}
+		
+		// Sort groups by score
+		self.groups.sort(function(a,b){ return a.groupScore - b.groupScore; });
 	};
 
 	// Get rid of X worst
 	self.eliminateBottom = function(X){
+		if(Tournament.GROUP_MODE){
+			// Group mode: eliminate worst groups
+			self.eliminateWorstGroups(X);
+		} else {
+			// Individual mode: eliminate worst agents
+			var worst = self.agentsSorted.slice(0,X);
 
-		// The worst X
-		var worst = self.agentsSorted.slice(0,X);
-
-		// For each one, subtract from AGENTS count, and KILL.
-		for(var i=0; i<worst.length; i++){
-			var badAgent = worst[i];
-			var config = AGENTS.find(function(config){
-				return config.strategy==badAgent.strategyName;
-			});
-			config.count--; // remove one
-			badAgent.eliminate(); // ELIMINATE
+			// For each one, subtract from AGENTS count, and KILL.
+			for(var i=0; i<worst.length; i++){
+				var badAgent = worst[i];
+				var config = AGENTS.find(function(config){
+					return config.strategy==badAgent.strategyName;
+				});
+				config.count--; // remove one
+				badAgent.eliminate(); // ELIMINATE
+			}
 		}
+	};
 
+	// Group mode: eliminate worst groups
+	self.eliminateWorstGroups = function(X){
+		// Eliminate worst X groups
+		for(var i=0; i<X && i<self.groups.length; i++){
+			var worstGroup = self.groups[i];
+			
+			// Remove group members from AGENTS
+			for(var j=0; j<worstGroup.members.length; j++){
+				var memberStrategy = worstGroup.members[j];
+				var config = AGENTS.find(function(config){
+					return config.strategy==memberStrategy;
+				});
+				if(config) config.count--;
+			}
+			
+			// Remove group from groups array
+			self.groups.splice(i, 1);
+			i--; // Adjust index after removal
+		}
 	};
 	self.actuallyRemoveAgent = function(agent){
 		var index = self.agents.indexOf(agent);
@@ -304,47 +359,70 @@ function Tournament(config){
 
 	// Reproduce the top X
 	self.reproduceTop = function(X){
+		if(Tournament.GROUP_MODE){
+			// Group mode: reproduce best groups
+			self.reproduceBestGroups(X);
+		} else {
+			// Individual mode: reproduce best agents
+			var best = self.agentsSorted.slice(self.agentsSorted.length-X, self.agentsSorted.length);
 
-		// The top X
-		var best = self.agentsSorted.slice(self.agentsSorted.length-X, self.agentsSorted.length);
+			// For each one, add to AGENTS count
+			for(var i=0; i<best.length; i++){
+				var goodAgent = best[i];
+				var config = AGENTS.find(function(config){
+					return config.strategy==goodAgent.strategyName;
+				});
+				config.count++; // ADD one
+			}
 
-		// For each one, add to AGENTS count
-		for(var i=0; i<best.length; i++){
-			var goodAgent = best[i];
-			var config = AGENTS.find(function(config){
-				return config.strategy==goodAgent.strategyName;
-			});
-			config.count++; // ADD one
+			// ADD agents, splicing right AFTER
+			for(var i=0; i<best.length; i++){
+
+				// Properties...
+				var goodAgent = best[i];
+				var angle = goodAgent.angle + 0.1;
+				var strategy = goodAgent.strategyName;
+
+				// Create agent!
+				var agent = new TournamentAgent({angle:angle, strategy:strategy, tournament:self});
+				self.agentsContainer.addChild(agent.graphics);
+
+				// Splice RIGHT AFTER
+				var index = self.agents.indexOf(goodAgent);
+				self.agents.splice(index, 0, agent);
+
+			}
+
+			// What are the agents' GO-TO angles?
+			for(var i=0; i<self.agents.length; i++){
+				var agent = self.agents[i];
+				var angle = (i/self.agents.length)*Math.TAU - Math.TAU/4;
+				agent.gotoAngle = angle;
+			}
+
+			// ADD connections
+			self.createNetwork();
 		}
+	};
 
-		// ADD agents, splicing right AFTER
-		for(var i=0; i<best.length; i++){
-
-			// Properties...
-			var goodAgent = best[i];
-			var angle = goodAgent.angle + 0.1;
-			var strategy = goodAgent.strategyName;
-
-			// Create agent!
-			var agent = new TournamentAgent({angle:angle, strategy:strategy, tournament:self});
-			self.agentsContainer.addChild(agent.graphics);
-
-			// Splice RIGHT AFTER
-			var index = self.agents.indexOf(goodAgent);
-			self.agents.splice(index, 0, agent);
-
+	// Group mode: reproduce best groups
+	self.reproduceBestGroups = function(X){
+		// Get best X groups
+		var bestGroups = self.groups.slice(self.groups.length-X, self.groups.length);
+		
+		// For each best group, add members to AGENTS
+		for(var i=0; i<bestGroups.length; i++){
+			var bestGroup = bestGroups[i];
+			
+			// Add group members to AGENTS
+			for(var j=0; j<bestGroup.members.length; j++){
+				var memberStrategy = bestGroup.members[j];
+				var config = AGENTS.find(function(config){
+					return config.strategy==memberStrategy;
+				});
+				if(config) config.count++;
+			}
 		}
-
-		// What are the agents' GO-TO angles?
-		for(var i=0; i<self.agents.length; i++){
-			var agent = self.agents[i];
-			var angle = (i/self.agents.length)*Math.TAU - Math.TAU/4;
-			agent.gotoAngle = angle;
-		}
-
-		// ADD connections
-		self.createNetwork();
-
 	};
 
 	// ANIMATE the PLAYING, ELIMINATING, or REPRODUCING
