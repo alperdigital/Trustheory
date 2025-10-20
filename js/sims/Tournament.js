@@ -314,6 +314,17 @@ function Tournament(config){
 		
 		// Sort groups by score (highest first)
 		self.groups.sort(function(a,b){ return b.groupScore - a.groupScore; });
+		
+		// Update individual agent scores for display
+		for(var i=0; i<self.groups.length; i++){
+			var group = self.groups[i];
+			for(var j=0; j<group.members.length; j++){
+				var memberIndex = group.members[j];
+				if(self.agents[memberIndex]){
+					self.agents[memberIndex].coins = group.groupScore;
+				}
+			}
+		}
 	};
 
 	// Get rid of X worst
@@ -357,6 +368,9 @@ function Tournament(config){
 		
 		// Remove eliminated groups from groups array
 		self.groups.splice(self.groups.length-X, X);
+		
+		// Recreate groups after elimination
+		self.populateAgents();
 	};
 	self.actuallyRemoveAgent = function(agent){
 		var index = self.agents.indexOf(agent);
@@ -429,6 +443,9 @@ function Tournament(config){
 				if(config) config.count++;
 			}
 		}
+		
+		// Recreate groups after reproduction
+		self.populateAgents();
 	};
 
 	// ANIMATE the PLAYING, ELIMINATING, or REPRODUCING
