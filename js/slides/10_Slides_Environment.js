@@ -25,11 +25,11 @@ SLIDES.push({
 		self.add({id:"environment_tournament", type:"Tournament", x:-20, y:-20});
 		self.add({id:"environment_ui", type:"SandboxUI"});
 
-		// Explanation text
+		// Explanation text - ensure it's visible
 		self.add({
 			id:"label_environment", type:"TextBox",
 			x:55, y:470, width:900, align:"left",
-			text_id: "environment_explanation"
+			text: "Bu bölümde grup psikolojisini inceliyoruz. Oyuncular 3'lü gruplar halinde organize olur ve her grup, kendi üyelerinin çoğunluk oyuna göre karar verir. Her tur sonunda en kötü grup elenir, en iyi grup çoğalır. Bu grup dinamikleri güven oluşumunu nasıl etkiler?"
 		});
 		
 	},
