@@ -16,6 +16,13 @@ Tournament.resetGlobalVariables = function(){
 
 	Tournament.FLOWER_CONNECTIONS = false;
 
+	// Group mode settings (default: individual mode)
+	Tournament.GROUP_MODE = false;
+	Tournament.GROUP_SIZE = 3;
+	Tournament.HOMOGENEOUS_GROUPS = true;
+	Tournament.GROUP_VOTE_SOURCE = "perMemberHistory";
+	Tournament.GROUP_FITNESS_METRIC = "avg_payoff";
+
 	publish("pd/defaultPayoffs");
 
 	PD.NOISE = 0;
@@ -94,6 +101,46 @@ function Tournament(config){
 		
 		// Convert to an array
 		self.agents = _convertCountToArray(AGENTS);
+
+		// Group mode: organize agents into groups
+		if(Tournament.GROUP_MODE){
+			self.groups = [];
+			var groupSize = Tournament.GROUP_SIZE;
+			
+			// Create groups
+			for(var g=0; g<self.agents.length; g+=groupSize){
+				var group = {
+					members: [],
+					groupStrategy: null,
+					groupScore: 0
+				};
+				
+				// Add members to group
+				for(var m=0; m<groupSize && g+m<self.agents.length; m++){
+					group.members.push(self.agents[g+m]);
+				}
+				
+				// Determine group strategy (majority vote)
+				var strategyCounts = {};
+				for(var i=0; i<group.members.length; i++){
+					var strategy = group.members[i];
+					strategyCounts[strategy] = (strategyCounts[strategy] || 0) + 1;
+				}
+				
+				// Find majority strategy
+				var maxCount = 0;
+				var majorityStrategy = group.members[0]; // default
+				for(var strategy in strategyCounts){
+					if(strategyCounts[strategy] > maxCount){
+						maxCount = strategyCounts[strategy];
+						majorityStrategy = strategy;
+					}
+				}
+				
+				group.groupStrategy = majorityStrategy;
+				self.groups.push(group);
+			}
+		}
 
 		// Put 'em in a ring
 		var count = 0;
