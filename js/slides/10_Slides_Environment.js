@@ -13,22 +13,13 @@ SLIDES.push({
 		Tournament.GROUP_VOTE_SOURCE = "perMemberHistory";
 		Tournament.GROUP_FITNESS_METRIC = "avg_payoff";
 		
-		// Adjust population to be odd multiple of 3
-		var totalAgents = 0;
-		for(var i = 0; i < Tournament.INITIAL_AGENTS.length; i++) {
-			totalAgents += Tournament.INITIAL_AGENTS[i].count;
-		}
-		
-		var adjustedTotal = ensurePopulationMultipleOf3(totalAgents);
-		if (adjustedTotal !== totalAgents) {
-			// Adjust the random strategy count to reach target
-			var randomConfig = Tournament.INITIAL_AGENTS.find(function(config) {
-				return config.strategy === "random";
-			});
-			if (randomConfig) {
-				randomConfig.count += (adjustedTotal - totalAgents);
-			}
-		}
+		// Set population to exactly 30 for Bölüm 11 - Çevre (Environment)
+		// 30 people = 10 groups of 3 people each
+		Tournament.INITIAL_AGENTS = [
+			{strategy: "always_cooperate", count: 10},
+			{strategy: "always_cheat", count: 10},
+			{strategy: "copycat", count: 10}
+		];
 		
 		// Tournament and UI directly in slide
 		self.add({id:"environment_tournament", type:"Tournament", x:-20, y:-20});
