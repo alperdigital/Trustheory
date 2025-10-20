@@ -2,34 +2,26 @@ SLIDES.push({
 
 	id: "environment",
 	onstart: function(self){
-		// Restore in-slide Tournament + UI so visuals appear on normal navigation
-		Tournament.resetGlobalVariables();
-		Tournament.GROUP_MODE = true;
-		Tournament.GROUP_SIZE = 3;
-		Tournament.HOMOGENEOUS_GROUPS = true;
-		Tournament.GROUP_VOTE_SOURCE = "perMemberHistory";
-		Tournament.GROUP_FITNESS_METRIC = "avg_payoff";
+		// Mount isolated iframe for 11th section (fully sandboxed globals)
+		var sandbox = createIsolatedRuntime({
+			src: "env11.html",
+			width: 500,
+			height: 500,
+			left: -20,
+			top: -20
+		});
+		self.dom.appendChild(sandbox.iframe);
+		self.objects.environment_sandbox = sandbox;
 		
-		// Adjust population to be odd multiple of 3
-		var totalAgents = 0;
-		for(var i = 0; i < Tournament.INITIAL_AGENTS.length; i++) {
-			totalAgents += Tournament.INITIAL_AGENTS[i].count;
-		}
-		var adjustedTotal = ensurePopulationMultipleOf3(totalAgents);
-		if (adjustedTotal !== totalAgents) {
-			var randomConfig = Tournament.INITIAL_AGENTS.find(function(config) {
-				return config.strategy === "random";
-			});
-			if (randomConfig) randomConfig.count += (adjustedTotal - totalAgents);
-		}
-		
-		self.add({id:"environment_tournament", type:"Tournament", x:-20, y:-20});
-		self.add({id:"environment_ui", type:"SandboxUI"});
+		// Environment explanation text (kept outside iframe)
 		self.add({ id:"label_environment", type:"TextBox", x:55, y:470, width:900, align:"left", text_id: "environment_explanation" });
 		
 	},
 	onend: function(self){
-		Tournament.resetGlobalVariables();
+		if (self.objects.environment_sandbox) {
+			self.objects.environment_sandbox.destroy();
+			delete self.objects.environment_sandbox;
+		}
 		self.clear();
 	}
 
