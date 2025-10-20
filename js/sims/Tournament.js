@@ -123,13 +123,13 @@ function Tournament(config){
 				// Determine group strategy (majority vote)
 				var strategyCounts = {};
 				for(var i=0; i<group.members.length; i++){
-					var strategy = group.members[i];
+					var strategy = group.members[i].strategyName;
 					strategyCounts[strategy] = (strategyCounts[strategy] || 0) + 1;
 				}
 				
 				// Find majority strategy
 				var maxCount = 0;
-				var majorityStrategy = group.members[0]; // default
+				var majorityStrategy = group.members[0].strategyName; // default
 				for(var strategy in strategyCounts){
 					if(strategyCounts[strategy] > maxCount){
 						maxCount = strategyCounts[strategy];
@@ -358,7 +358,7 @@ function Tournament(config){
 			
 			// Remove group members from AGENTS
 			for(var j=0; j<worstGroup.members.length; j++){
-				var memberStrategy = worstGroup.members[j];
+				var memberStrategy = worstGroup.members[j].strategyName;
 				var config = AGENTS.find(function(config){
 					return config.strategy==memberStrategy;
 				});
@@ -436,7 +436,7 @@ function Tournament(config){
 			
 			// Add group members to AGENTS
 			for(var j=0; j<bestGroup.members.length; j++){
-				var memberStrategy = bestGroup.members[j];
+				var memberStrategy = bestGroup.members[j].strategyName;
 				var config = AGENTS.find(function(config){
 					return config.strategy==memberStrategy;
 				});
