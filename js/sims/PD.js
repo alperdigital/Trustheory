@@ -53,21 +53,11 @@ PD.getPayoffs = function(move1, move2){
 	if(move1==PD.COOPERATE && move2==PD.COOPERATE) return [payoffs.R, payoffs.R]; // both rewarded
 };
 
-PD.playOneGame = function(playerA, playerB, context){
+PD.playOneGame = function(playerA, playerB){
 
-	// Make your moves! Use group decision if context is provided
-	var A, B;
-	if (context && context.settings && context.settings.groupMode) {
-		A = decideWithGroup(playerA, playerB, context);
-		dbgOnDecision(); // Debug: count decisions
-		B = decideWithGroup(playerB, playerA, context);
-		dbgOnDecision(); // Debug: count decisions
-	} else {
-		A = playerA.play();
-		dbgOnDecision(); // Debug: count decisions
-		B = playerB.play();
-		dbgOnDecision(); // Debug: count decisions
-	}
+	// Make your moves!
+	var A = playerA.play();
+	var B = playerB.play();
 
 	// Noise: random mistakes, flip around!
 	if(Math.random()<PD.NOISE) A = ((A==PD.COOPERATE) ? PD.CHEAT : PD.COOPERATE);
@@ -89,7 +79,7 @@ PD.playOneGame = function(playerA, playerB, context){
 
 };
 
-PD.playRepeatedGame = function(playerA, playerB, turns, context){
+PD.playRepeatedGame = function(playerA, playerB, turns){
 
 	// I've never met you before, let's pretend
 	playerA.resetLogic();
@@ -102,7 +92,7 @@ PD.playRepeatedGame = function(playerA, playerB, turns, context){
 		payoffs:[]
 	};
 	for(var i=0; i<turns; i++){
-		var p = PD.playOneGame(playerA, playerB, context);
+		var p = PD.playOneGame(playerA, playerB);
 		scores.payoffs.push(p);
 		scores.totalA += p[0];
 		scores.totalB += p[1];
@@ -113,7 +103,7 @@ PD.playRepeatedGame = function(playerA, playerB, turns, context){
 
 };
 
-PD.playOneTournament = function(agents, turns, context){
+PD.playOneTournament = function(agents, turns){
 
 	// Reset everyone's coins
 	for(var i=0; i<agents.length; i++){
@@ -125,52 +115,10 @@ PD.playOneTournament = function(agents, turns, context){
 		var playerA = agents[i];
 		for(var j=i+1; j<agents.length; j++){
 			var playerB = agents[j];
-			PD.playRepeatedGame(playerA, playerB, turns, context);
+			PD.playRepeatedGame(playerA, playerB, turns);
 		}	
 	}
 
-}
-
-///////////////////////////////////////////////////////
-// GROUP DECISION WRAPPER
-///////////////////////////////////////////////////////
-
-/**
- * Group-based decision wrapper
- * If groupMode is enabled, uses majority vote from group members
- * Otherwise, uses individual agent decision
- * @param {Object} player - The focal player making the decision
- * @param {Object} opponent - The opponent player
- * @param {Object} sim - Game simulation context (contains groups, settings, etc.)
- * @returns {string} Decision: PD.COOPERATE or PD.CHEAT
- */
-function decideWithGroup(player, opponent, sim) {
-    const s = sim?.settings || {};
-    if (!s.groupMode) return player.logic.play();
-
-    const group = sim.groups?.get?.(player.groupId);
-    if (!group) return player.logic.play();
-
-    // HER ÜYE, AYNI RAKİBE karşı oy verir; recursion YOK
-    const votes = group.members.map(m => {
-        // Her üye kendi logic'ini kullan (geçmiş kontrolü olmadan)
-        return m.logic.play();
-    });
-    
-    const cooperators = votes.filter(v => v === PD.COOPERATE).length;
-    const decision = cooperators >= 2 ? PD.COOPERATE : PD.CHEAT;
-    
-    // Debug log
-    if (window.__GROUP_DEBUG__) {
-        console.debug(`Group ${player.groupId} decision:`, {
-            votes: votes,
-            cooperators: cooperators,
-            decision: decision,
-            against: opponent.strategyName
-        });
-    }
-    
-    return decision;
 };
 
 ///////////////////////////////////////////////////////
