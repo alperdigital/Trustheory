@@ -221,7 +221,7 @@ function SandboxUI(config){
 		// Label: Name (Group version)
 		var popName = document.createElement("div");
 		popName.className = "sandbox_pop_label";
-		popName.innerHTML = Words.get("label_short_"+peepID).toUpperCase() + " GRUPLAR";
+		popName.innerHTML = Words.get("label_short_"+peepID).toUpperCase();
 		popName.style.color = PEEP_METADATA[peepID].color;
 		popDOM.appendChild(popName);
 
