@@ -72,15 +72,16 @@
     <script src="js/slides/8_Slides_Conclusion.js?v11"></script>
     <script src="js/slides/9_Slides_Credits.js?v11"></script>
     <script src="js/slides/10_Slides_Environment.js?v11"></script>
+    <script src="js/slides/11_Slides_Environment_Isolated.js?v11"></script>
 
     <!-- Main Code -->
     <script src="js/main.js?v11"></script>
 
     <script>
-    // Auto-jump to environment slide inside iframe context
+    // Auto-jump to isolated environment slide inside iframe context
     window.addEventListener('load', function(){
         try {
-            publish("slideshow/goto", ["environment"]);
+            publish("slideshow/goto", ["environment_inner"]);
         } catch(e) {
             console.error(e);
         }
