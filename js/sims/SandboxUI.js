@@ -198,17 +198,91 @@ function SandboxUI(config){
 		publish(message, [defaultValue]);
 
 	};
+
+	// Group mode population controls
+	var _makeGroupPopulationControl = function(x, y, peepID, defaultValue){
+
+		var popDOM = document.createElement("div");
+		popDOM.className = "sandbox_pop";
+		popDOM.style.position = "absolute";
+		popDOM.style.left = x;
+		popDOM.style.top = y;
+		page.appendChild(popDOM);
+
+		// Message
+		var message = "sandbox/group/"+peepID;
+
+		// Icon
+		var popIcon = document.createElement("div");
+		popIcon.className = "sandbox_pop_icon";
+		popIcon.style.backgroundPosition = (-PEEP_METADATA[peepID].frame*40)+"px 0px";
+		popDOM.appendChild(popIcon);
+
+		// Label: Name (Group version)
+		var popName = document.createElement("div");
+		popName.className = "sandbox_pop_label";
+		popName.innerHTML = Words.get("label_short_"+peepID).toUpperCase() + " GRUPLAR";
+		popName.style.color = PEEP_METADATA[peepID].color;
+		popDOM.appendChild(popName);
+
+		// Label: Amount
+		var popAmount = document.createElement("div");
+		popAmount.className = "sandbox_pop_label";
+		popAmount.style.textAlign = "right";
+		popAmount.style.color = PEEP_METADATA[peepID].color;
+		popDOM.appendChild(popAmount);
+		listen(self, message, function(value){
+			popAmount.innerHTML = value + " GRUP";
+		});
+
+		// Slider (for groups)
+		(function(peepID){
+			var popSlider = new Slider({
+				x:0, y:35, width:200,
+				min:0, max:10, step:1,
+				message: message,
+				onselect: function(){
+					// For group mode, we don't need anchoring
+				},
+				onchange: function(value){
+					// Adjust group count
+					Tournament.INITIAL_AGENTS.find(function(config){
+						return config.strategy==peepID;
+					}).count = value * Tournament.GROUP_SIZE;
+					publish("tournament/reset");
+				}
+			});
+			sliders.push(popSlider);
+			popSlider.slideshow = self.slideshow;
+			popDOM.appendChild(popSlider.dom);
+		})(peepID);
+
+		// Default value!
+		publish(message, [defaultValue]);
+
+	};
+
 	var xDiff = 220;
 	var yDiff = 80;
 	var yOff = 40;
-	_makePopulationControl(    0, yOff+0,       "tft",		3);
-	_makePopulationControl(xDiff, yOff+0,       "all_d",	3);
-	_makePopulationControl(    0, yOff+yDiff,   "all_c",	3);
-	_makePopulationControl(xDiff, yOff+yDiff,   "grudge",	3);
-	_makePopulationControl(    0, yOff+yDiff*2, "prober",	3);
-	_makePopulationControl(xDiff, yOff+yDiff*2, "tf2t",		3);
-	_makePopulationControl(    0, yOff+yDiff*3, "pavlov",	3);
-	_makePopulationControl(xDiff, yOff+yDiff*3, "random",	4);
+	
+	// Check if we're in group mode
+	if(Tournament.GROUP_MODE){
+		// Group mode: show group controls
+		_makeGroupPopulationControl(    0, yOff+0,       "all_c",	3);
+		_makeGroupPopulationControl(xDiff, yOff+0,       "all_d",	3);
+		_makeGroupPopulationControl(    0, yOff+yDiff,   "tft",		4);
+	} else {
+		// Individual mode: show individual controls
+		_makePopulationControl(    0, yOff+0,       "tft",		3);
+		_makePopulationControl(xDiff, yOff+0,       "all_d",	3);
+		_makePopulationControl(    0, yOff+yDiff,   "all_c",	3);
+		_makePopulationControl(xDiff, yOff+yDiff,   "grudge",	3);
+		_makePopulationControl(    0, yOff+yDiff*2, "prober",	3);
+		_makePopulationControl(xDiff, yOff+yDiff*2, "tf2t",		3);
+		_makePopulationControl(    0, yOff+yDiff*3, "pavlov",	3);
+		_makePopulationControl(xDiff, yOff+yDiff*3, "random",	4);
+	}
 
 	// Adjust the WHOLE population...
 	/******************************
