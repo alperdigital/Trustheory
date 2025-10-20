@@ -268,10 +268,15 @@ function SandboxUI(config){
 	
 	// Check if we're in group mode
 	if(Tournament.GROUP_MODE){
-		// Group mode: show group controls
-		_makeGroupPopulationControl(    0, yOff+0,       "all_c",	3);
-		_makeGroupPopulationControl(xDiff, yOff+0,       "all_d",	3);
-		_makeGroupPopulationControl(    0, yOff+yDiff,   "tft",		4);
+		// Group mode: show all 8 strategies as group controls
+		_makeGroupPopulationControl(    0, yOff+0,       "tft",		4);
+		_makeGroupPopulationControl(xDiff, yOff+0,       "all_d",	4);
+		_makeGroupPopulationControl(    0, yOff+yDiff,   "all_c",	4);
+		_makeGroupPopulationControl(xDiff, yOff+yDiff,   "grudge",	4);
+		_makeGroupPopulationControl(    0, yOff+yDiff*2, "prober",	4);
+		_makeGroupPopulationControl(xDiff, yOff+yDiff*2, "tf2t",		4);
+		_makeGroupPopulationControl(    0, yOff+yDiff*3, "pavlov",	3);
+		_makeGroupPopulationControl(xDiff, yOff+yDiff*3, "random",	3);
 	} else {
 		// Individual mode: show individual controls
 		_makePopulationControl(    0, yOff+0,       "tft",		3);
