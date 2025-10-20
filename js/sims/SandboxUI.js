@@ -235,21 +235,17 @@ function SandboxUI(config){
 			popAmount.innerHTML = value + " GRUP";
 		});
 
-		// Slider (for groups)
+		// Slider (for groups) - min 1, max 10, total must be 10
 		(function(peepID){
 			var popSlider = new Slider({
 				x:0, y:35, width:200,
-				min:0, max:10, step:1,
+				min:1, max:10, step:1,
 				message: message,
 				onselect: function(){
-					// For group mode, we don't need anchoring
+					_anchorGroupPopulation(peepID);
 				},
 				onchange: function(value){
-					// Adjust group count
-					Tournament.INITIAL_AGENTS.find(function(config){
-						return config.strategy==peepID;
-					}).count = value * Tournament.GROUP_SIZE;
-					publish("tournament/reset");
+					_adjustGroupPopulation(peepID, value);
 				}
 			});
 			sliders.push(popSlider);
@@ -266,17 +262,101 @@ function SandboxUI(config){
 	var yDiff = 80;
 	var yOff = 40;
 	
+	// Group population adjustment functions
+	var _groupPopulation;
+	var _groupRemainder;
+	var _groupAnchoredIndex;
+	var _anchorGroupPopulation = function(peepID){
+		// Which index should be anchored?
+		_groupAnchoredIndex = Tournament.INITIAL_AGENTS.findIndex(function(config){
+			return config.strategy==peepID;
+		});
+		var initValue = Tournament.INITIAL_AGENTS[_groupAnchoredIndex].count / Tournament.GROUP_SIZE;
+
+		// Create array of all group counts...
+		_groupPopulation = [];
+		for(var i=0; i<Tournament.INITIAL_AGENTS.length; i++){
+			var conf = Tournament.INITIAL_AGENTS[i];
+			_groupPopulation.push(conf.count / Tournament.GROUP_SIZE);
+		}
+
+		// Remainder sum of those NOT anchored (10-anchor.count)
+		_groupRemainder = 10-initValue;
+	};
+
+	var _adjustGroupPopulation = function(peepID, value){
+		// Change the anchored one
+		Tournament.INITIAL_AGENTS.find(function(config){
+			return config.strategy==peepID;
+		}).count = value * Tournament.GROUP_SIZE;
+		
+		// What's the scale for the rest of 'em?
+		var newRemainder = 10-value;
+		var scale = newRemainder/_groupRemainder;
+
+		// Adjust everyone to scale, ROUNDING.
+		var total = 0;
+		for(var i=0; i<Tournament.INITIAL_AGENTS.length; i++){
+			// do NOT adjust anchor.
+			var conf = Tournament.INITIAL_AGENTS[i];
+			if(conf.strategy==peepID) continue;
+
+			var initCount = _groupPopulation[i];
+			var newCount = Math.round(initCount*scale);
+			conf.count = newCount * Tournament.GROUP_SIZE;
+
+			// Count total!
+			total += newCount;
+		}
+		total += value; // total
+
+		// Difference... 
+		var diff = 10-total;
+		// If negative, remove one starting from BOTTOM, skipping anchor.
+		if(diff<0){
+			for(var i=Tournament.INITIAL_AGENTS.length-1; i>=0 && diff<0; i--){
+				// do NOT adjust anchor.
+				var conf = Tournament.INITIAL_AGENTS[i];
+				if(conf.strategy==peepID) continue;
+				if(conf.count==Tournament.GROUP_SIZE) continue; // DON'T DO IT IF IT'S MINIMUM
+				conf.count -= Tournament.GROUP_SIZE; // REMOVE ONE GROUP
+				diff++; // yay
+			}
+		}
+		// If positive, add one starting from TOP, skipping anchor.
+		if(diff>0){
+			for(var i=0; i<Tournament.INITIAL_AGENTS.length && diff>0; i++){
+				// do NOT adjust anchor.
+				var conf = Tournament.INITIAL_AGENTS[i];
+				if(conf.strategy==peepID) continue;
+				conf.count += Tournament.GROUP_SIZE; // ADD ONE GROUP
+				diff--; // yay
+			}
+		}
+
+		// NOW adjust UI
+		for(var i=0; i<Tournament.INITIAL_AGENTS.length; i++){
+			// do NOT adjust anchor.
+			var conf = Tournament.INITIAL_AGENTS[i];
+			if(conf.strategy==peepID) continue;
+			publish("sandbox/group/"+conf.strategy, [conf.count / Tournament.GROUP_SIZE]);
+		}
+
+		// Reset!
+		publish("tournament/reset");
+	};
+
 	// Check if we're in group mode
 	if(Tournament.GROUP_MODE){
 		// Group mode: show all 8 strategies as group controls
-		_makeGroupPopulationControl(    0, yOff+0,       "tft",		4);
-		_makeGroupPopulationControl(xDiff, yOff+0,       "all_d",	4);
-		_makeGroupPopulationControl(    0, yOff+yDiff,   "all_c",	4);
-		_makeGroupPopulationControl(xDiff, yOff+yDiff,   "grudge",	4);
-		_makeGroupPopulationControl(    0, yOff+yDiff*2, "prober",	4);
-		_makeGroupPopulationControl(xDiff, yOff+yDiff*2, "tf2t",		4);
-		_makeGroupPopulationControl(    0, yOff+yDiff*3, "pavlov",	3);
-		_makeGroupPopulationControl(xDiff, yOff+yDiff*3, "random",	3);
+		_makeGroupPopulationControl(    0, yOff+0,       "tft",		1);
+		_makeGroupPopulationControl(xDiff, yOff+0,       "all_d",	1);
+		_makeGroupPopulationControl(    0, yOff+yDiff,   "all_c",	1);
+		_makeGroupPopulationControl(xDiff, yOff+yDiff,   "grudge",	1);
+		_makeGroupPopulationControl(    0, yOff+yDiff*2, "prober",	1);
+		_makeGroupPopulationControl(xDiff, yOff+yDiff*2, "tf2t",		1);
+		_makeGroupPopulationControl(    0, yOff+yDiff*3, "pavlov",	1);
+		_makeGroupPopulationControl(xDiff, yOff+yDiff*3, "random",	1);
 	} else {
 		// Individual mode: show individual controls
 		_makePopulationControl(    0, yOff+0,       "tft",		3);
