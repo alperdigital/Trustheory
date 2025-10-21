@@ -100,7 +100,7 @@ function Tournament(config){
 		while(self.agents.length>0) self.agents[0].kill();
 		
 		// Convert to an array
-		var agentStrategies = _convertCountToArray(AGENTS);
+		var agentStrategies = _convertCountToArray(Tournament.INITIAL_AGENTS);
 		self.agents = [];
 
 		// Put 'em in a ring - CREATE AGENTS FIRST
