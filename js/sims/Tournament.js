@@ -319,9 +319,10 @@ function Tournament(config){
 		for(var i=0; i<self.groups.length; i++){
 			var group = self.groups[i];
 			for(var j=0; j<group.members.length; j++){
-				var memberIndex = group.members[j];
-				if(self.agents[memberIndex]){
-					self.agents[memberIndex].coins = group.groupScore;
+				var member = group.members[j];
+				if(member && member.coins !== undefined){
+					member.coins = group.groupScore;
+					member.updateScore();
 				}
 			}
 		}
@@ -356,14 +357,15 @@ function Tournament(config){
 		for(var i=0; i<groupsToEliminate.length; i++){
 			var worstGroup = groupsToEliminate[i];
 			
-			// Remove group members from AGENTS
-			for(var j=0; j<worstGroup.members.length; j++){
-				var memberStrategy = worstGroup.members[j].strategyName;
-				var config = AGENTS.find(function(config){
-					return config.strategy==memberStrategy;
-				});
-				if(config) config.count--;
-			}
+		// Remove group members from AGENTS
+		for(var j=0; j<worstGroup.members.length; j++){
+			var member = worstGroup.members[j];
+			var memberStrategy = member.strategyName;
+			var config = AGENTS.find(function(config){
+				return config.strategy==memberStrategy;
+			});
+			if(config) config.count--;
+		}
 		}
 		
 		// Remove eliminated groups from groups array
@@ -434,14 +436,15 @@ function Tournament(config){
 		for(var i=0; i<bestGroups.length; i++){
 			var bestGroup = bestGroups[i];
 			
-			// Add group members to AGENTS
-			for(var j=0; j<bestGroup.members.length; j++){
-				var memberStrategy = bestGroup.members[j].strategyName;
-				var config = AGENTS.find(function(config){
-					return config.strategy==memberStrategy;
-				});
-				if(config) config.count++;
-			}
+		// Add group members to AGENTS
+		for(var j=0; j<bestGroup.members.length; j++){
+			var member = bestGroup.members[j];
+			var memberStrategy = member.strategyName;
+			var config = AGENTS.find(function(config){
+				return config.strategy==memberStrategy;
+			});
+			if(config) config.count++;
+		}
 		}
 		
 		// Recreate groups after reproduction
