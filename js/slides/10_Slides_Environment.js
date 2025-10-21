@@ -15,15 +15,16 @@ SLIDES.push({
 		
 		// Set population to exactly 30 for Bölüm 11 - Çevre (Environment)
 		// 30 people = 10 groups of 3 people each
+		// Start with 1 group per strategy (8 groups) + 2 extra groups for tft and all_d
 		Tournament.INITIAL_AGENTS = [
-			{strategy: "tft", count: 3},
-			{strategy: "all_d", count: 3},
-			{strategy: "all_c", count: 3},
-			{strategy: "grudge", count: 3},
-			{strategy: "prober", count: 3},
-			{strategy: "tf2t", count: 3},
-			{strategy: "pavlov", count: 3},
-			{strategy: "random", count: 3}
+			{strategy: "tft", count: 6},      // 2 groups
+			{strategy: "all_d", count: 6},   // 2 groups
+			{strategy: "all_c", count: 3},   // 1 group
+			{strategy: "grudge", count: 3},  // 1 group
+			{strategy: "prober", count: 3},  // 1 group
+			{strategy: "tf2t", count: 3},    // 1 group
+			{strategy: "pavlov", count: 3},  // 1 group
+			{strategy: "random", count: 3}   // 1 group
 		];
 		
 		// Tournament and UI directly in slide
