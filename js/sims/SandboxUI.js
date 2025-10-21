@@ -232,7 +232,7 @@ function SandboxUI(config){
 		popAmount.style.color = PEEP_METADATA[peepID].color;
 		popDOM.appendChild(popAmount);
 		listen(self, message, function(value){
-			popAmount.innerHTML = value + " GRUP";
+			popAmount.innerHTML = value;
 		});
 
 		// Slider (for groups) - min 1, max 10, total must be 10
