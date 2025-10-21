@@ -124,8 +124,17 @@ function Tournament(config){
 			self.groups = [];
 			var groupSize = Tournament.GROUP_SIZE;
 			
+			// Shuffle agents for random group assignment
+			var shuffledAgents = self.agents.slice();
+			for(var i = shuffledAgents.length - 1; i > 0; i--) {
+				var j = Math.floor(Math.random() * (i + 1));
+				var temp = shuffledAgents[i];
+				shuffledAgents[i] = shuffledAgents[j];
+				shuffledAgents[j] = temp;
+			}
+			
 			// Create groups
-			for(var g=0; g<self.agents.length; g+=groupSize){
+			for(var g=0; g<shuffledAgents.length; g+=groupSize){
 				var group = {
 					members: [],
 					groupStrategy: null,
@@ -133,8 +142,8 @@ function Tournament(config){
 				};
 				
 				// Add members to group
-				for(var m=0; m<groupSize && g+m<self.agents.length; m++){
-					group.members.push(self.agents[g+m]);
+				for(var m=0; m<groupSize && g+m<shuffledAgents.length; m++){
+					group.members.push(shuffledAgents[g+m]);
 				}
 				
 				// Determine group strategy (majority vote)
