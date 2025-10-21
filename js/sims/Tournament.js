@@ -547,12 +547,26 @@ function Tournament(config){
 			self.sortAgentsByDepth();
 			for(var i=0;i<self.connections.length;i++) self.connections[i].updateGraphics();
 
-			// End
-			if(_tweenTimer>=1){
-				_tweenTimer = 0;
-				self.STAGE = STAGE_REST;
-				publish("tournament/step/completed", ["reproduce"]);
+		// End
+		if(_tweenTimer>=1){
+			_tweenTimer = 0;
+			self.STAGE = STAGE_REST;
+			
+			// Reset all agent scores after reproduction
+			for(var i=0; i<self.agents.length; i++){
+				self.agents[i].coins = 0;
+				self.agents[i].updateScore();
 			}
+			
+			// Reset group scores in group mode
+			if(Tournament.GROUP_MODE && self.groups){
+				for(var i=0; i<self.groups.length; i++){
+					self.groups[i].groupScore = 0;
+				}
+			}
+			
+			publish("tournament/step/completed", ["reproduce"]);
+		}
 
 		}
 
