@@ -349,7 +349,7 @@ function Tournament(config){
 			// For each one, subtract from AGENTS count, and KILL.
 			for(var i=0; i<worst.length; i++){
 				var badAgent = worst[i];
-				var config = AGENTS.find(function(config){
+				var config = Tournament.INITIAL_AGENTS.find(function(config){
 					return config.strategy==badAgent.strategyName;
 				});
 				config.count--; // remove one
@@ -397,10 +397,10 @@ function Tournament(config){
 			// Individual mode: reproduce best agents
 			var best = self.agentsSorted.slice(self.agentsSorted.length-X, self.agentsSorted.length);
 
-			// For each one, add to AGENTS count
+			// For each one, add to Tournament.INITIAL_AGENTS count
 			for(var i=0; i<best.length; i++){
 				var goodAgent = best[i];
-				var config = AGENTS.find(function(config){
+				var config = Tournament.INITIAL_AGENTS.find(function(config){
 					return config.strategy==goodAgent.strategyName;
 				});
 				config.count++; // ADD one
