@@ -357,15 +357,15 @@ function Tournament(config){
 		for(var i=0; i<groupsToEliminate.length; i++){
 			var worstGroup = groupsToEliminate[i];
 			
-		// Remove group members from AGENTS
-		for(var j=0; j<worstGroup.members.length; j++){
-			var member = worstGroup.members[j];
-			var memberStrategy = member.strategyName;
-			var config = AGENTS.find(function(config){
-				return config.strategy==memberStrategy;
-			});
-			if(config) config.count--;
-		}
+			// Remove group members from Tournament.INITIAL_AGENTS
+			for(var j=0; j<worstGroup.members.length; j++){
+				var member = worstGroup.members[j];
+				var memberStrategy = member.strategyName;
+				var config = Tournament.INITIAL_AGENTS.find(function(config){
+					return config.strategy==memberStrategy;
+				});
+				if(config) config.count--;
+			}
 		}
 		
 		// Remove eliminated groups from groups array
@@ -432,19 +432,19 @@ function Tournament(config){
 		// Get best X groups (they are at the beginning after sorting)
 		var bestGroups = self.groups.slice(0, X);
 		
-		// For each best group, add members to AGENTS
+		// For each best group, add members to Tournament.INITIAL_AGENTS
 		for(var i=0; i<bestGroups.length; i++){
 			var bestGroup = bestGroups[i];
 			
-		// Add group members to AGENTS
-		for(var j=0; j<bestGroup.members.length; j++){
-			var member = bestGroup.members[j];
-			var memberStrategy = member.strategyName;
-			var config = AGENTS.find(function(config){
-				return config.strategy==memberStrategy;
-			});
-			if(config) config.count++;
-		}
+			// Add group members to Tournament.INITIAL_AGENTS
+			for(var j=0; j<bestGroup.members.length; j++){
+				var member = bestGroup.members[j];
+				var memberStrategy = member.strategyName;
+				var config = Tournament.INITIAL_AGENTS.find(function(config){
+					return config.strategy==memberStrategy;
+				});
+				if(config) config.count++;
+			}
 		}
 		
 		// Recreate groups after reproduction
