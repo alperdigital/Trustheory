@@ -100,9 +100,26 @@ function Tournament(config){
 		while(self.agents.length>0) self.agents[0].kill();
 		
 		// Convert to an array
-		self.agents = _convertCountToArray(AGENTS);
+		var agentStrategies = _convertCountToArray(AGENTS);
+		self.agents = [];
 
-		// Group mode: organize agents into groups
+		// Put 'em in a ring - CREATE AGENTS FIRST
+		for(var i=0; i<agentStrategies.length; i++){
+
+			// Angle
+			var angle = (i/agentStrategies.length)*Math.TAU - Math.TAU/4;
+
+			// What kind of agent?
+			var strategy = agentStrategies[i];
+			var agent = new TournamentAgent({angle:angle, strategy:strategy, tournament:self});
+			self.agentsContainer.addChild(agent.graphics);
+
+			// Remember me!
+			self.agents.push(agent);
+
+		}
+
+		// Group mode: organize agents into groups AFTER creating agent objects
 		if(Tournament.GROUP_MODE){
 			self.groups = [];
 			var groupSize = Tournament.GROUP_SIZE;
@@ -140,23 +157,6 @@ function Tournament(config){
 				group.groupStrategy = majorityStrategy;
 				self.groups.push(group);
 			}
-		}
-
-		// Put 'em in a ring
-		var count = 0;
-		for(var i=0; i<self.agents.length; i++){
-
-			// Angle
-			var angle = (i/self.agents.length)*Math.TAU - Math.TAU/4;
-
-			// What kind of agent?
-			var strategy = self.agents[i];
-			var agent = new TournamentAgent({angle:angle, strategy:strategy, tournament:self});
-			self.agentsContainer.addChild(agent.graphics);
-
-			// Remember me!
-			self.agents[i] = agent;
-
 		}
 
 		// (sort agents by depth)
