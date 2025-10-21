@@ -495,13 +495,15 @@ function Tournament(config){
 
 		// PLAY!
 		if(self.STAGE == STAGE_PLAY){
-			/*if(self.isAutoPlaying){
-				self.playOneTournament(); // FOR REAL, NOW.
+			if(Tournament.GROUP_MODE){
+				// Group mode: play group tournament directly
+				self.playGroupTournament();
 				_playIndex = 0;
 				_tweenTimer = 0;
 				self.STAGE = STAGE_REST;
 				publish("tournament/step/completed", ["play"]);
-			}else{*/
+			} else {
+				// Individual mode: play individual tournament
 				if(_playIndex>0 && _playIndex<self.agents.length+1) self.agents[_playIndex-1].dehighlightConnections();
 				if(_playIndex>1 && _playIndex<self.agents.length+2) self.agents[_playIndex-2].dehighlightConnections();
 				if(_playIndex<self.agents.length){
@@ -514,12 +516,18 @@ function Tournament(config){
 					self.STAGE = STAGE_REST;
 					publish("tournament/step/completed", ["play"]);
 				}
-			//}
+			}
 		}
 
 		// ELIMINATE!
 		if(self.STAGE == STAGE_ELIMINATE){
-			self.eliminateBottom(Tournament.SELECTION);
+			if(Tournament.GROUP_MODE){
+				// Group mode: eliminate worst groups
+				self.eliminateWorstGroups(1); // Eliminate 1 worst group
+			} else {
+				// Individual mode: eliminate worst agents
+				self.eliminateBottom(Tournament.SELECTION);
+			}
 			_tweenTimer++;
 			if(_tweenTimer==_s(0.3) || self.isAutoPlaying){
 				_tweenTimer = 0;
@@ -533,7 +541,13 @@ function Tournament(config){
 
 			// Start
 			if(_tweenTimer==0){
-				self.reproduceTop(Tournament.SELECTION);
+				if(Tournament.GROUP_MODE){
+					// Group mode: reproduce best groups
+					self.reproduceBestGroups(1); // Reproduce 1 best group
+				} else {
+					// Individual mode: reproduce best agents
+					self.reproduceTop(Tournament.SELECTION);
+				}
 			}
 
 			// Middle...
