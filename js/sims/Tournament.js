@@ -75,8 +75,8 @@ function Tournament(config){
 
 	var _convertCountToArray = function(countList){
 		var array = [];
-		for(var i=0; i<AGENTS.length; i++){
-			var A = AGENTS[i];
+		for(var i=0; i<Tournament.INITIAL_AGENTS.length; i++){
+			var A = Tournament.INITIAL_AGENTS[i];
 			var strategy = A.strategy;
 			var count = A.count;
 			for(var j=0; j<count; j++){
@@ -335,6 +335,14 @@ function Tournament(config){
 				}
 			}
 		}
+		
+		// Log group scores for debugging
+		console.log("Group Tournament Results:");
+		for(var i=0; i<self.groups.length; i++){
+			var group = self.groups[i];
+			var memberScores = group.members.map(function(m) { return m.coins || 0; });
+			console.log("G" + (i+1) + ": total = " + group.groupScore + " (" + memberScores.join("+") + ")");
+		}
 	};
 
 	// Get rid of X worst
@@ -360,11 +368,14 @@ function Tournament(config){
 
 	// Group mode: eliminate worst groups
 	self.eliminateWorstGroups = function(X){
+		console.log("Eliminating " + X + " worst groups");
+		
 		// Eliminate worst X groups (they are at the end after sorting)
 		var groupsToEliminate = self.groups.slice(self.groups.length-X, self.groups.length);
 		
 		for(var i=0; i<groupsToEliminate.length; i++){
 			var worstGroup = groupsToEliminate[i];
+			console.log("Eliminating group with score:", worstGroup.groupScore);
 			
 			// Remove group members from Tournament.INITIAL_AGENTS
 			for(var j=0; j<worstGroup.members.length; j++){
@@ -373,7 +384,10 @@ function Tournament(config){
 				var config = Tournament.INITIAL_AGENTS.find(function(config){
 					return config.strategy==memberStrategy;
 				});
-				if(config) config.count--;
+				if(config && config.count > 0) {
+					config.count--;
+					console.log("Reduced " + memberStrategy + " count to " + config.count);
+				}
 			}
 		}
 		
@@ -438,12 +452,15 @@ function Tournament(config){
 
 	// Group mode: reproduce best groups
 	self.reproduceBestGroups = function(X){
+		console.log("Reproducing " + X + " best groups");
+		
 		// Get best X groups (they are at the beginning after sorting)
 		var bestGroups = self.groups.slice(0, X);
 		
 		// For each best group, add members to Tournament.INITIAL_AGENTS
 		for(var i=0; i<bestGroups.length; i++){
 			var bestGroup = bestGroups[i];
+			console.log("Reproducing group with score:", bestGroup.groupScore);
 			
 			// Add group members to Tournament.INITIAL_AGENTS
 			for(var j=0; j<bestGroup.members.length; j++){
@@ -452,7 +469,10 @@ function Tournament(config){
 				var config = Tournament.INITIAL_AGENTS.find(function(config){
 					return config.strategy==memberStrategy;
 				});
-				if(config) config.count++;
+				if(config) {
+					config.count++;
+					console.log("Increased " + memberStrategy + " count to " + config.count);
+				}
 			}
 		}
 		
@@ -470,11 +490,23 @@ function Tournament(config){
 	// AUTOPLAY
 	self.isAutoPlaying = false;
 	var _step = 0;
+	var _roundCount = 0;
+	var _maxRounds = 50;
 	var _nextStep = function(){
 		if(self.STAGE!=STAGE_REST) return;
 		if(_step==0) publish("tournament/play");
 		if(_step==1) publish("tournament/eliminate");
-		if(_step==2) publish("tournament/reproduce");
+		if(_step==2) {
+			publish("tournament/reproduce");
+			_roundCount++;
+			console.log("Round " + _roundCount + " completed");
+			
+			// Check for stability after 50 rounds
+			if(_roundCount >= _maxRounds) {
+				console.log("✅ Section11 simulation stable after " + _maxRounds + " rounds.");
+				_stopAutoPlay();
+			}
+		}
 		_step = (_step+1)%3;
 	};
 	var _startAutoPlay = function(){
