@@ -1,69 +1,20 @@
-// Debug counters for loop diagnosis
-window.__DBG__ = window.__DBG__ || {};
-__DBG__.rounds = (__DBG__.rounds||0);
-__DBG__.decisions = 0;
-__DBG__.phase = 'A';
-
-function dbgOnRoundStart(sim){ 
-	__DBG__.rounds++; 
-	__DBG__.decisions = 0; 
-	__DBG__.phase = 'A';
-	console.debug("=== ROUND START #", __DBG__.rounds, "===");
-}
-function dbgOnDecision(){ 
-	__DBG__.decisions++; 
-}
-function dbgOnRoundEnd(sim){
-	console.debug("ROUND#", __DBG__.rounds, " decisions:", __DBG__.decisions,
-	              " players:", sim.agents.length, " groups:", sim.groups?.size);
-}
-function dbgOnPhase(phase){
-	__DBG__.phase = phase;
-	console.debug("=== PHASE", phase, "===");
-}
-
-// Helper function to update AGENTS global variable from agents array
-function _updateAGENTSFromAgents(agents){
-	// Count each strategy type
-	var strategyCounts = {};
-	for(var i=0; i<agents.length; i++){
-		var strategyName = agents[i].strategyName || agents[i].strategy;
-		if(!strategyCounts[strategyName]) strategyCounts[strategyName] = 0;
-		strategyCounts[strategyName]++;
-	}
-	
-	// Update AGENTS array
-	for(var i=0; i<AGENTS.length; i++){
-		AGENTS[i].count = strategyCounts[AGENTS[i].strategy] || 0;
-	}
-	
-	console.log("_updateAGENTSFromAgents: Updated AGENTS counts:", AGENTS.map(a => `${a.strategy}:${a.count}`).join(", "));
-}
-
 Tournament.resetGlobalVariables = function(){
 
-	Tournament.SELECTION = 3; // 1 grup = 3 kişi
+	Tournament.SELECTION = 5;
 	Tournament.NUM_TURNS = 10;
 
 	Tournament.INITIAL_AGENTS = [
-		{strategy:"tft", count:3},     // 1 grup = 3 kişi
-		{strategy:"all_d", count:3},   // 1 grup = 3 kişi
-		{strategy:"all_c", count:3},   // 1 grup = 3 kişi
-		{strategy:"grudge", count:3},  // 1 grup = 3 kişi
-		{strategy:"prober", count:3},  // 1 grup = 3 kişi
-		{strategy:"tf2t", count:3},    // 1 grup = 3 kişi
-		{strategy:"pavlov", count:3},  // 1 grup = 3 kişi
-		{strategy:"random", count:6}   // 2 grup = 6 kişi (toplam 27 kişi = 9 grup)
+		{strategy:"tft", count:3},
+		{strategy:"all_d", count:3},
+		{strategy:"all_c", count:3},
+		{strategy:"grudge", count:3},
+		{strategy:"prober", count:3},
+		{strategy:"tf2t", count:3},
+		{strategy:"pavlov", count:3},
+		{strategy:"random", count:4}
 	];
 
 	Tournament.FLOWER_CONNECTIONS = false;
-
-	// Group settings
-	Tournament.GROUP_MODE = false;
-	Tournament.GROUP_SIZE = 3;
-	Tournament.HOMOGENEOUS_GROUPS = true;
-	Tournament.GROUP_VOTE_SOURCE = "perMemberHistory";
-	Tournament.GROUP_FITNESS_METRIC = "avg_payoff";
 
 	publish("pd/defaultPayoffs");
 
@@ -130,37 +81,6 @@ function Tournament(config){
 
 	self.agents = [];
 	self.connections = [];
-	self.groups = new Map(); // Group management
-
-	// Group settings
-	self.settings = {
-		groupMode: Tournament.GROUP_MODE,
-		groupSize: Tournament.GROUP_SIZE,
-		homogeneousGroups: Tournament.HOMOGENEOUS_GROUPS,
-		groupVoteSource: Tournament.GROUP_VOTE_SOURCE,
-		groupFitnessMetric: Tournament.GROUP_FITNESS_METRIC
-	};
-
-	// Context for group decisions
-	self.context = {
-		settings: self.settings,
-		groups: self.groups
-	};
-
-	// Debug logging for group decisions
-	self.logGroupDecisions = function(){
-		if (window.__GROUP_DEBUG__ && self.settings.groupMode) {
-			console.log("=== GROUP DECISION LOG ===");
-			console.log("Groups:", self.groups.size);
-			for (const [groupId, group] of self.groups) {
-				console.log(`Group ${groupId}:`, {
-					strategy: group.strategy,
-					members: group.members.length,
-					color: group.color
-				});
-			}
-		}
-	};
 
 	self.networkContainer = new PIXI.Container();
 	self.agentsContainer = new PIXI.Container();
@@ -174,16 +94,6 @@ function Tournament(config){
 		
 		// Convert to an array
 		self.agents = _convertCountToArray(AGENTS);
-		console.log("populateAgents: Created", self.agents.length, "agents");
-
-		// Form groups if group mode is enabled
-		if (self.settings.groupMode) {
-			self.groups = formGroups(self.agents, {
-				groupSize: self.settings.groupSize,
-				homogeneous: self.settings.homogeneousGroups
-			});
-			console.log("populateAgents: Formed", self.groups.size, "groups");
-		}
 
 		// Put 'em in a ring
 		var count = 0;
@@ -196,11 +106,6 @@ function Tournament(config){
 			var strategy = self.agents[i];
 			var agent = new TournamentAgent({angle:angle, strategy:strategy, tournament:self});
 			self.agentsContainer.addChild(agent.graphics);
-
-			// Update group badge if in group mode
-			if (self.settings.groupMode) {
-				agent.updateGroupBadge();
-			}
 
 			// Remember me!
 			self.agents[i] = agent;
@@ -320,211 +225,79 @@ function Tournament(config){
 	// EVOLUTION ///////////////////////
 	////////////////////////////////////
 
-	// Deterministic 4-Phase Evolutionary Loop
+	// Play one tournament
 	self.agentsSorted = null;
-	self.currentPhase = 'A';
-	self.roundNumber = 0;
-	
 	self.playOneTournament = function(){
-		dbgOnRoundStart(self);
-		self.roundNumber++;
-		
-		// Update context with current groups
-		self.context.groups = self.groups;
-		
-		// Log group decisions if debug mode is on
-		if (window.__GROUP_DEBUG__ && self.settings.groupMode) {
-			console.log("=== TOURNAMENT START (Round " + self.roundNumber + ") ===");
-			self.logGroupDecisions();
-		}
-		
-		// PHASE A: Group Voting
-		dbgOnPhase('A');
-		self.executePhaseA();
-		
-		// PHASE B: Round-Robin Matches
-		dbgOnPhase('B');
-		self.executePhaseB();
-		
-		// PHASE C: Group Selection
-		dbgOnPhase('C');
-		self.executePhaseC();
-		
-		// PHASE D: Cleanup
-		dbgOnPhase('D');
-		self.executePhaseD();
-		
-		// Log group scores after tournament
-		if (window.__GROUP_DEBUG__ && self.settings.groupMode) {
-			console.log("=== TOURNAMENT END (Round " + self.roundNumber + ") ===");
-			const scores = computeGroupScores(self.groups, self.settings.groupFitnessMetric);
-			console.log("Group Scores:", scores);
-		}
-		
-		dbgOnRoundEnd(self);
-	};
-	
-	// PHASE A: Group Voting - Each group decides C or D by majority
-	self.executePhaseA = function(){
-		if (!self.settings.groupMode) return;
-		
-		console.log("Phase A: Group voting for", self.groups.size, "groups");
-		
-		for (const [groupId, group] of self.groups) {
-			// Each member votes based on their strategy preference
-			const votes = group.members.map(member => {
-				// For now, use their individual strategy decision
-				// In the future, this could be based on strategyPreference
-				return member.logic.play();
-			});
-			
-			// Majority vote (2-1 or 3-0)
-			const cooperators = votes.filter(v => v === PD.COOPERATE).length;
-			const groupDecision = cooperators >= 2 ? PD.COOPERATE : PD.CHEAT;
-			
-			// Set currentAction for all group members
-			group.members.forEach(member => {
-				member.currentAction = groupDecision;
-				member.roundScore = 0; // Reset round score
-			});
-			
-			group.decision = groupDecision;
-			
-			if (window.__GROUP_DEBUG__) {
-				console.log(`Group ${groupId} (${group.strategy}): votes=${votes}, decision=${groupDecision}`);
-			}
-		}
-	};
-	
-	// PHASE B: Round-Robin Matches - Everyone plays everyone
-	self.executePhaseB = function(){
-		console.log("Phase B: Round-robin matches for", self.agents.length, "agents");
-		
-		// Reset all round scores
-		for (var i = 0; i < self.agents.length; i++) {
-			self.agents[i].roundScore = 0;
-		}
-		
-		// Round-robin: everyone plays everyone else
-		for (var i = 0; i < self.agents.length; i++) {
-			var playerA = self.agents[i];
-			for (var j = i + 1; j < self.agents.length; j++) {
-				var playerB = self.agents[j];
-				
-				// Get decisions (from group voting or individual)
-				var decisionA, decisionB;
-				if (self.settings.groupMode) {
-					decisionA = playerA.currentAction;
-					decisionB = playerB.currentAction;
-				} else {
-					decisionA = playerA.logic.play();
-					decisionB = playerB.logic.play();
-				}
-				
-				// Apply noise if enabled
-				if (Math.random() < PD.NOISE) {
-					decisionA = (decisionA === PD.COOPERATE) ? PD.CHEAT : PD.COOPERATE;
-				}
-				if (Math.random() < PD.NOISE) {
-					decisionB = (decisionB === PD.COOPERATE) ? PD.CHEAT : PD.COOPERATE;
-				}
-				
-				// Get payoffs
-				var payoffs = PD.getPayoffs(decisionA, decisionB);
-				
-				// Add to round scores
-				playerA.roundScore += payoffs[0];
-				playerB.roundScore += payoffs[1];
-				
-				// Add to total scores
-				playerA.addPayoff(payoffs[0]);
-				playerB.addPayoff(payoffs[1]);
-				
-				// Remember moves for individual strategies
-				if (!self.settings.groupMode) {
-					playerA.remember(decisionA, decisionB);
-					playerB.remember(decisionB, decisionA);
-				}
-				
-				dbgOnDecision();
-				dbgOnDecision();
-			}
-		}
-	};
-	
-	// PHASE C: Group Selection - Eliminate worst, reproduce best
-	self.executePhaseC = function(){
-		if (!self.settings.groupMode) {
-			// Individual selection
-			self.agentsSorted = _shuffleArray(self.agents.slice());
-			self.agentsSorted.sort(function(a,b){ return a.coins-b.coins; });
-			return;
-		}
-		
-		console.log("Phase C: Group selection");
-		
-		// Calculate group scores
-		const scores = computeGroupScores(self.groups, self.settings.groupFitnessMetric);
-		
-		if (scores.length <= 1) {
-			console.log("Not enough groups for selection");
-			return;
-		}
-		
-		// Apply group selection
-		self.groups = applyGroupSelection(self.agents, self.groups, self.settings);
-		
-		// Update context reference
-		if (self.context) {
-			self.context.groups = self.groups;
-		}
-		
-		// Update AGENTS global variable
-		_updateAGENTSFromAgents(self.agents);
-	};
-	
-	// PHASE D: Cleanup - Reset for next round
-	self.executePhaseD = function(){
-		console.log("Phase D: Cleanup");
-		
-		// Reset round-specific data
-		for (var i = 0; i < self.agents.length; i++) {
-			var agent = self.agents[i];
-			agent.currentAction = null;
-			agent.roundScore = 0;
-			
-			// Reset logic for next round (if not in group mode)
-			if (!self.settings.groupMode) {
-				agent.resetLogic();
-			}
-		}
-		
-		// Clear group decisions
-		if (self.settings.groupMode) {
-			for (const [groupId, group] of self.groups) {
-				group.decision = null;
-			}
-		}
+		PD.playOneTournament(self.agents, Tournament.NUM_TURNS);
+		self.agentsSorted = _shuffleArray(self.agents.slice());
+		self.agentsSorted.sort(function(a,b){ return a.coins-b.coins; });
 	};
 
-	// Get rid of X worst (now handled in Phase C)
+	// Get rid of X worst
 	self.eliminateBottom = function(X){
-		console.log("eliminateBottom called - this is now handled in Phase C");
-		// Group selection is now handled in executePhaseC()
-		// Individual selection is also handled there
-		// This function is kept for compatibility but does nothing
+
+		// The worst X
+		var worst = self.agentsSorted.slice(0,X);
+
+		// For each one, subtract from AGENTS count, and KILL.
+		for(var i=0; i<worst.length; i++){
+			var badAgent = worst[i];
+			var config = AGENTS.find(function(config){
+				return config.strategy==badAgent.strategyName;
+			});
+			config.count--; // remove one
+			badAgent.eliminate(); // ELIMINATE
+		}
+
 	};
 	self.actuallyRemoveAgent = function(agent){
 		var index = self.agents.indexOf(agent);
 		self.agents.splice(index,1);
 	};
 
-	// Reproduce the top X (now handled in Phase C)
+	// Reproduce the top X
 	self.reproduceTop = function(X){
-		console.log("reproduceTop called - this is now handled in Phase C");
-		// Group selection is now handled in executePhaseC()
-		// Individual selection is also handled there
-		// This function is kept for compatibility but does nothing
+
+		// The top X
+		var best = self.agentsSorted.slice(self.agentsSorted.length-X, self.agentsSorted.length);
+
+		// For each one, add to AGENTS count
+		for(var i=0; i<best.length; i++){
+			var goodAgent = best[i];
+			var config = AGENTS.find(function(config){
+				return config.strategy==goodAgent.strategyName;
+			});
+			config.count++; // ADD one
+		}
+
+		// ADD agents, splicing right AFTER
+		for(var i=0; i<best.length; i++){
+
+			// Properties...
+			var goodAgent = best[i];
+			var angle = goodAgent.angle + 0.1;
+			var strategy = goodAgent.strategyName;
+
+			// Create agent!
+			var agent = new TournamentAgent({angle:angle, strategy:strategy, tournament:self});
+			self.agentsContainer.addChild(agent.graphics);
+
+			// Splice RIGHT AFTER
+			var index = self.agents.indexOf(goodAgent);
+			self.agents.splice(index, 0, agent);
+
+		}
+
+		// What are the agents' GO-TO angles?
+		for(var i=0; i<self.agents.length; i++){
+			var agent = self.agents[i];
+			var angle = (i/self.agents.length)*Math.TAU - Math.TAU/4;
+			agent.gotoAngle = angle;
+		}
+
+		// ADD connections
+		self.createNetwork();
+
 	};
 
 	// ANIMATE the PLAYING, ELIMINATING, or REPRODUCING
@@ -532,10 +305,6 @@ function Tournament(config){
 	var STAGE_PLAY = 1;
 	var STAGE_ELIMINATE = 2;
 	var STAGE_REPRODUCE = 3;
-	var STAGE_PHASE_A = 4;
-	var STAGE_PHASE_B = 5;
-	var STAGE_PHASE_C = 6;
-	var STAGE_PHASE_D = 7;
 	self.STAGE = STAGE_REST;
 
 	// AUTOPLAY
@@ -543,16 +312,19 @@ function Tournament(config){
 	var _step = 0;
 	var _nextStep = function(){
 		if(self.STAGE!=STAGE_REST) return;
-		// With the new 4-phase system, we just need to trigger play
-		publish("tournament/play");
+		if(_step==0) publish("tournament/play");
+		if(_step==1) publish("tournament/eliminate");
+		if(_step==2) publish("tournament/reproduce");
+		_step = (_step+1)%3;
 	};
 	var _startAutoPlay = function(){
-		console.log("Starting autoplay");
 		self.isAutoPlaying = true;
 		_nextStep();
+		setTimeout(function(){
+			if(self.isAutoPlaying) _startAutoPlay();
+		},150);
 	};
 	var _stopAutoPlay = function(){
-		console.log("Stopping autoplay");
 		self.isAutoPlaying = false;
 	};
 	listen(self, "tournament/autoplay/start", _startAutoPlay);
@@ -570,35 +342,28 @@ function Tournament(config){
 		// Tick
 		Tween.tick();
 
-		// PLAY! (Now executes the full 4-phase tournament)
+		// PLAY!
 		if(self.STAGE == STAGE_PLAY){
-			console.log("Executing tournament in _tick");
-			// Execute the complete tournament with all 4 phases
-			self.playOneTournament();
-			
-			// Re-populate agents and network after group selection
-			if (self.settings.groupMode) {
-				console.log("Re-populating agents and network after tournament");
-				self.populateAgents();
-				self.createNetwork();
-			}
-			
-			_playIndex = 0;
-			_tweenTimer = 0;
-			
-			// If auto-playing, continue to next tournament after a delay
-			if (self.isAutoPlaying) {
-				console.log("Auto-playing: scheduling next tournament");
-				setTimeout(function(){
-					if (self.isAutoPlaying && self.STAGE == STAGE_REST) {
-						console.log("Auto-playing: starting next tournament");
-						self.STAGE = STAGE_PLAY;
-					}
-				}, 1000); // 1 second delay between tournaments
-			}
-			
-			self.STAGE = STAGE_REST;
-			publish("tournament/step/completed", ["play"]);
+			/*if(self.isAutoPlaying){
+				self.playOneTournament(); // FOR REAL, NOW.
+				_playIndex = 0;
+				_tweenTimer = 0;
+				self.STAGE = STAGE_REST;
+				publish("tournament/step/completed", ["play"]);
+			}else{*/
+				if(_playIndex>0 && _playIndex<self.agents.length+1) self.agents[_playIndex-1].dehighlightConnections();
+				if(_playIndex>1 && _playIndex<self.agents.length+2) self.agents[_playIndex-2].dehighlightConnections();
+				if(_playIndex<self.agents.length){
+					self.agents[_playIndex].highlightConnections();
+					_playIndex += self.isAutoPlaying ? 2 : 1;
+				}else{
+					self.playOneTournament(); // FOR REAL, NOW.
+					_playIndex = 0;
+					_tweenTimer = 0;
+					self.STAGE = STAGE_REST;
+					publish("tournament/step/completed", ["play"]);
+				}
+			//}
 		}
 
 		// ELIMINATE!
@@ -648,7 +413,6 @@ function Tournament(config){
 		if(!self.isAutoPlaying){
 			Loader.sounds.coin_get.volume(0.1).play();
 		}
-		console.log("Starting tournament - STAGE_PLAY");
 		self.STAGE=STAGE_PLAY;
 	};
 	listen(self, "tournament/play", self._startPlay);
@@ -821,7 +585,6 @@ function TournamentAgent(config){
 
 	// Number of coins
 	self.coins = 0;
-	self.roundScore = 0; // Score for current round
 	self.addPayoff = function(payoff){
 		self.coins += payoff;
 		self.updateScore();
@@ -839,33 +602,6 @@ function TournamentAgent(config){
 	body.anchor.y = 0.75;
 	g.addChild(body);
 
-	// Group badge (if in group mode)
-	var groupBadge = null;
-	self.updateGroupBadge = function(){
-		if (groupBadge) {
-			g.removeChild(groupBadge);
-		}
-		
-		if (self.groupId !== undefined && self.groupId !== null) {
-			groupBadge = new PIXI.Graphics();
-			groupBadge.beginFill(parseInt(pickGroupColor(self.groupId).replace("#", "0x")), 0.8);
-			groupBadge.drawCircle(0, -30, 8);
-			groupBadge.endFill();
-			
-			// Add group ID text
-			var groupText = new PIXI.Text(self.groupId.toString(), {
-				fontFamily: "Arial",
-				fontSize: 10,
-				fill: "#FFFFFF",
-				align: "center"
-			});
-			groupText.anchor.set(0.5);
-			groupBadge.addChild(groupText);
-			
-			g.addChild(groupBadge);
-		}
-	};
-
 	// Score!
 	var textStyle = new PIXI.TextStyle({
 	    fontFamily: "FuturaHandwritten",
@@ -878,14 +614,9 @@ function TournamentAgent(config){
 	self.updateScore = function(){
 		scoreText.visible = true;
 		scoreText.text = self.coins;
-		console.log("updateScore called for agent", self.strategyName, "coins:", self.coins, "visible:", scoreText.visible);
 	};
 	self.updateScore();
-	// Keep score text visible during tournament
-	scoreText.visible = true;
-	listen(self, "tournament/play", function(){
-		scoreText.visible = true;
-	});
+	scoreText.visible = false;
 	listen(self, "tournament/reproduce",function(){
 		scoreText.visible = false;
 	});
