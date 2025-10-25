@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Verify Group Elimination</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        #console { background: #000; color: #0f0; padding: 10px; margin: 10px 0; height: 600px; overflow-y: scroll; font-family: monospace; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; }
+        .status { padding: 10px; margin: 5px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        .warning { background: #fff3cd; color: #856404; }
+    </style>
+</head>
+<body>
+    <h1>Verify Group Elimination</h1>
+    <p><strong>CRITICAL TEST:</strong> This will test the actual Section 11 simulation to verify group elimination is working.</p>
+    
+    <button onclick="testSection11()">Test Section 11</button>
+    <button onclick="testGroupElimination()">Test Group Elimination</button>
+    <button onclick="testFullSimulation()">Test Full Simulation</button>
+    <button onclick="clearConsole()">Clear Console</button>
+    
+    <div id="status"></div>
+    <div id="console"></div>
+
+    <script>
+        let testResults = {
+            section11Loads: false,
+            groupModeActive: false,
+            groupsCreated: false,
+            eliminationWorks: false,
+            reproductionWorks: false,
+            simulationRuns: false,
+            fullTurnWorks: false
+        };
+
+        function log(message, type = 'info') {
+            const console = document.getElementById('console');
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'error' ? 'error' : type === 'success' : 'success' : type === 'warning' ? 'warning' : 'info';
+            console.innerHTML += `<div class="${className}">[${timestamp}] ${message}</div>`;
+            console.scrollTop = console.scrollHeight;
+        }
+
+        function updateStatus() {
+            const status = document.getElementById('status');
+            const totalTests = Object.keys(testResults).length;
+            const passedTests = Object.values(testResults).filter(Boolean).length;
+            
+            status.innerHTML = `
+                <div class="status ${passedTests === totalTests ? 'success' : 'warning'}">
+                    <strong>Test Status:</strong> ${passedTests}/${totalTests} tests passed
+                    ${passedTests === totalTests ? '✅ ALL TESTS PASSED - GROUP ELIMINATION WORKING' : '⚠️ SOME TESTS FAILED - NEEDS FIXING'}
+                </div>
+            `;
+        }
+
+        function clearConsole() {
+            document.getElementById('console').innerHTML = '';
+            testResults = {
+                section11Loads: false,
+                groupModeActive: false,
+                groupsCreated: false,
+                eliminationWorks: false,
+                reproductionWorks: false,
+                simulationRuns: false,
+                fullTurnWorks: false
+            };
+            updateStatus();
+        }
+
+        async function testSection11() {
+            log("🔍 Testing Section 11...", 'info');
+            
+            try {
+                // Test 1: Load Section 11
+                log("Test 1: Loading Section 11...", 'info');
+                if (typeof Slideshow !== 'undefined') {
+                    Slideshow.gotoSlide("environment");
+                    testResults.section11Loads = true;
+                    log("✅ Section 11 loaded", 'success');
+                } else {
+                    log("❌ Slideshow not found", 'error');
+                }
+
+                // Wait for slide to load
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
+                // Test 2: Check Group Mode
+                log("Test 2: Checking group mode...", 'info');
+                if (typeof Tournament !== 'undefined' && Tournament.GROUP_MODE === true) {
+                    testResults.groupModeActive = true;
+                    log("✅ Group mode is active", 'success');
+                } else {
+                    log("❌ Group mode not active", 'error');
+                }
+
+                // Test 3: Check Tournament Instance
+                log("Test 3: Checking tournament instance...", 'info');
+                const tournamentElements = document.querySelectorAll('[id*="tournament"]');
+                if (tournamentElements.length > 0) {
+                    testResults.groupsCreated = true;
+                    log(`✅ Tournament instance found: ${tournamentElements.length} elements`, 'success');
+                } else {
+                    log("❌ No tournament instance found", 'error');
+                }
+
+                // Test 4: Test Group Operations
+                log("Test 4: Testing group operations...", 'info');
+                if (typeof Tournament !== 'undefined') {
+                    try {
+                        const testTournament = new Tournament({x: 0, y: 0});
+                        
+                        if (testTournament.groups && testTournament.groups.length > 0) {
+                            log(`✅ ${testTournament.groups.length} groups created`, 'success');
+                            
+                            // Test elimination
+                            const groupsBefore = testTournament.groups.length;
+                            testTournament.eliminateWorstGroups(1);
+                            const groupsAfter = testTournament.groups.length;
+                            
+                            if (groupsAfter < groupsBefore) {
+                                testResults.eliminationWorks = true;
+                                log(`✅ Elimination works: ${groupsBefore} -> ${groupsAfter} groups`, 'success');
+                            } else {
+                                log(`⚠️ Elimination may not work: ${groupsBefore} -> ${groupsAfter} groups`, 'warning');
+                            }
+
+                            // Test reproduction
+                            const groupsBeforeRep = testTournament.groups.length;
+                            testTournament.reproduceBestGroups(1);
+                            const groupsAfterRep = testTournament.groups.length;
+                            
+                            if (groupsAfterRep > groupsBeforeRep) {
+                                testResults.reproductionWorks = true;
+                                log(`✅ Reproduction works: ${groupsBeforeRep} -> ${groupsAfterRep} groups`, 'success');
+                            } else {
+                                log(`⚠️ Reproduction may not work: ${groupsBeforeRep} -> ${groupsAfterRep} groups`, 'warning');
+                            }
+
+                            // Test group tournament
+                            testTournament.playGroupTournament();
+                            testResults.simulationRuns = true;
+                            log("✅ Group tournament runs", 'success');
+
+                        } else {
+                            log("❌ No groups created", 'error');
+                        }
+                    } catch (error) {
+                        log("❌ Tournament test failed: " + error.message, 'error');
+                    }
+                }
+
+                // Test 5: Check Visual Updates
+                log("Test 5: Checking visual updates...", 'info');
+                const uiElements = document.querySelectorAll('[id*="ui"]');
+                if (uiElements.length > 0) {
+                    testResults.visualUpdates = true;
+                    log(`✅ UI elements found: ${uiElements.length}`, 'success');
+                } else {
+                    log("❌ No UI elements found", 'error');
+                }
+
+                updateStatus();
+
+            } catch (error) {
+                log("❌ Section 11 test failed: " + error.message, 'error');
+                console.error(error);
+            }
+        }
+
+        async function testGroupElimination() {
+            log("🧪 Testing group elimination specifically...", 'info');
+            
+            try {
+                if (typeof Tournament !== 'undefined') {
+                    const tournament = new Tournament({x: 0, y: 0});
+                    
+                    log(`Initial groups: ${tournament.groups.length}`, 'info');
+                    
+                    // Test multiple eliminations
+                    for (let i = 1; i <= 3; i++) {
+                        log(`--- Elimination ${i} ---`, 'info');
+                        const before = tournament.groups.length;
+                        tournament.eliminateWorstGroups(1);
+                        const after = tournament.groups.length;
+                        log(`Elimination ${i}: ${before} -> ${after} groups`, 'info');
+                    }
+                    
+                    log("✅ Group elimination test completed", 'success');
+                } else {
+                    log("❌ Tournament object not found", 'error');
+                }
+            } catch (error) {
+                log("❌ Group elimination test failed: " + error.message, 'error');
+            }
+        }
+
+        async function testFullSimulation() {
+            log("🎯 Testing full simulation...", 'info');
+            
+            try {
+                if (typeof Tournament !== 'undefined') {
+                    const tournament = new Tournament({x: 0, y: 0});
+                    
+                    log(`Starting simulation with ${tournament.groups.length} groups`, 'info');
+                    
+                    // Run 3 full turns
+                    for (let turn = 1; turn <= 3; turn++) {
+                        log(`--- Turn ${turn} ---`, 'info');
+                        
+                        // Play
+                        tournament.playGroupTournament();
+                        log(`After play: ${tournament.groups.length} groups`, 'info');
+                        
+                        // Eliminate
+                        const beforeElim = tournament.groups.length;
+                        tournament.eliminateWorstGroups(1);
+                        const afterElim = tournament.groups.length;
+                        log(`Elimination: ${beforeElim} -> ${afterElim} groups`, 'info');
+                        
+                        // Reproduce
+                        const beforeRep = tournament.groups.length;
+                        tournament.reproduceBestGroups(1);
+                        const afterRep = tournament.groups.length;
+                        log(`Reproduction: ${beforeRep} -> ${afterRep} groups`, 'info');
+                        
+                        // Check if turn worked
+                        if (afterElim < beforeElim && afterRep > beforeRep) {
+                            log(`✅ Turn ${turn} completed successfully`, 'success');
+                        } else {
+                            log(`⚠️ Turn ${turn} may not have worked correctly`, 'warning');
+                        }
+                    }
+                    
+                    log("🎉 Full simulation test completed!", 'success');
+                } else {
+                    log("❌ Tournament object not found", 'error');
+                }
+            } catch (error) {
+                log("❌ Full simulation test failed: " + error.message, 'error');
+            }
+        }
+
+        // Override console methods
+        const originalLog = console.log;
+        const originalError = console.error;
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            log(args.join(' '), 'info');
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            log("ERROR: " + args.join(' '), 'error');
+        };
+    </script>
+
+    <!-- Load the main application -->
+    <script src="js/lib/helpers.js?v12"></script>
+    <script src="js/lib/pegasus.js?v12"></script>
+    <script src="js/lib/q.js?v12"></script>
+    <script src="js/lib/pixi.min.js?v12"></script>
+    <script src="js/lib/minpubsub.src.js?v12"></script>
+    <script src="js/lib/howler.js?v12"></script>
+    <script src="js/lib/sharing.js?v12"></script>
+    <script src="js/lib/tweenjs-0.6.2.min.js?v12"></script>
+    <script src="js/lib/sandbox.js?v12"></script>
+    <script src="js/core/Loader.js?v12"></script>
+    <script src="js/core/Slideshow.js?v12"></script>
+    <script src="js/core/Button.js?v12"></script>
+    <script src="js/core/SlideSelect.js?v12"></script>
+    <script src="js/core/TextBox.js?v12"></script>
+    <script src="js/core/Words.js?v12"></script>
+    <script src="js/core/IncDecNumber.js?v12"></script>
+    <script src="js/core/Slider.js?v12"></script>
+    <script src="js/core/Scratcher.js?v12"></script>
+    <script src="js/core/Background.js?v12"></script>
+    <script src="js/core/ImageBox.js?v12"></script>
+    <script src="js/core/PayoffsUI.js?v12"></script>
+    <script src="js/sims/Splash.js?v12"></script>
+    <script src="js/sims/PD.js?v12"></script>
+    <script src="js/sims/Iterated.js?v12"></script>
+    <script src="js/sims/Tournament.js?v12"></script>
+    <script src="js/sims/GroupTournament.js?v12"></script>
+    <script src="js/sims/SandboxUI.js?v12"></script>
+    <script src="js/groups.js?v12"></script>
+    <script src="js/slides/0_Slides_Intro.js?v12"></script>
+    <script src="js/slides/1_Slides_OneOff.js?v12"></script>
+    <script src="js/slides/2_Slides_Iterated.js?v12"></script>
+    <script src="js/slides/3_Slides_Tournament.js?v12"></script>
+    <script src="js/slides/4_Slides_Evolution.js?v12"></script>
+    <script src="js/slides/5_Slides_Distrust.js?v12"></script>
+    <script src="js/slides/6_Slides_Noise.js?v12"></script>
+    <script src="js/slides/7_Slides_Sandbox.js?v12"></script>
+    <script src="js/slides/7_Slides_TrustTheory.js?v12"></script>
+    <script src="js/slides/8_Slides_Conclusion.js?v12"></script>
+    <script src="js/slides/9_Slides_Credits.js?v12"></script>
+    <script src="js/slides/10_Slides_Environment.js?v12"></script>
+    <script src="js/main.js?v12"></script>
+
+    <script>
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                log("🚀 Application loaded. Ready to test Section 11.", 'info');
+                log("Click 'Test Section 11' to test the group elimination logic.", 'info');
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
