@@ -1,0 +1,14 @@
+.mod8-root{position:relative;display:block;padding:12px;font-family:FuturaHandwritten,Arial,sans-serif}
+.mod8-hidden{display:none}
+.mod8-panel{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:8px 0}
+.mod8-grid{display:grid;grid-template-columns:repeat(5,1fr);grid-gap:10px;margin-top:8px}
+.mod8-card{border:2px solid #ddd;border-radius:10px;padding:8px;background:#fff}
+.mod8-card.mod8-best{border-color:#2a9d8f;box-shadow:0 0 0 2px rgba(42,157,143,.15) inset}
+.mod8-card.mod8-worst{border-color:#e76f51;box-shadow:0 0 0 2px rgba(231,111,81,.15) inset}
+.mod8-card h4{margin:0 0 6px 0;font-size:16px}
+.mod8-members{display:flex;gap:6px;margin:6px 0}
+.mod8-badge{width:14px;height:14px;border-radius:50%}
+.mod8-score{font-weight:bold;margin-top:4px}
+.mod8-warning{color:#b00020;font-weight:bold}
+@media(max-width:860px){.mod8-grid{grid-template-columns:repeat(2,1fr)}}
+ 
