@@ -4,7 +4,7 @@
     var root = null;
     var mounted = false;
     var autoplayTimer = null;
-    var speedMs = 1000;
+    var speedMs = 100; // start fastest by default
 
     // Simple pub/sub inside module scope
     var listeners = [];
@@ -19,6 +19,10 @@
         root.hidden = false;
         var slideHost = document.getElementById("slideshow_container"); if(slideHost){ slideHost.style.display='none'; }
         root.innerHTML = ""+
+            "<div class=\"mod8-intro\">"+
+              "<h2>8. Bölüm – Grup Eşleşmesi</h2>"+
+              "<p>Takımlar arası Mahkûmun İkilemi simülasyonu: gruplar oynar, en düşük elenir, en yüksek çoğalır. Aşağıdaki kontrollerle nüfusu, ödülleri ve kuralları ayarlayabilirsiniz.</p>"+
+            "</div>"+
             "<div class=\"mod8-layout\">"+
               "<div class=\"mod8-stage-col\">"+
                  "<div id=\"mod8-stage\" class=\"mod8-stage\">"+

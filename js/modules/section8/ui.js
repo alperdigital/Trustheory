@@ -50,6 +50,9 @@ window.mod8_renderUI = function(){
         var gscore = node.querySelector('.mod8-group-score'); if(!gscore){ gscore=document.createElement('div'); gscore.className='mod8-group-score'; node.appendChild(gscore); }
         var displayScore = String(g.score);
         gscore.textContent = displayScore;
+        // place score above if node center is below horizontal axis (to avoid overlap)
+        var nodeCenterY = y + 40; // node height 80
+        if(nodeCenterY > cy){ gscore.classList.add('above'); } else { gscore.classList.remove('above'); }
 
         // members cloud slightly outside circle
         var mx=cx + (r+50)*Math.cos(angle) - 12; var my=cy + (r+50)*Math.sin(angle) - 12;
@@ -63,10 +66,27 @@ window.mod8_renderUI = function(){
         }
     }
     var status = document.getElementById("mod8-status"); if(status){
-        var best = (bestIdx>=0)? ("En yüksek: Grup "+(bestIdx+1)) : "";
-        var worst = (worstIdx>=0)? (" | En düşük: Grup "+(worstIdx+1)) : "";
-        var turns = " | Tur içi tekrar sayısı: "+(s.turns||10);
-        status.textContent = "Tur: "+s.round+" — "+best+worst+turns;
+        // replace text label with evolution progress bar UI
+        status.textContent = "";
+        var bar = document.getElementById('mod8-evolution');
+        if(!bar){
+            bar = document.createElement('div');
+            bar.id = 'mod8-evolution';
+            bar.className = 'mod8-evolution';
+            var title = document.createElement('div'); title.className='mod8-evolution-title'; title.textContent='Evrim Süreci'; bar.appendChild(title);
+            var track = document.createElement('div'); track.className='mod8-evolution-track';
+            var fill = document.createElement('div'); fill.className='mod8-evolution-fill'; track.appendChild(fill);
+            var flag = document.createElement('div'); flag.className='mod8-evolution-flag'; flag.innerHTML='<span class="mod8-flag-label"></span>';
+            track.appendChild(flag);
+            bar.appendChild(track);
+            status.appendChild(bar);
+        }
+        var maxRound = 15; // 15 turda tamamlansın; sonrasında dolu kalsın
+        var pct = Math.max(0, Math.min(1, (s.round)/maxRound));
+        var fillEl = bar.querySelector('.mod8-evolution-fill');
+        var flagEl = bar.querySelector('.mod8-evolution-flag');
+        if(fillEl){ fillEl.style.width = (pct*100)+'%'; }
+        if(flagEl){ flagEl.style.left = 'calc('+(pct*100)+'% - 10px)'; var lbl = flagEl.querySelector('.mod8-flag-label'); if(lbl){ var shown = (s.round>=maxRound)? maxRound : s.round; lbl.textContent = 'Tur '+shown; } }
     }
 };
 
@@ -132,15 +152,17 @@ window.mod8_buildRulesControls = function(){
     // Speed slider using core Slider for visual parity
     var rule_turns = document.createElement('div'); rule_turns.className='label'; rule_turns.style.left='0px'; rule_turns.style.top='0px'; rule_turns.style.width='433px';
     rule_turns.innerHTML = 'Simülasyon Hızı (ms/cycle)'; container.appendChild(rule_turns);
-    var slider_speed = new Slider({ x:0, y:35, width:430, min:100, max:2000, step:50, onchange:function(v){ mod8_setSpeed(v); } });
+    var slider_speed = new Slider({ x:0, y:35, width:430, min:100, max:2000, step:50, message:'mod8/rules/speed', onchange:function(v){ mod8_setSpeed(v); } });
     listen(window, 'mod8/sync/speed', function(v){ slider_speed.setValue(v); });
+    slider_speed.setValue(typeof window.mod8_getSpeed==='function'? window.mod8_getSpeed() : 1000);
     slider_speed.slideshow = { dom: container }; container.appendChild(slider_speed.dom);
 
     var rule_noise = document.createElement('div'); rule_noise.className='label'; rule_noise.style.left='0px'; rule_noise.style.top='100px'; rule_noise.style.width='433px';
     rule_noise.innerHTML = (Words.get?Words.get('sandbox_rules_3'):'Her tur sırasında, bir oyuncunun hata yapma şansı [N]%:').replace(/\[N\]/g, String(Math.round((window.mod8_state.noise||0)*100)));
     container.appendChild(rule_noise);
-    var slider_noise = new Slider({ x:0, y:165, width:430, min:0, max:50, step:1, onchange:function(v){ window.mod8_state.noise = (v||0)/100; rule_noise.innerHTML = (Words.get?Words.get('sandbox_rules_3'):'Her tur sırasında, bir oyuncunun hata yapma şansı [N]%:').replace(/\[N\]/g, String(v)); } });
+    var slider_noise = new Slider({ x:0, y:165, width:430, min:0, max:50, step:1, message:'mod8/rules/noise', onchange:function(v){ window.mod8_state.noise = (v||0)/100; rule_noise.innerHTML = (Words.get?Words.get('sandbox_rules_3'):'Her tur sırasında, bir oyuncunun hata yapma şansı [N]%:').replace(/\[N\]/g, String(v)); } });
     listen(window, 'mod8/sync/noise', function(v){ slider_noise.setValue(v); });
+    slider_noise.setValue(Math.round((window.mod8_state.noise||0)*100));
     slider_noise.slideshow = { dom: container }; container.appendChild(slider_noise.dom);
 
     // Turns slider similar to chapter 7 (1..50)
@@ -148,7 +170,8 @@ window.mod8_buildRulesControls = function(){
     var turnsWords = (window.mod8_state.turns==1)? (Words.get?Words.get('sandbox_rules_1_single'):'Maç başına [N] tur oyna:') : (Words.get?Words.get('sandbox_rules_1'):'Maç başına [N] tur oyna:');
     rule_turns.innerHTML = turnsWords.replace(/\[N\]/g, String(window.mod8_state.turns||10));
     container.appendChild(rule_turns);
-    var slider_turns = new Slider({ x:0, y:290, width:430, min:1, max:50, step:1, onchange:function(v){ window.mod8_state.turns = v; var tw = (v==1)? (Words.get?Words.get('sandbox_rules_1_single'):'Maç başına [N] tur oyna:') : (Words.get?Words.get('sandbox_rules_1'):'Maç başına [N] tur oyna:'); rule_turns.innerHTML = tw.replace(/\[N\]/g, String(v)); } });
+    var slider_turns = new Slider({ x:0, y:290, width:430, min:1, max:50, step:1, message:'mod8/rules/turns', onchange:function(v){ window.mod8_state.turns = v; var tw = (v==1)? (Words.get?Words.get('sandbox_rules_1_single'):'Maç başına [N] tur oyna:') : (Words.get?Words.get('sandbox_rules_1'):'Maç başına [N] tur oyna:'); rule_turns.innerHTML = tw.replace(/\[N\]/g, String(v)); } });
+    slider_turns.setValue(window.mod8_state.turns||10);
     slider_turns.slideshow = { dom: container }; container.appendChild(slider_turns.dom);
 
     // Decision Mode toggle & intra-group checkbox (single bottom row, absolute positioned)

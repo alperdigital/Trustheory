@@ -2,13 +2,14 @@
 
 window.mod8_defaults = {
     payoffs: { T:5, R:3, P:1, S:0 },
-    noise: 0,
+    noise: 0.1,
     turns: 10,
     decisionMode: 'group', // 'group' | 'individual'
     includeIntraGroup: true,
     resetMemoryEachRound: false,
     seed: 123456789,
     cloneWithEmptyMemory: false,
+    currentRound: 0,
     distribution: {
         COOPERATOR: 2,
         RANDOM: 2,
@@ -44,7 +45,8 @@ window.mod8_initState = function(){
         resetMemoryEachRound: mod8_defaults.resetMemoryEachRound,
         seed: mod8_defaults.seed,
         generation: 0,
-        phase: 0
+        phase: 0,
+        currentRound: mod8_defaults.currentRound
     };
 };
 
