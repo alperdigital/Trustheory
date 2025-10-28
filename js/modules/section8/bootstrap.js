@@ -19,31 +19,69 @@
         root.hidden = false;
         var slideHost = document.getElementById("slideshow_container"); if(slideHost){ slideHost.style.display='none'; }
         root.innerHTML = ""+
-            "<div class=\"mod8-panel\">"+
-            "<button id=\"mod8-start\">Başlat</button>"+
-            "<button id=\"mod8-step\">Adım</button>"+
-            "<button id=\"mod8-stop\">Durdur</button>"+
-            "<button id=\"mod8-reset\">Sıfırla</button>"+
-            "<label style=\"margin-left:8px\">Hız <input id=\"mod8-speed\" type=\"range\" min=\"100\" max=\"2000\" step=\"50\" value=\"1000\"></label>"+
-            "<span id=\"mod8-total-warning\" class=\"mod8-warning\"></span>"+
-            "</div>"+
-            "<div id=\"mod8-grid\" class=\"mod8-grid\"></div>"+
-            "<div class=\"mod8-panel\"><span id=\"mod8-status\"></span></div>";
+            "<div class=\"mod8-layout\">"+
+              "<div class=\"mod8-stage-col\">"+
+                 "<div id=\"mod8-stage\" class=\"mod8-stage\">"+
+                    "<div id=\"mod8-stage-circle\" class=\"mod8-stage-circle\"></div>"+
+                    "<div class=\"mod8-stage-center\">"+
+                       "<div class=\"mod8-center-buttons\">"+
+                          "<button id=\"mod8-start\" class=\"mod8-ctrl-btn\" aria-label=\"Başlat\">BAŞLAT</button>"+
+                          "<button id=\"mod8-step\" class=\"mod8-ctrl-btn\" aria-label=\"Adım\">ADIM</button>"+
+                          "<button id=\"mod8-stop\" class=\"mod8-ctrl-btn\" aria-label=\"Dur\">DUR</button>"+
+                          "<button id=\"mod8-reset\" class=\"mod8-ctrl-btn\" aria-label=\"Sıfırla\">SIFIRLA</button>"+
+                       "</div>"+
+                       "<div class=\"mod8-center-info\">"+
+                          "<span id=\"mod8-total-warning\" class=\"mod8-warning\"></span>"+
+                          "<span id=\"mod8-status\"></span>"+
+                       "</div>"+
+                    "</div>"+
+                 "</div>"+
+              "</div>"+
+              "<div class=\"mod8-side-col\">"+
+                 "<div class=\"mod8-sandbox_tabs\" id=\"mod8-sandbox_tabs\">"+
+                   "<div class=\"mod8-hitbox\" data-page=\"pop\">"+(window.Words&&Words.get?Words.get('label_population'):'NÜFUS').toUpperCase()+"</div>"+
+                   "<div class=\"mod8-hitbox\" data-page=\"pay\">"+(window.Words&&Words.get?Words.get('label_payoffs'):'ÖDÜLLER').toUpperCase()+"</div>"+
+                   "<div class=\"mod8-hitbox\" data-page=\"rules\">"+(window.Words&&Words.get?Words.get('label_rules'):'KURALLAR').toUpperCase()+"</div>"+
+                   "<div class=\"mod8-sandbox_page\" id=\"mod8-page-pop\"></div>"+
+                   "<div class=\"mod8-sandbox_page\" id=\"mod8-page-pay\" hidden></div>"+
+                   "<div class=\"mod8-sandbox_page\" id=\"mod8-page-rules\" hidden></div>"+
+                 "</div>"+
+              "</div>"+
+            "</div>";
 
         // Initialize state/UI
         window.mod8_state = window.mod8_state || {};
         mod8_initState();
         mod8_renderUI();
+        mod8_initTabs();
         mod8_buildDistributionControls();
+        mod8_buildPayoffsControls();
+        mod8_buildRulesControls();
 
         // Events
         on(document.getElementById("mod8-start"), "click", function(){ mod8_startAutoplay(); });
-        on(document.getElementById("mod8-step"), "click", function(){ mod8_runOneRoundAndRender(); });
+        on(document.getElementById("mod8-step"), "click", function(){
+            // Run stepwise over 3 phases: 0->1->2->reset
+            var p = (window.mod8_state.phase||0);
+            if(p===0){
+                window.mod8_state = mod8_stepPlay(window.mod8_state); mod8_renderUI();
+            }else if(p===1){
+                window.mod8_state = mod8_stepEliminate(window.mod8_state); mod8_renderUI();
+            }else{
+                window.mod8_state = mod8_stepReplicateReset(window.mod8_state); mod8_renderUI();
+            }
+        });
         on(document.getElementById("mod8-stop"), "click", function(){ mod8_stopAutoplay(); });
         on(document.getElementById("mod8-reset"), "click", function(){ mod8_stopAutoplay(); mod8_initState(); mod8_renderUI(); });
-        on(document.getElementById("mod8-speed"), "input", function(e){ speedMs = parseInt(e.target.value,10)||1000; if(autoplayTimer){ mod8_stopAutoplay(); mod8_startAutoplay(); } });
+        var speedEl = document.getElementById("mod8-speed");
+        if(speedEl){ on(speedEl, "input", function(e){ speedMs = parseInt(e.target.value,10)||1000; if(autoplayTimer){ mod8_stopAutoplay(); mod8_startAutoplay(); } }); }
 
         mounted = true;
+        // Sync sliders to current state on mount
+        try{
+            publish && publish('mod8/sync/speed', [mod8_getSpeed()]);
+            publish && publish('mod8/sync/noise', [Math.round((window.mod8_state.noise||0)*100)]);
+        }catch(e){}
     };
 
     // Public unmount
@@ -60,6 +98,14 @@
     // Autoplay helpers
     function mod8_startAutoplay(){ if(autoplayTimer) return; autoplayTimer = setInterval(mod8_runOneRoundAndRender, speedMs); }
     function mod8_stopAutoplay(){ if(!autoplayTimer) return; clearInterval(autoplayTimer); autoplayTimer=null; }
+
+    // Public speed setter for UI sliders
+    window.mod8_setSpeed = function(ms){
+        speedMs = parseInt(ms,10)||1000;
+        if(autoplayTimer){ mod8_stopAutoplay(); mod8_startAutoplay(); }
+    };
+    // Public getter for UI initialization
+    window.mod8_getSpeed = function(){ return speedMs; };
 
     // Wiring to slideshow (non-invasive): optional keyboard quick toggle
     document.addEventListener("keydown", function(e){ if(e.key==="8" && (e.metaKey||e.ctrlKey)){ mod8_mount(); } });
