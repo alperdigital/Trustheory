@@ -1,6 +1,7 @@
 SLIDES.push({
 	id: "under_construction",
 	onstart: function(self){
+        if(typeof mod8_mount==="function"){ mod8_mount(); }
 		
 		// Ana başlık
 		self.add({
@@ -26,6 +27,7 @@ SLIDES.push({
 		
 	},
 	onend: function(self){
-		self.clear();
+        if(typeof mod8_unmount==="function"){ mod8_unmount(); }
+        self.clear();
 	}
 });
