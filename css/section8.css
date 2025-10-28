@@ -5,8 +5,8 @@
 .mod8-stage{position:relative;width:560px;height:560px;margin:0 auto}
 .mod8-stage-circle{position:absolute;left:30px;top:30px;width:500px;height:500px;border-radius:50%;border:3px dashed #E0E0E0;box-shadow:0 0 0 4px rgba(0,0,0,0.03) inset}
 .mod8-stage-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center}
-.mod8-center-buttons{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;width:380px;margin:0 auto}
-.mod8-ctrl-btn{font-family:FuturaHandwritten,Arial,sans-serif;font-size:18px;border:2px solid #e3e3e3;border-radius:14px;background:linear-gradient(180deg,#fff,#f6f6f6);cursor:pointer;padding:10px 12px;transition:transform .06s ease, box-shadow .15s ease,border-color .15s ease;color:#333;box-shadow:0 2px 0 0 #d0d0d0}
+.mod8-center-buttons{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;width:340px;margin:0 auto}
+.mod8-ctrl-btn{font-family:FuturaHandwritten,Arial,sans-serif;font-size:16px;border:2px solid #e3e3e3;border-radius:12px;background:linear-gradient(180deg,#fff,#f6f6f6);cursor:pointer;padding:8px 10px;transition:transform .06s ease, box-shadow .15s ease,border-color .15s ease;color:#333;box-shadow:0 2px 0 0 #d0d0d0}
 .mod8-ctrl-btn:hover{transform:translateY(-1px);box-shadow:0 3px 0 0 #c8c8c8}
 .mod8-ctrl-btn:active{transform:translateY(1px);box-shadow:0 1px 0 0 #c0c0c0}
 .mod8-ctrl-btn:disabled{opacity:.55;cursor:not-allowed;transform:none;box-shadow:0 2px 0 0 #d0d0d0}
