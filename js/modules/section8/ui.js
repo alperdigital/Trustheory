@@ -140,7 +140,7 @@ window.mod8_buildPayoffsControls = function(){
     container.innerHTML = '';
     var pay = new MOD8_PayoffsUI({x:84, y:41, scale:0.9});
     container.appendChild(pay.dom);
-    var resetBtn = document.createElement('button'); resetBtn.textContent='Varsayılanı Ayarla'; resetBtn.style.position='absolute'; resetBtn.style.left='240px'; resetBtn.style.top='300px';
+    var resetBtn = document.createElement('button'); resetBtn.textContent='Varsayılanı Ayarla'; resetBtn.className='mod8-reset-btn';
     resetBtn.onclick=function(){ window.mod8_state.payoffs = Object.assign({}, window.mod8_defaults.payoffs); mod8_buildPayoffsControls(); };
     container.appendChild(resetBtn);
 };

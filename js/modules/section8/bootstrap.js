@@ -20,7 +20,7 @@
         var slideHost = document.getElementById("slideshow_container"); if(slideHost){ slideHost.style.display='none'; }
         root.innerHTML = ""+
             "<div class=\"mod8-intro\">"+
-              "<h2>8. Bölüm – Grup Eşleşmesi</h2>"+
+              "<h2>8. Bölüm – Grup Evrimi</h2>"+
               "<p>Takımlar arası Mahkûmun İkilemi simülasyonu: gruplar oynar, en düşük elenir, en yüksek çoğalır. Aşağıdaki kontrollerle nüfusu, ödülleri ve kuralları ayarlayabilirsiniz.</p>"+
             "</div>"+
             "<div class=\"mod8-layout\">"+

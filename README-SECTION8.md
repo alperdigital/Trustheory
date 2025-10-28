@@ -1,10 +1,10 @@
-Bölüm 8 – Grup Eşleşmesi Simülasyonu (mod8)
+Bölüm 8 – Grup Evrimi Simülasyonu (mod8)
 
 Bu bölüm, mevcut bölümlerden tamamen izole çalışan bir mini-modüldür. Tüm kimlikler, fonksiyonlar ve stiller mod8_ veya .mod8- ile ön eklenmiştir.
 
 Entegrasyon Noktaları
 - index.html içine tek bir kök eklendi: <section id="mod8-root" class="mod8-root" hidden></section>
-- Alt kısımdaki menüye buton: <button id="mod8-nav-link">8. Bölüm – Grup Eşleşmesi</button>
+- Alt kısımdaki menüye buton: <button id="mod8-nav-link">8. Bölüm – Grup Evrimi</button>
 - Bağımsız scriptler (yalnızca mod8):
   - js/modules/section8/state.js
   - js/modules/section8/strategies.js
@@ -15,7 +15,7 @@ Entegrasyon Noktaları
 - Stil: css/section8.css (yalnızca .mod8-root … altında kurallar)
 
 Kullanım
-- Menüde “8. Bölüm – Grup Eşleşmesi” butonuna tıklayın (veya Ctrl/Cmd+8).
+- Menüde “8. Bölüm – Grup Evrimi” butonuna tıklayın (veya Ctrl/Cmd+8).
 - Bölüm açıldığında slideshow gizlenir, #mod8-root görünür.
 - Kontroller:
   - Başlat: Otomatik tur döngüsünü başlatır.
@@ -60,7 +60,7 @@ Notlar
 - PIXI sahnesi opsiyoneldir; şu an yalnızca DOM tabanlı görselleştirme kullanılmaktadır.
 - Tie-break deterministik olarak grup indeksine göre yapılır; gerekirse seed’li RNG ile genişletilebilir.
 
-Section 8 – Grup Eşleşmesi Simülasyonu (İzole)
+Section 8 – Grup Evrimi Simülasyonu (İzole)
 
 - Kapsayıcı DOM: <section id="mod8-root" class="mod8-root" hidden>
 - Başlat: mod8_mount(), Kapat: mod8_unmount()
