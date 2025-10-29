@@ -6,6 +6,7 @@
     var autoplayTimer = null;
     var speedMs = 100; // start fastest by default
 	var hatsObserver = null;
+	var mod8_nextHandle = null;
 
     // Simple pub/sub inside module scope
     var listeners = [];
@@ -92,12 +93,22 @@
 		var speedEl = document.getElementById("mod8-speed");
 		if(speedEl){ on(speedEl, "input", function(e){ speedMs = parseInt(e.target.value,10)||1000; if(autoplayTimer){ mod8_stopAutoplay(); mod8_startAutoplay(); } }); }
 
-		// Side CTA: go to Section 9
+		// CTA: animated go to Section 9
 		var nextBtn = document.getElementById('mod8-next-s9');
 		if(nextBtn){
 			on(nextBtn, 'click', function(){
-				try{ publish('slideshow/goto', ['group_intra']); }
-				catch(e){ try{ window.location.hash = '#group_intra'; }catch(_e){} }
+				try{
+					// unsubscribe previous chain if any
+					if(mod8_nextHandle){ try{ unsubscribe(mod8_nextHandle); }catch(_e){} mod8_nextHandle=null; }
+					var steps=0, maxSteps=10, target='group_intra';
+					mod8_nextHandle = subscribe('slideshow/slideChange', function(currentId){
+						if(currentId===target || steps>=maxSteps){ try{ unsubscribe(mod8_nextHandle); }catch(_e){} mod8_nextHandle=null; return; }
+						steps++;
+						publish('slideshow/next');
+					});
+					// kick it off with first animated step
+					publish('slideshow/next');
+				}catch(e){ try{ window.location.hash = '#group_intra'; }catch(_e){} }
 			});
 		}
 
@@ -189,6 +200,7 @@
         if(!mounted) return;
         mod8_stopAutoplay();
         offAll();
+		try{ if(mod8_nextHandle){ unsubscribe(mod8_nextHandle); mod8_nextHandle=null; } }catch(e){}
 		try{ if(hatsObserver){ hatsObserver.disconnect(); hatsObserver=null; } }catch(e){}
         root.innerHTML = "";
         root.hidden = true;
