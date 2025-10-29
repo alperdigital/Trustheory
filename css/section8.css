@@ -101,3 +101,10 @@
 .mod8-root.mod8-sprite .mod8-center-buttons .mod8-ctrl-btn:hover{ transform:scale(1.02); background-position:0 -125px }
 .mod8-root.mod8-sprite .mod8-center-buttons .mod8-ctrl-btn:active{ transform:scale(.95) }
 .mod8-root.mod8-sprite .mod8-center-buttons .mod8-ctrl-btn:disabled{ opacity:.55; cursor:not-allowed; background-position:0 -250px; transform:none }
+
+/* remove blue focus outline only for sprite variant */
+.mod8-root.mod8-sprite .mod8-center-buttons .mod8-ctrl-btn:focus,
+.mod8-root.mod8-sprite .mod8-center-buttons .mod8-ctrl-btn:focus-visible{
+    outline: none;
+    box-shadow: none;
+}
