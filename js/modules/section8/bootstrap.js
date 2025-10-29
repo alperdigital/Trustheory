@@ -18,6 +18,8 @@
         if(!root){ console.error("mod8-root not found"); return; }
         // Opt-in sprite buttons (revertable via CSS or by removing this class)
         try{ root.classList.add("mod8-sprite"); }catch(e){}
+        // Revertible opt-in: lock member hats to strategy frames during updates
+        try{ root.classList.add('mod8-lock-hats'); }catch(e){}
         root.hidden = false;
         root.innerHTML = ""+
             "<div class=\"mod8-intro\">"+
@@ -85,9 +87,9 @@
         if(speedEl){ on(speedEl, "input", function(e){ speedMs = parseInt(e.target.value,10)||1000; if(autoplayTimer){ mod8_stopAutoplay(); mod8_startAutoplay(); } }); }
 
         mounted = true;
-        // Ensure member hats stay inside during autoplay: wrap the render tick
+        // Ensure member hats stay strategy-consistent during all renders (revertible by removing mod8-lock-hats)
         try{
-            if(typeof window.mod8_runOneRoundAndRender==='function' && !window.mod8_runOneRoundAndRender._mod8Wrapped){
+            if(root.classList.contains('mod8-lock-hats') && typeof window.mod8_runOneRoundAndRender==='function' && !window.mod8_runOneRoundAndRender._mod8Wrapped){
                 var __origRun = window.mod8_runOneRoundAndRender;
                 window.mod8_runOneRoundAndRender = function(){
                     var r = __origRun();
@@ -95,6 +97,15 @@
                     return r;
                 };
                 window.mod8_runOneRoundAndRender._mod8Wrapped = true;
+            }
+            if(root.classList.contains('mod8-lock-hats') && typeof window.mod8_renderUI==='function' && !window.mod8_renderUI._mod8Wrapped){
+                var __origRenderUI = window.mod8_renderUI;
+                window.mod8_renderUI = function(){
+                    var r2 = __origRenderUI.apply(this, arguments);
+                    try{ mod8_renderMembersTriangle(); }catch(e){}
+                    return r2;
+                };
+                window.mod8_renderUI._mod8Wrapped = true;
             }
         }catch(e){}
         // Sync sliders to current state on mount
