@@ -57,6 +57,9 @@
                    "<div class=\"mod8-sandbox_page\" id=\"mod8-page-pay\" hidden></div>"+
                    "<div class=\"mod8-sandbox_page\" id=\"mod8-page-rules\" hidden></div>"+
                  "</div>"+
+			     "<div class=\"mod8-side-next\">"+
+			       "<button id=\"mod8-next-s9\" class=\"mod8-side-next-btn\" aria-label=\"ya rastgele gruplar?\">ya rastgele gruplar?</button>"+
+			     "</div>"+
               "</div>"+
             "</div>";
 
@@ -88,6 +91,15 @@
         on(document.getElementById("mod8-reset"), "click", function(){ mod8_stopAutoplay(); mod8_initState(); mod8_renderUI(); try{ mod8_renderEvolution(); mod8_renderMembersTriangle(); }catch(e){} });
 		var speedEl = document.getElementById("mod8-speed");
 		if(speedEl){ on(speedEl, "input", function(e){ speedMs = parseInt(e.target.value,10)||1000; if(autoplayTimer){ mod8_stopAutoplay(); mod8_startAutoplay(); } }); }
+
+		// Side CTA: go to Section 9
+		var nextBtn = document.getElementById('mod8-next-s9');
+		if(nextBtn){
+			on(nextBtn, 'click', function(){
+				try{ publish('slideshow/goto', ['group_intra']); }
+				catch(e){ try{ window.location.hash = '#group_intra'; }catch(_e){} }
+			});
+		}
 
         mounted = true;
         // Ensure member hats stay strategy-consistent during all renders (revertible by removing mod8-lock-hats)

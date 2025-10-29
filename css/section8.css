@@ -133,3 +133,17 @@
     outline: none;
     box-shadow: none;
 }
+
+/* Side CTA under tabs */
+.mod8-side-next{ display:flex; justify-content:center; margin-top:490px; }
+.mod8-side-next-btn{
+    font-family:FuturaHandwritten,Arial,sans-serif;
+    font-size:16px; line-height:20px;
+    padding:6px 12px;
+    color:#000; background:#fff;
+    border:2px solid #333; border-radius:6px;
+    cursor:pointer;
+    transition:transform .08s ease, background-color .08s ease;
+}
+.mod8-side-next-btn:hover{ transform: scale(1.02); background:#f7f7f7 }
+.mod8-side-next-btn:active{ transform: scale(.98) }
