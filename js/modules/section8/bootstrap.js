@@ -21,6 +21,8 @@
         try{ root.classList.add("mod8-sprite"); }catch(e){}
         // Revertible opt-in: lock member hats to strategy frames during updates
         try{ root.classList.add('mod8-lock-hats'); }catch(e){}
+        // Revertible opt-in: render all three hats per group using a single group frame
+        try{ root.classList.add('mod8-group-hats'); }catch(e){}
         root.hidden = false;
         root.innerHTML = ""+
             "<div class=\"mod8-intro\">"+
@@ -119,17 +121,16 @@
 						var gi = parseInt(m[1],10), mi = parseInt(m[2],10);
 						var groups = (window.mod8_state&&window.mod8_state.groups)||[];
 						var g = groups[gi]; if(!g||!g.members||!g.members[mi]) return;
-						var mem = g.members[mi];
 						var icon = wrap.querySelector('.mod8-member');
                     if(icon){
-                        var frame = mod8_memberFrame(mem.strategy);
+                        var frame = (root && root.classList && root.classList.contains('mod8-group-hats')) ? mod8_groupFrame(g) : mod8_memberFrame(g.members[mi].strategy);
                         var want = (-(frame*25))+'px 0px';
                         try{ icon.style.setProperty('background-position', want, 'important'); }
                         catch(e){ if(icon.style.backgroundPosition!==want){ icon.style.backgroundPosition = want; } }
                     }
 						var badge = wrap.querySelector('.mod8-member-badge');
                     if(badge){
-                        var coins = mem.coins;
+                        var coins = g.members[mi].coins;
                         if(typeof coins==='number' && isFinite(coins)){
                             var text = String(Math.round(coins));
                             if(badge.textContent!==text) badge.textContent = text;
@@ -234,6 +235,23 @@
         if(k==='PAVLOV') return 6;
         return 7; // RANDOM
     }
+    function mod8_groupFrame(g){
+        // Choose one frame for the whole group, based on majority strategy (deterministic tie-break)
+        try{
+            var counts = {};
+            for(var i=0;i<(g.members?g.members.length:0);i++){
+                var s = (g.members[i]&&g.members[i].strategy)||'';
+                counts[s] = (counts[s]||0)+1;
+            }
+            var bestS = null, bestC = -1;
+            for(var sKey in counts){ if(counts.hasOwnProperty(sKey)){
+                var c = counts[sKey];
+                if(c>bestC || (c===bestC && String(sKey)<String(bestS))){ bestS=sKey; bestC=c; }
+            }}
+            if(!bestS && g.members && g.members[0]) bestS = g.members[0].strategy;
+            return mod8_memberFrame(bestS);
+        }catch(e){ return 0; }
+    }
     function mod8_renderMembersTriangle(){
         var stage = document.getElementById('mod8-stage'); if(!stage) return;
         var groups = (window.mod8_state&&window.mod8_state.groups)||[];
@@ -246,6 +264,7 @@
             for(var z=0;z<olds.length;z++){ olds[z].parentNode && olds[z].parentNode.removeChild(olds[z]); }
             // triangle inside the 80x80 node
             var cx=40, cy=40, r=24; var angs=[-Math.PI/2, Math.PI/6, 5*Math.PI/6];
+            var gFrame = (root && root.classList && root.classList.contains('mod8-group-hats')) ? mod8_groupFrame(g) : null;
             for(var k=0;k<3;k++){
                 var m = g.members && g.members[k]; if(!m) continue;
                 var mx = cx + r*Math.cos(angs[k]) - 12;
@@ -267,7 +286,7 @@
                     // ensure icon frame reflects strategy
                     var mmIcon = wrap.querySelector('.mod8-member');
                     if(mmIcon){
-                        var frame = mod8_memberFrame(m.strategy);
+                        var frame = (gFrame!=null) ? gFrame : mod8_memberFrame(m.strategy);
                         var pos = (-(frame*25))+'px 0px';
                         // use !important to defeat move-based flips
                         try{ mmIcon.style.setProperty('background-position', pos, 'important'); }
