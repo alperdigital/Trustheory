@@ -96,8 +96,15 @@
 .mod8-warning{color:#b00020;font-weight:bold}
 @media(max-width:860px){.mod8-grid{grid-template-columns:repeat(2,1fr)}}
 
-/* Better spacing for sidebar and stage on small heights */
-@media(max-height:760px){ .mod8-stage{transform:scale(.9); transform-origin:center top} }
+/* Better spacing & vertical centering on small screens */
+@media(max-height:760px){
+  .mod8-root{min-height:calc(100vh - 60px); display:flex; align-items:center; justify-content:center}
+  .mod8-stage{transform:scale(.9); transform-origin:center center}
+}
+@media(max-width:860px){
+  .mod8-root{min-height:calc(100vh - 60px); display:flex; align-items:center; justify-content:center}
+  .mod8-layout{margin:0 auto}
+}
 
 /* Prevent touch scrolling while sliding */
 .slider_knob, .slider{touch-action:none}
