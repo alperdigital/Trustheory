@@ -1,7 +1,13 @@
 SLIDES.push({
-  id:"section9_intragroup",
-  onstart:function(self){ if(typeof S9_mount==="function"){ S9_mount(); } },
-  onend:function(self){ if(typeof S9_unmount==="function"){ S9_unmount(); } self.clear(); }
+
+	id: "group_intra",
+	onstart: function(self){
+		try{ if(window.S9_mount) S9_mount(); }catch(e){ console.error("S9 mount error", e); }
+	},
+	onend: function(self){
+		try{ if(window.S9_unmount) S9_unmount(); }catch(e){ console.error("S9 unmount error", e); }
+	}
+
 });
 
  
