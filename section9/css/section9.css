@@ -7,7 +7,10 @@
 .s9-stage-circle{position:absolute;left:50px;top:50px;width:500px;height:500px;border-radius:50%;border:3px dashed #E0E0E0;box-shadow:0 0 0 4px rgba(0,0,0,0.03) inset}
 .s9-stage-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center}
 .s9-center-buttons{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;width:340px;margin:0 auto}
-.s9-btn{font-family:FuturaHandwritten,Arial,sans-serif;font-size:14px;border:2px solid #e3e3e3;border-radius:10px;background:linear-gradient(180deg,#fff,#f6f6f6);cursor:pointer;padding:6px 6px;color:#333;box-shadow:0 2px 0 0 #d0d0d0}
+.s9-btn{font-family:FuturaHandwritten,Arial,sans-serif;font-size:18px;cursor:pointer;padding:0;color:#000;display:inline-block;width:115px;height:55px;background:url('../../assets/ui/button_short.png');background-size:100% auto;background-position:0 0;border:0;border-radius:0;box-shadow:none;transition:transform .1s ease}
+.s9-btn:hover{transform:scale(1.02);background-position:0 -125px}
+.s9-btn:active{transform:scale(.95)}
+.s9-btn:disabled{opacity:.55;cursor:not-allowed;background-position:0 -250px;transform:none}
 .s9-center-info{margin-top:6px}
 .s9-sb{position: relative; background: none; width:520px; min-height: 200px; margin:8px auto 0 auto; user-select:none; padding:0}
 .s9-sb .s9-page{ position:relative; left:auto; top:auto; width:auto; min-height:auto; z-index:1 }

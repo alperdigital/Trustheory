@@ -76,6 +76,8 @@
         });
         on(document.getElementById("mod8-stop"), "click", function(){ mod8_stopAutoplay(); });
         on(document.getElementById("mod8-reset"), "click", function(){ mod8_stopAutoplay(); mod8_initState(); mod8_renderUI(); });
+        // Button click sound like core buttons
+        ["mod8-start","mod8-step","mod8-stop","mod8-reset"].forEach(function(id){ var el=document.getElementById(id); if(!el) return; el.addEventListener('click', function(){ try{ var num=Math.ceil(Math.random()*3); if(window.Loader&&Loader.sounds&&Loader.sounds["button"+num]) Loader.sounds["button"+num].play(); }catch(e){} }); });
         var speedEl = document.getElementById("mod8-speed");
         if(speedEl){ on(speedEl, "input", function(e){ speedMs = parseInt(e.target.value,10)||1000; if(autoplayTimer){ mod8_stopAutoplay(); mod8_startAutoplay(); } }); }
 

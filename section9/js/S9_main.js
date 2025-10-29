@@ -31,10 +31,11 @@
       '</div>';
     try{ S9_initState(); S9_buildUI(); S9_render(); }catch(e){ console.error('S9 init error',e); root.innerHTML='<div style="padding:20px">9. bölüm yüklenemedi.</div>'; }
     var b;
-    b=document.getElementById('s9-start'); if(b) on(b,'click',function(){ S9_start(); });
-    b=document.getElementById('s9-stop'); if(b) on(b,'click',function(){ S9_stop(); });
-    b=document.getElementById('s9-step'); if(b) on(b,'click',function(){ S9_stepOnce(); });
-    b=document.getElementById('s9-reset'); if(b) on(b,'click',function(){ S9_stop(); S9_initState(S9_newSeed()); S9_buildUI(); S9_render(); });
+    function s9PlayClick(){ try{ var num=Math.ceil(Math.random()*3); if(window.Loader&&Loader.sounds&&Loader.sounds["button"+num]) Loader.sounds["button"+num].play(); }catch(e){} }
+    b=document.getElementById('s9-start'); if(b) on(b,'click',function(){ s9PlayClick(); S9_start(); });
+    b=document.getElementById('s9-stop'); if(b) on(b,'click',function(){ s9PlayClick(); S9_stop(); });
+    b=document.getElementById('s9-step'); if(b) on(b,'click',function(){ s9PlayClick(); S9_stepOnce(); });
+    b=document.getElementById('s9-reset'); if(b) on(b,'click',function(){ s9PlayClick(); S9_stop(); S9_initState(S9_newSeed()); S9_buildUI(); S9_render(); });
     mounted=true;
   };
   window.S9_unmount=function(){ if(!mounted) return; try{ S9_stop(); }catch(e){} offAll(); var root=document.getElementById('s9-root'); if(root){ root.innerHTML=''; root.hidden=true; } mounted=false; };
