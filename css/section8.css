@@ -135,6 +135,10 @@
     box-shadow: none;
 }
 
+/* Fine vertical offsets for center control buttons */
+#mod8-start, #mod8-step{ margin-top:15px }
+#mod8-stop, #mod8-reset{ margin-top:-15px }
+
 /* Side CTA under tabs */
 .mod8-side-next{ display:flex; justify-content:center; margin-top:12px; }
 .mod8-side-next-btn{
