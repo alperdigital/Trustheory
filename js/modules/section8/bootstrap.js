@@ -59,26 +59,27 @@
         window.mod8_state = window.mod8_state || {};
         mod8_initState();
         mod8_renderUI();
+        try{ mod8_buildEvolution(); mod8_renderEvolution(); }catch(e){}
         mod8_initTabs();
         mod8_buildDistributionControls();
         mod8_buildPayoffsControls();
         mod8_buildRulesControls();
 
         // Events
-        on(document.getElementById("mod8-start"), "click", function(){ mod8_startAutoplay(); });
+        on(document.getElementById("mod8-start"), "click", function(){ mod8_startAutoplay(); try{ mod8_renderEvolution(); }catch(e){} });
         on(document.getElementById("mod8-step"), "click", function(){
             // Run stepwise over 3 phases: 0->1->2->reset
             var p = (window.mod8_state.phase||0);
             if(p===0){
-                window.mod8_state = mod8_stepPlay(window.mod8_state); mod8_renderUI();
+                window.mod8_state = mod8_stepPlay(window.mod8_state); mod8_renderUI(); try{ mod8_renderEvolution(); }catch(e){}
             }else if(p===1){
-                window.mod8_state = mod8_stepEliminate(window.mod8_state); mod8_renderUI();
+                window.mod8_state = mod8_stepEliminate(window.mod8_state); mod8_renderUI(); try{ mod8_renderEvolution(); }catch(e){}
             }else{
-                window.mod8_state = mod8_stepReplicateReset(window.mod8_state); mod8_renderUI();
+                window.mod8_state = mod8_stepReplicateReset(window.mod8_state); mod8_renderUI(); try{ mod8_renderEvolution(); }catch(e){}
             }
         });
-        on(document.getElementById("mod8-stop"), "click", function(){ mod8_stopAutoplay(); });
-        on(document.getElementById("mod8-reset"), "click", function(){ mod8_stopAutoplay(); mod8_initState(); mod8_renderUI(); });
+        on(document.getElementById("mod8-stop"), "click", function(){ mod8_stopAutoplay(); try{ mod8_renderEvolution(); }catch(e){} });
+        on(document.getElementById("mod8-reset"), "click", function(){ mod8_stopAutoplay(); mod8_initState(); mod8_renderUI(); try{ mod8_renderEvolution(); }catch(e){} });
         var speedEl = document.getElementById("mod8-speed");
         if(speedEl){ on(speedEl, "input", function(e){ speedMs = parseInt(e.target.value,10)||1000; if(autoplayTimer){ mod8_stopAutoplay(); mod8_startAutoplay(); } }); }
 
@@ -116,6 +117,29 @@
     document.addEventListener("keydown", function(e){ if(e.key==="8" && (e.metaKey||e.ctrlKey)){ mod8_mount(); } });
     var navBtn = document.getElementById("mod8-nav-link");
     if(navBtn){ navBtn.addEventListener('click', function(){ if(!mounted) mod8_mount(); }); }
+
+    // Evolution bar build & render
+    function mod8_buildEvolution(){
+        var bar = document.getElementById('mod8-evolution'); if(!bar) return;
+        if(bar.getAttribute('data-built')==='yes') return;
+        bar.innerHTML = ''+
+            '<div class="mod8-evolution-title">Evrim Süreci</div>'+
+            '<div class="mod8-evolution-track">'+
+              '<div class="mod8-evolution-fill"></div>'+
+              '<div class="mod8-evolution-flag"><span class="mod8-flag-label"></span></div>'+
+            '</div>';
+        bar.setAttribute('data-built','yes');
+    }
+    function mod8_renderEvolution(){
+        var bar = document.getElementById('mod8-evolution'); if(!bar) return;
+        var s = window.mod8_state || {};
+        var gen = Math.max(0, parseInt(s.gen||0,10));
+        var max = parseInt(s.maxGen||15,10); if(!max||max<1) max=15; if(gen>max) gen=max;
+        var pct = (gen/max)*100;
+        var fill = bar.querySelector('.mod8-evolution-fill'); if(fill){ fill.style.width = pct+'%'; }
+        var flag = bar.querySelector('.mod8-evolution-flag'); if(flag){ flag.style.left = pct+'%'; }
+        var lbl = bar.querySelector('.mod8-flag-label'); if(lbl){ lbl.textContent = 'Jenerasyon '+gen+' / '+max; }
+    }
 
 })();
  
