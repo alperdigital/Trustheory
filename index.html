@@ -57,6 +57,7 @@ Many thanks again!
 	<!-- Styles -->
 	<link rel="stylesheet" href="css/slides.css?v11">
 	<link rel="stylesheet" href="css/balloon.css?v11">
+	<link rel="stylesheet" href="section9/css/section9.css">
 
 </head>
 <body>
@@ -66,7 +67,7 @@ Many thanks again!
 			<div id="slideshow"></div>
 			<div id="scratcher"></div>
 		</div>
-		<section id="mod8-root" class="mod8-root" hidden></section>
+		<div id="s9-root" hidden></div>
 	</div>
 	<div style="display:none" id="footer">
 		<div id="sound" sound="on" class="no-select">
@@ -75,13 +76,12 @@ Many thanks again!
 			<div id="sound_off">KAPALI</div> <!-- TRANSLATE THIS -->
 		</div>
 		<div id="select"></div>
-		<button id="mod8-nav-link" aria-label="8. Bölüm – Grup Evrimi">8. Bölüm – Grup Evrimi</button>
 
 		<!-- TRANSLATE "title" & "text". Make sure it's less than 112 characters, for Twitter's sake -->
 		<!-- Also, change "link" to whatever the link for the translated version will be! -->
 		<sharing title="Güven Teorisi"
 				 text="Güvene bakış açınızı değiştirecek bir düşünce deneyi"
-				 link="https://github.com/alperdigital/trusttheory"></sharing>
+				 link="https://github.com/alperdigital/trust"></sharing>
 
 	</div>
 </body>
@@ -120,8 +120,6 @@ Many thanks again!
 <script src="js/sims/Iterated.js?v11"></script>
 <script src="js/sims/Tournament.js?v11"></script>
 <script src="js/sims/SandboxUI.js?v11"></script>
-<link rel="stylesheet" href="css/section8.css?v11">
-
 
 <!-- Slides -->
 <script src="js/slides/0_Slides_Intro.js?v11"></script>
@@ -132,19 +130,25 @@ Many thanks again!
 <script src="js/slides/5_Slides_Distrust.js?v11"></script>
 <script src="js/slides/6_Slides_Noise.js?v11"></script>
 <script src="js/slides/7_Slides_Sandbox.js?v11"></script>
-<script src="js/slides/8_Slides_UnderConstruction.js?v11"></script>
+<!-- Section 9 (Group Intra Evolution) dependencies -->
+<script src="section9/js/S9_main.js"></script>
+<script src="section9/js/S9_model.js"></script>
+<script src="section9/js/S9_strategies.js"></script>
+<script src="section9/js/S9_ui.js"></script>
+<script src="section9/js/S9_payoffs_ui.js"></script>
+
+<!-- Slides -->
+<script src="js/slides/0_Slides_Intro.js?v11"></script>
+<script src="js/slides/1_Slides_OneOff.js?v11"></script>
+<script src="js/slides/2_Slides_Iterated.js?v11"></script>
+<script src="js/slides/3_Slides_Tournament.js?v11"></script>
+<script src="js/slides/4_Slides_Evolution.js?v11"></script>
+<script src="js/slides/5_Slides_Distrust.js?v11"></script>
+<script src="js/slides/6_Slides_Noise.js?v11"></script>
+<script src="js/slides/7_Slides_Sandbox.js?v11"></script>
+<script src="js/slides/9_Slides_GroupIntra.js"></script>
 <script src="js/slides/9_Slides_Conclusion.js?v11"></script>
 <script src="js/slides/10_Slides_Credits.js?v11"></script>
-
-<!-- Section 8 (isolated) -->
-<script src="js/modules/section8/state.js?v11"></script>
-<script src="js/modules/section8/strategies.js?v11"></script>
-<script src="js/modules/section8/payoffs.js?v11"></script>
-<script src="js/modules/section8/simulation.js?v11"></script>
-<script src="js/modules/section8/ui.js?v11"></script>
-<script src="js/modules/section8/lib/payoffs_ui.js?v11"></script>
-<script src="js/modules/section8/lib/population_slider.js?v11"></script>
-<script src="js/modules/section8/bootstrap.js?v11"></script>
 
 <!-- Main Code -->
 <script src="js/main.js?v11"></script>
