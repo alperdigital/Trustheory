@@ -156,10 +156,10 @@
     }
     function mod8_renderMembersTriangle(){
         var stage = document.getElementById('mod8-stage'); if(!stage) return;
-        var nodes = stage.querySelectorAll('.mod8-group-node');
         var groups = (window.mod8_state&&window.mod8_state.groups)||[];
-        for(var i=0;i<nodes.length && i<groups.length;i++){
-            var node = nodes[i]; var g = groups[i]; if(!g) continue;
+        for(var i=0;i<groups.length;i++){
+            var node = document.getElementById('mod8-group-node-'+i) || document.getElementById('mod8-gn-'+i) || null; if(!node) continue;
+            var g = groups[i]; if(!g) continue;
             // hide big icon & remove any previously injected inner nodes
             var ic = node.querySelector('.mod8-group-icon'); if(ic){ ic.style.display='none'; }
             var olds = node.querySelectorAll('.mod8-node-member, .mod8-node-score');
@@ -178,6 +178,7 @@
                     wrap.style.position = 'absolute';
                     wrap.style.left = mx+'px';
                     wrap.style.top = my+'px';
+                    wrap.style.transform = '';
                     wrap.style.zIndex = 2;
                     if(wrap.parentNode!==node){ node.appendChild(wrap); }
                     // ensure icon frame reflects strategy
