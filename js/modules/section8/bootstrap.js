@@ -160,23 +160,33 @@
         var groups = (window.mod8_state&&window.mod8_state.groups)||[];
         for(var i=0;i<nodes.length && i<groups.length;i++){
             var node = nodes[i]; var g = groups[i]; if(!g) continue;
-            // remove or hide big icon
+            // hide big icon & remove any previously injected inner nodes
             var ic = node.querySelector('.mod8-group-icon'); if(ic){ ic.style.display='none'; }
-            // cleanup previous members
             var olds = node.querySelectorAll('.mod8-node-member, .mod8-node-score');
             for(var z=0;z<olds.length;z++){ olds[z].parentNode && olds[z].parentNode.removeChild(olds[z]); }
-            // geometry
+            // triangle inside the 80x80 node
             var cx=40, cy=40, r=24; var angs=[-Math.PI/2, Math.PI/6, 5*Math.PI/6];
             for(var k=0;k<3;k++){
                 var m = g.members && g.members[k]; if(!m) continue;
                 var mx = cx + r*Math.cos(angs[k]) - 12;
                 var my = cy + r*Math.sin(angs[k]) - 12;
-                var el = document.createElement('div'); el.className='mod8-node-member'; el.style.left=mx+'px'; el.style.top=my+'px';
-                var frame = mod8_memberFrame(m.strategy); el.style.backgroundPosition = (-(frame*25))+'px 0px';
-                node.appendChild(el);
-                var sc = document.createElement('div'); sc.className='mod8-node-score'; sc.textContent = String(Math.round(m.coins||0));
-                sc.style.left = (mx+12)+'px'; sc.style.top = (my+26)+'px';
-                node.appendChild(sc);
+                // find existing outer wrap and move it inside the node
+                var wrapId = 'mod8-member-'+i+'-'+k;
+                var wrap = document.getElementById(wrapId);
+                if(wrap){
+                    // ensure absolute positioning inside node
+                    wrap.style.position = 'absolute';
+                    wrap.style.left = mx+'px';
+                    wrap.style.top = my+'px';
+                    wrap.style.zIndex = 2;
+                    if(wrap.parentNode!==node){ node.appendChild(wrap); }
+                    // ensure icon frame reflects strategy
+                    var mmIcon = wrap.querySelector('.mod8-member');
+                    if(mmIcon){ var frame = mod8_memberFrame(m.strategy); mmIcon.style.backgroundPosition = (-(frame*25))+'px 0px'; }
+                    // ensure badge shows current coins
+                    var badge = wrap.querySelector('.mod8-member-badge');
+                    if(badge){ badge.textContent = String(Math.round(m.coins||0)); }
+                }
             }
         }
     }
