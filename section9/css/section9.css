@@ -52,7 +52,7 @@
 /* (Reverted) Remove sprite-based override: use base button styling above */
 
 /* Center CTA like Section 8 */
-.s9-center-next{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%) translate(525px,250px); display:flex; justify-content:center; z-index:5 }
+.s9-center-next{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%) translate(525px,210px); display:flex; justify-content:center; z-index:5 }
 .s9-next-btn{ width:400px; height:125px; font-size:24px; color:#000; display:flex; align-items:center; justify-content:center; text-align:center; white-space:nowrap; border:0; border-radius:0; padding:0; background-image:url('/assets/ui/button_long.png'); background-repeat:no-repeat; background-size:100% auto; background-position:0 0; box-shadow:none; transition:transform .1s ease; -webkit-appearance:none; -moz-appearance:none; appearance:none }
 .s9-next-btn:hover{ transform:scale(1.02); background-position:0 -125px }
 .s9-next-btn:active{ transform:scale(.95) }

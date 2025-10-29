@@ -21,7 +21,7 @@
               '</div>'+
               '<div class="s9-center-info"><span id="s9-status"></span></div>'+
               '<div class="s9-center-next">'+
-                '<button id="s9-next-s9" class="s9-next-btn" aria-label="ya rastgele gruplar?">ya rastgele gruplar?</button>'+
+                '<button id="s9-next-s9" class="s9-next-btn" aria-label="sonuç olarak ...">sonuç olarak ...</button>'+
               '</div>'+
             '</div>'+
           '</div>'+
