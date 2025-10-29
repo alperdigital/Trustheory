@@ -5,6 +5,7 @@
     var mounted = false;
     var autoplayTimer = null;
     var speedMs = 100; // start fastest by default
+	var hatsObserver = null;
 
     // Simple pub/sub inside module scope
     var listeners = [];
@@ -107,6 +108,51 @@
                 };
                 window.mod8_renderUI._mod8Wrapped = true;
             }
+			// As a final guard, observe DOM mutations and re-assert frames/badges if something flips them
+			if(root.classList.contains('mod8-lock-hats') && !hatsObserver){
+				var stage = document.getElementById('mod8-stage');
+				if(stage){
+					var reassert = function(wrap){
+						if(!wrap || !wrap.id) return;
+						var m = wrap.id.match(/^mod8-member-(\d+)-(\d+)$/);
+						if(!m) return;
+						var gi = parseInt(m[1],10), mi = parseInt(m[2],10);
+						var groups = (window.mod8_state&&window.mod8_state.groups)||[];
+						var g = groups[gi]; if(!g||!g.members||!g.members[mi]) return;
+						var mem = g.members[mi];
+						var icon = wrap.querySelector('.mod8-member');
+						if(icon){ var frame = mod8_memberFrame(mem.strategy); var want = (-(frame*25))+'px 0px'; if(icon.style.backgroundPosition!==want){ icon.style.backgroundPosition = want; } }
+						var badge = wrap.querySelector('.mod8-member-badge');
+						if(badge){
+							var coins = mem.coins; if(typeof coins==='number' && !isNaN(coins)){
+								var text = String(Math.round(coins));
+								if(badge.textContent!==text) badge.textContent = text;
+							}
+						}
+					};
+					hatsObserver = new MutationObserver(function(muts){
+						for(var i=0;i<muts.length;i++){
+							var mu = muts[i];
+							if(mu.type==='attributes' && mu.target && mu.target.classList && mu.target.classList.contains('mod8-member')){
+								var wrap = mu.target.closest('.mod8-member-wrap');
+								reassert(wrap);
+							}else{
+								if(mu.addedNodes){
+									for(var j=0;j<mu.addedNodes.length;j++){
+										var n = mu.addedNodes[j];
+										if(n.nodeType===1){
+											if(n.classList && n.classList.contains('mod8-member-wrap')) reassert(n);
+											var maybeWraps = n.querySelectorAll && n.querySelectorAll('.mod8-member-wrap');
+											if(maybeWraps){ for(var k=0;k<maybeWraps.length;k++) reassert(maybeWraps[k]); }
+										}
+									}
+								}
+							}
+						}
+					});
+					hatsObserver.observe(stage, { subtree:true, childList:true, attributes:true, attributeFilter:['style','class'] });
+				}
+			}
         }catch(e){}
         // Sync sliders to current state on mount
         try{
@@ -120,6 +166,7 @@
         if(!mounted) return;
         mod8_stopAutoplay();
         offAll();
+		try{ if(hatsObserver){ hatsObserver.disconnect(); hatsObserver=null; } }catch(e){}
         root.innerHTML = "";
         root.hidden = true;
         mounted = false;
