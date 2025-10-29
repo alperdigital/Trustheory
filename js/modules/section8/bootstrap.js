@@ -112,7 +112,7 @@
 			if(root.classList.contains('mod8-lock-hats') && !hatsObserver){
 				var stage = document.getElementById('mod8-stage');
 				if(stage){
-					var reassert = function(wrap){
+                var reassert = function(wrap){
 						if(!wrap || !wrap.id) return;
 						var m = wrap.id.match(/^mod8-member-(\d+)-(\d+)$/);
 						if(!m) return;
@@ -121,14 +121,24 @@
 						var g = groups[gi]; if(!g||!g.members||!g.members[mi]) return;
 						var mem = g.members[mi];
 						var icon = wrap.querySelector('.mod8-member');
-						if(icon){ var frame = mod8_memberFrame(mem.strategy); var want = (-(frame*25))+'px 0px'; if(icon.style.backgroundPosition!==want){ icon.style.backgroundPosition = want; } }
+                    if(icon){
+                        var frame = mod8_memberFrame(mem.strategy);
+                        var want = (-(frame*25))+'px 0px';
+                        try{ icon.style.setProperty('background-position', want, 'important'); }
+                        catch(e){ if(icon.style.backgroundPosition!==want){ icon.style.backgroundPosition = want; } }
+                    }
 						var badge = wrap.querySelector('.mod8-member-badge');
-						if(badge){
-							var coins = mem.coins; if(typeof coins==='number' && !isNaN(coins)){
-								var text = String(Math.round(coins));
-								if(badge.textContent!==text) badge.textContent = text;
-							}
-						}
+                    if(badge){
+                        var coins = mem.coins;
+                        if(typeof coins==='number' && isFinite(coins)){
+                            var text = String(Math.round(coins));
+                            if(badge.textContent!==text) badge.textContent = text;
+                            wrap.setAttribute('data-last-coins', text);
+                        }else{
+                            var last = wrap.getAttribute('data-last-coins');
+                            if(last!=null && badge.textContent!==last) badge.textContent = last;
+                        }
+                    }
 					};
 					hatsObserver = new MutationObserver(function(muts){
 						for(var i=0;i<muts.length;i++){
@@ -250,13 +260,32 @@
                     wrap.style.top = my+'px';
                     wrap.style.transform = '';
                     wrap.style.zIndex = 2;
+                    // cache indices for quick re-assert
+                    wrap.setAttribute('data-gi', i);
+                    wrap.setAttribute('data-mi', k);
                     if(wrap.parentNode!==node){ node.appendChild(wrap); }
                     // ensure icon frame reflects strategy
                     var mmIcon = wrap.querySelector('.mod8-member');
-                    if(mmIcon){ var frame = mod8_memberFrame(m.strategy); mmIcon.style.backgroundPosition = (-(frame*25))+'px 0px'; }
+                    if(mmIcon){
+                        var frame = mod8_memberFrame(m.strategy);
+                        var pos = (-(frame*25))+'px 0px';
+                        // use !important to defeat move-based flips
+                        try{ mmIcon.style.setProperty('background-position', pos, 'important'); }
+                        catch(e){ mmIcon.style.backgroundPosition = pos; }
+                    }
                     // ensure badge shows current coins
                     var badge = wrap.querySelector('.mod8-member-badge');
-                    if(badge){ badge.textContent = String(Math.round(m.coins||0)); }
+                    if(badge){
+                        var coins = m.coins;
+                        if(typeof coins==='number' && isFinite(coins)){
+                            var t = String(Math.round(coins));
+                            badge.textContent = t;
+                            wrap.setAttribute('data-last-coins', t);
+                        }else{
+                            var last = wrap.getAttribute('data-last-coins');
+                            if(last!=null) badge.textContent = last;
+                        }
+                    }
                 }
             }
         }
