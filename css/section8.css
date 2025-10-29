@@ -169,7 +169,7 @@
 /* Center-next placement (visible in stage center) */
 .mod8-center-next{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%) translate(500px,280px); display:flex; justify-content:center }
 .mod8-root.mod8-sprite .mod8-center-next .mod8-side-next-btn{
-    width:150px; height:125px;
+    width:260px; height:125px;
     font-size:24px; color:#000;
     display:flex; align-items:center; justify-content:center;
     text-align:center; white-space:nowrap;
