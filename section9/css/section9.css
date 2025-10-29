@@ -43,7 +43,7 @@
 @keyframes s9-wobble{ 0%{ transform: translateX(0) rotate(-0.4deg) } 100%{ transform: translateX(0) rotate(0.4deg) } }
 
 /* S9 buttons styled like core "OYNA" (short) button */
-.s9-btn{width:150px;height:125px;font-size:24px;color:#000;display:flex;align-items:center;justify-content:center;text-align:center;white-space:nowrap;border:0;border-radius:0;background-image:url('/assets/ui/button_short.png');background-repeat:no-repeat;background-size:100% auto;background-position:0 0;box-shadow:none;transition:transform .1s ease;-webkit-appearance:none;-moz-appearance:none;appearance:none}
+.s9-btn{width:150px;height:125px;font-size:24px;color:#000;display:flex;align-items:center;justify-content:center;text-align:center;white-space:nowrap;border:0;border-radius:0;background:none;background-image:url('../../assets/ui/button_short.png');background-repeat:no-repeat;background-size:100% auto;background-position:0 0;box-shadow:none;transition:transform .1s ease;-webkit-appearance:none;-moz-appearance:none;appearance:none}
 .s9-btn:hover{transform:scale(1.02);background-position:0 -125px}
 .s9-btn:active{transform:scale(.95)}
 .s9-btn:disabled{opacity:.55;cursor:not-allowed;background-position:0 -250px;transform:none}
@@ -62,7 +62,7 @@
 }
 /* Center CTA like Section 8 */
 .s9-center-next{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%) translate(525px,210px); display:flex; justify-content:center; z-index:5 }
-.s9-next-btn{ width:400px; height:125px; font-size:24px; color:#000; display:flex; align-items:center; justify-content:center; text-align:center; white-space:nowrap; border:0; border-radius:0; padding:0; background-image:url('/assets/ui/button_long.png'); background-repeat:no-repeat; background-size:100% auto; background-position:0 0; background-color:transparent; box-shadow:none; transition:transform .1s ease; -webkit-appearance:none; -moz-appearance:none; appearance:none; -webkit-tap-highlight-color: transparent }
+.s9-next-btn{ width:400px; height:125px; font-size:24px; color:#000; display:flex; align-items:center; justify-content:center; text-align:center; white-space:nowrap; border:0; border-radius:0; padding:0; background:none; background-image:url('../../assets/ui/button_long.png'); background-repeat:no-repeat; background-size:100% auto; background-position:0 0; background-color:transparent; box-shadow:none; transition:transform .1s ease; -webkit-appearance:none; -moz-appearance:none; appearance:none; -webkit-tap-highlight-color: transparent }
 .s9-next-btn:hover{ transform:scale(1.02); background-position:0 -125px }
 .s9-next-btn:active{ transform:scale(.95); background-position:0 -125px }
 .s9-next-btn:focus,.s9-next-btn:focus-visible{ outline:none; box-shadow:none }
