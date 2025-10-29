@@ -41,10 +41,13 @@
                     "<button id=\"mod8-stop\" class=\"mod8-ctrl-btn\" aria-label=\"Dur\">DUR</button>"+
                     "<button id=\"mod8-reset\" class=\"mod8-ctrl-btn\" aria-label=\"Sıfırla\">SIFIRLA</button>"+
                     "</div>"+
-                       "<div class=\"mod8-center-info\">"+
+                   "<div class=\"mod8-center-info\">"+
                           "<span id=\"mod8-total-warning\" class=\"mod8-warning\"></span>"+
                           "<span id=\"mod8-status\"></span>"+
                        "</div>"+
+                   "<div class=\"mod8-center-next\">"+
+                      "<button id=\"mod8-next-s9\" class=\"mod8-side-next-btn\" aria-label=\"ya rastgele gruplar?\">ya rastgele gruplar?</button>"+
+                   "</div>"+
                     "</div>"+
                  "</div>"+
               "</div>"+
@@ -56,11 +59,8 @@
                    "<div class=\"mod8-sandbox_page\" id=\"mod8-page-pop\"></div>"+
                    "<div class=\"mod8-sandbox_page\" id=\"mod8-page-pay\" hidden></div>"+
                    "<div class=\"mod8-sandbox_page\" id=\"mod8-page-rules\" hidden></div>"+
-                 "</div>"+
-			     "<div class=\"mod8-side-next\">"+
-			       "<button id=\"mod8-next-s9\" class=\"mod8-side-next-btn\" aria-label=\"ya rastgele gruplar?\">ya rastgele gruplar?</button>"+
-			     "</div>"+
-              "</div>"+
+                  "</div>"+
+               "</div>"+
             "</div>";
 
         // Initialize state/UI

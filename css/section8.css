@@ -166,6 +166,24 @@
 .mod8-root.mod8-sprite .mod8-side-next .mod8-side-next-btn:focus,
 .mod8-root.mod8-sprite .mod8-side-next .mod8-side-next-btn:focus-visible{ outline:none; box-shadow:none }
 
+/* Center-next placement (visible in stage center) */
+.mod8-center-next{ display:flex; justify-content:center; margin-top:8px }
+.mod8-root.mod8-sprite .mod8-center-next .mod8-side-next-btn{
+    width:150px; height:125px;
+    font-size:24px; color:#000;
+    display:flex; align-items:center; justify-content:center;
+    text-align:center; white-space:nowrap;
+    border:0; border-radius:0; padding:0;
+    background-image:url('../assets/ui/button_short.png');
+    background-repeat:no-repeat; background-size:100% auto; background-position:0 0;
+    box-shadow:none; transition:transform .1s ease;
+    -webkit-appearance:none; -moz-appearance:none; appearance:none;
+}
+.mod8-root.mod8-sprite .mod8-center-next .mod8-side-next-btn:hover{ transform:scale(1.02); background-position:0 -125px }
+.mod8-root.mod8-sprite .mod8-center-next .mod8-side-next-btn:active{ transform:scale(.95) }
+.mod8-root.mod8-sprite .mod8-center-next .mod8-side-next-btn:focus,
+.mod8-root.mod8-sprite .mod8-center-next .mod8-side-next-btn:focus-visible{ outline:none; box-shadow:none }
+
 /* Side CTA under tabs */
 .mod8-side-next{ display:flex; justify-content:center; margin-top:490px; }
 .mod8-side-next-btn{
