@@ -85,3 +85,19 @@
 .mod8-toggle[data-mode="group"] .mod8-toggle-option[data-key="group"],
 .mod8-toggle[data-mode="individual"] .mod8-toggle-option[data-key="individual"]{color:#4089DD;font-weight:bold}
  
+/* === Sprite-style center buttons (revertable) === */
+/* To revert: remove 'mod8-sprite' class on .mod8-root or delete this block. */
+.mod8-root.mod8-sprite .mod8-center-buttons .mod8-ctrl-btn{
+    width:150px; height:125px;
+    font-size:24px; color:#000;
+    display:flex; align-items:center; justify-content:center;
+    text-align:center; white-space:nowrap;
+    border:0; border-radius:0; padding:0;
+    background-image:url('../assets/ui/button_short.png');
+    background-repeat:no-repeat; background-size:100% auto; background-position:0 0;
+    box-shadow:none; transition:transform .1s ease;
+    -webkit-appearance:none; -moz-appearance:none; appearance:none;
+}
+.mod8-root.mod8-sprite .mod8-center-buttons .mod8-ctrl-btn:hover{ transform:scale(1.02); background-position:0 -125px }
+.mod8-root.mod8-sprite .mod8-center-buttons .mod8-ctrl-btn:active{ transform:scale(.95) }
+.mod8-root.mod8-sprite .mod8-center-buttons .mod8-ctrl-btn:disabled{ opacity:.55; cursor:not-allowed; background-position:0 -250px; transform:none }

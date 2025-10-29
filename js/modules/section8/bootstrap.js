@@ -16,6 +16,8 @@
         if(mounted) return;
         root = document.getElementById("mod8-root");
         if(!root){ console.error("mod8-root not found"); return; }
+        // Opt-in sprite buttons (revertable via CSS or by removing this class)
+        try{ root.classList.add("mod8-sprite"); }catch(e){}
         root.hidden = false;
         root.innerHTML = ""+
             "<div class=\"mod8-intro\">"+
