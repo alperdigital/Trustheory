@@ -44,10 +44,11 @@
 .mod8-group-node .mod8-group-score{position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);font-weight:bold;font-size:14px}
 .mod8-group-node .mod8-group-score.above{bottom:auto; top:-18px}
 .mod8-group-node .mod8-node-member{position:absolute;width:25px;height:25px;background:url('../assets/ui/sandbox_hats.png');background-size:auto 100%}
-.mod8-group-node .mod8-node-score{position:absolute;font-size:11px;line-height:14px;background:#fff;border:1px solid #ccc;border-radius:10px;padding:0 4px;z-index:3}
+
+.mod8-group-node .mod8-node-score{position:absolute;font-size:11px;line-height:14px;background:#fff;border:1px solid #ccc;border-radius:10px;padding:0 4px;transform:translate(-50%,-50%);}
 
 /* Hide outer member hats/badges once inner ones are used */
-.mod8-stage .mod8-member-wrap, .mod8-stage .mod8-member, .mod8-stage .mod8-member-badge{ display:none !important }
+/* (reverted) keep outer members visible for now */
 .mod8-member-cloud{position:absolute}
 .mod8-member-wrap{position:absolute}
 .mod8-member{width:25px;height:25px;background:url('../assets/ui/sandbox_hats.png');background-size:auto 100%}
