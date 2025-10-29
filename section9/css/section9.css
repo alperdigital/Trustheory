@@ -1,6 +1,9 @@
 .s9-root{position:relative;display:block;padding:12px;font-family:FuturaHandwritten,Arial,sans-serif}
 .s9-layout{display:grid;grid-template-columns:600px 520px;gap:16px;justify-content:center}
 .s9-stage{position:relative;width:600px;height:600px;margin:0 auto}
+.s9-intro{max-width:1120px;margin:0 auto 8px auto;padding:6px 10px 8px 10px;text-align:center}
+.s9-intro-title{font-size:20px;font-weight:bold;margin-bottom:4px}
+.s9-intro-desc{font-size:14px;color:#444}
 .s9-stage-circle{position:absolute;left:50px;top:50px;width:500px;height:500px;border-radius:50%;border:3px dashed #E0E0E0;box-shadow:0 0 0 4px rgba(0,0,0,0.03) inset}
 .s9-stage-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center}
 .s9-center-buttons{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;width:340px;margin:0 auto}

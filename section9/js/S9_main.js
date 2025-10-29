@@ -4,6 +4,10 @@
   function offAll(){ for(var i=0;i<listeners.length;i++){ var l=listeners[i]; try{ l[0].removeEventListener(l[1],l[2]); }catch(e){} } listeners=[]; }
   window.S9_mount=function(){ if(mounted) return; var root=document.getElementById('s9-root'); if(!root){ console.error('s9-root yok'); return; } root.hidden=false; var slideHost=document.getElementById('slideshow_container'); if(slideHost){ slideHost.style.display='none'; }
     root.innerHTML=''+
+      '<div class="s9-intro">'+
+        '<div class="s9-intro-title">9. Bölüm – Grup içi evrim</div>'+
+        '<div class="s9-intro-desc">20 grup ve her grupta 5 birey ile, güven oyununu hem gruplar <i>arasında</i> hem de grupların <i>içinde</i> evrimleştiriyoruz. Her jenerasyon sonunda en düşük puanlı gruplar elenir ve en yüksek puanlı gruplar kopyalanır; ayrıca her grupta en yüksek puanlı bireyin stratejisi, en düşük puanlı bireye aktarılır. Gürültü (hata payı), ödül tablosu ve karar verme modu (Grup | Bireysel) üzerinde oynayarak dinamikleri keşfedin.</div>'+
+      '</div>'+
       '<div class="s9-layout">'+
         '<div class="s9-stage-col">'+
           '<div id="s9-stage" class="s9-stage">'+
