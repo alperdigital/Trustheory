@@ -2,7 +2,7 @@
   window.S9 = window.S9 || {};
   var mounted=false; var listeners=[]; function on(el,ev,fn){ el.addEventListener(ev,fn); listeners.push([el,ev,fn]); }
   function offAll(){ for(var i=0;i<listeners.length;i++){ var l=listeners[i]; try{ l[0].removeEventListener(l[1],l[2]); }catch(e){} } listeners=[]; }
-  window.S9_mount=function(){ if(mounted) return; var root=document.getElementById('s9-root'); if(!root){ console.error('s9-root yok'); return; } root.hidden=false; var slideHost=document.getElementById('slideshow_container'); if(slideHost){ slideHost.style.display='none'; }
+  window.S9_mount=function(){ if(mounted) return; var root=document.getElementById('s9-root'); if(!root){ console.error('s9-root yok'); return; } root.hidden=false;
     root.innerHTML=''+
       '<div class="s9-intro">'+
         '<div class="s9-intro-title">9. Bölüm – Grup içi evrim</div>'+
@@ -37,7 +37,7 @@
     b=document.getElementById('s9-reset'); if(b) on(b,'click',function(){ S9_stop(); S9_initState(S9_newSeed()); S9_buildUI(); S9_render(); });
     mounted=true;
   };
-  window.S9_unmount=function(){ if(!mounted) return; try{ S9_stop(); }catch(e){} offAll(); var root=document.getElementById('s9-root'); if(root){ root.innerHTML=''; root.hidden=true; } var slideHost=document.getElementById('slideshow_container'); if(slideHost){ slideHost.style.display='block'; } mounted=false; };
+  window.S9_unmount=function(){ if(!mounted) return; try{ S9_stop(); }catch(e){} offAll(); var root=document.getElementById('s9-root'); if(root){ root.innerHTML=''; root.hidden=true; } mounted=false; };
 })();
 
 

@@ -17,7 +17,6 @@
         root = document.getElementById("mod8-root");
         if(!root){ console.error("mod8-root not found"); return; }
         root.hidden = false;
-        var slideHost = document.getElementById("slideshow_container"); if(slideHost){ slideHost.style.display='none'; }
         root.innerHTML = ""+
             "<div class=\"mod8-intro\">"+
               "<h2>8. Bölüm – Grup Evrimi</h2>"+
@@ -95,7 +94,6 @@
         offAll();
         root.innerHTML = "";
         root.hidden = true;
-        var slideHost = document.getElementById("slideshow_container"); if(slideHost){ slideHost.style.display='block'; }
         mounted = false;
     };
 
@@ -117,4 +115,5 @@
     if(navBtn){ navBtn.addEventListener('click', function(){ if(!mounted) mod8_mount(); }); }
 
 })();
+ 
  
