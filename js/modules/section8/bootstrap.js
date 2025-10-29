@@ -175,7 +175,7 @@
                 var frame = mod8_memberFrame(m.strategy); el.style.backgroundPosition = (-(frame*25))+'px 0px';
                 node.appendChild(el);
                 var sc = document.createElement('div'); sc.className='mod8-node-score'; sc.textContent = String(Math.round(m.coins||0));
-                sc.style.left = (mx+12)+'px'; sc.style.top = (my+26)+'px';
+                sc.style.left = (mx+12)+'px'; sc.style.top = (my+6)+'px'; sc.style.transform='translate(-50%,-110%)'; sc.style.pointerEvents='none';
                 node.appendChild(sc);
             }
         }
