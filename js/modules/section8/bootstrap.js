@@ -60,26 +60,27 @@
         mod8_initState();
         mod8_renderUI();
         try{ mod8_buildEvolution(); mod8_renderEvolution(); }catch(e){}
+        try{ mod8_renderMembersTriangle(); }catch(e){}
         mod8_initTabs();
         mod8_buildDistributionControls();
         mod8_buildPayoffsControls();
         mod8_buildRulesControls();
 
         // Events
-        on(document.getElementById("mod8-start"), "click", function(){ mod8_startAutoplay(); try{ mod8_renderEvolution(); }catch(e){} });
+        on(document.getElementById("mod8-start"), "click", function(){ mod8_startAutoplay(); try{ mod8_renderEvolution(); mod8_renderMembersTriangle(); }catch(e){} });
         on(document.getElementById("mod8-step"), "click", function(){
             // Run stepwise over 3 phases: 0->1->2->reset
             var p = (window.mod8_state.phase||0);
             if(p===0){
-                window.mod8_state = mod8_stepPlay(window.mod8_state); mod8_renderUI(); try{ mod8_renderEvolution(); }catch(e){}
+                window.mod8_state = mod8_stepPlay(window.mod8_state); mod8_renderUI(); try{ mod8_renderEvolution(); mod8_renderMembersTriangle(); }catch(e){}
             }else if(p===1){
-                window.mod8_state = mod8_stepEliminate(window.mod8_state); mod8_renderUI(); try{ mod8_renderEvolution(); }catch(e){}
+                window.mod8_state = mod8_stepEliminate(window.mod8_state); mod8_renderUI(); try{ mod8_renderEvolution(); mod8_renderMembersTriangle(); }catch(e){}
             }else{
-                window.mod8_state = mod8_stepReplicateReset(window.mod8_state); mod8_renderUI(); try{ mod8_renderEvolution(); }catch(e){}
+                window.mod8_state = mod8_stepReplicateReset(window.mod8_state); mod8_renderUI(); try{ mod8_renderEvolution(); mod8_renderMembersTriangle(); }catch(e){}
             }
         });
-        on(document.getElementById("mod8-stop"), "click", function(){ mod8_stopAutoplay(); try{ mod8_renderEvolution(); }catch(e){} });
-        on(document.getElementById("mod8-reset"), "click", function(){ mod8_stopAutoplay(); mod8_initState(); mod8_renderUI(); try{ mod8_renderEvolution(); }catch(e){} });
+        on(document.getElementById("mod8-stop"), "click", function(){ mod8_stopAutoplay(); try{ mod8_renderEvolution(); mod8_renderMembersTriangle(); }catch(e){} });
+        on(document.getElementById("mod8-reset"), "click", function(){ mod8_stopAutoplay(); mod8_initState(); mod8_renderUI(); try{ mod8_renderEvolution(); mod8_renderMembersTriangle(); }catch(e){} });
         var speedEl = document.getElementById("mod8-speed");
         if(speedEl){ on(speedEl, "input", function(e){ speedMs = parseInt(e.target.value,10)||1000; if(autoplayTimer){ mod8_stopAutoplay(); mod8_startAutoplay(); } }); }
 
@@ -141,6 +142,44 @@
         var lbl = bar.querySelector('.mod8-flag-label'); if(lbl){ lbl.textContent = 'Jenerasyon '+gen+' / '+max; }
     }
 
+    // Group members inside node: hide big icon & place 3 small hats in equilateral triangle with mini-scores
+    function mod8_memberFrame(str){
+        var k = (str||'').toUpperCase();
+        if(k==='TIT_FOR_TAT') return 0;
+        if(k==='DEFECTOR') return 1;
+        if(k==='COOPERATOR') return 2;
+        if(k==='GRUDGER') return 3;
+        if(k==='PROBER') return 4;
+        if(k==='TIT_FOR_TWO_TATS') return 5;
+        if(k==='PAVLOV') return 6;
+        return 7; // RANDOM
+    }
+    function mod8_renderMembersTriangle(){
+        var stage = document.getElementById('mod8-stage'); if(!stage) return;
+        var nodes = stage.querySelectorAll('.mod8-group-node');
+        var groups = (window.mod8_state&&window.mod8_state.groups)||[];
+        for(var i=0;i<nodes.length && i<groups.length;i++){
+            var node = nodes[i]; var g = groups[i]; if(!g) continue;
+            // remove or hide big icon
+            var ic = node.querySelector('.mod8-group-icon'); if(ic){ ic.style.display='none'; }
+            // cleanup previous members
+            var olds = node.querySelectorAll('.mod8-node-member, .mod8-node-score');
+            for(var z=0;z<olds.length;z++){ olds[z].parentNode && olds[z].parentNode.removeChild(olds[z]); }
+            // geometry
+            var cx=40, cy=40, r=24; var angs=[-Math.PI/2, Math.PI/6, 5*Math.PI/6];
+            for(var k=0;k<3;k++){
+                var m = g.members && g.members[k]; if(!m) continue;
+                var mx = cx + r*Math.cos(angs[k]) - 12;
+                var my = cy + r*Math.sin(angs[k]) - 12;
+                var el = document.createElement('div'); el.className='mod8-node-member'; el.style.left=mx+'px'; el.style.top=my+'px';
+                var frame = mod8_memberFrame(m.strategy); el.style.backgroundPosition = (-(frame*25))+'px 0px';
+                node.appendChild(el);
+                var sc = document.createElement('div'); sc.className='mod8-node-score'; sc.textContent = String(Math.round(m.coins||0));
+                sc.style.left = (mx+12)+'px'; sc.style.top = (my+26)+'px';
+                node.appendChild(sc);
+            }
+        }
+    }
 })();
  
  
