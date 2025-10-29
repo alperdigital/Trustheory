@@ -133,3 +133,16 @@
     outline: none;
     box-shadow: none;
 }
+
+/* Next-section CTA (Section 7 style-ish) */
+.mod8-next-row{ display:flex; justify-content:center; margin-top:10px }
+.mod8-next-btn{
+    font-size:16px; line-height:20px;
+    padding:6px 12px;
+    color:#000; background:#fff;
+    border:2px solid #333; border-radius:6px;
+    cursor:pointer;
+    transition:transform .08s ease, background-color .08s ease;
+}
+.mod8-next-btn:hover{ transform: scale(1.02); background:#f7f7f7 }
+.mod8-next-btn:active{ transform: scale(.98) }
