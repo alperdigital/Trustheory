@@ -167,7 +167,7 @@
 .mod8-root.mod8-sprite .mod8-side-next .mod8-side-next-btn:focus-visible{ outline:none; box-shadow:none }
 
 /* Center-next placement (visible in stage center) */
-.mod8-center-next{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%) translate(525px,270px); display:flex; justify-content:center }
+.mod8-center-next{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%) translate(525px,250px); display:flex; justify-content:center }
 .mod8-root.mod8-sprite .mod8-center-next .mod8-side-next-btn{
     width:400px; height:125px;
     font-size:24px; color:#000;
