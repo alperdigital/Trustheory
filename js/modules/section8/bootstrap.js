@@ -85,6 +85,18 @@
         if(speedEl){ on(speedEl, "input", function(e){ speedMs = parseInt(e.target.value,10)||1000; if(autoplayTimer){ mod8_stopAutoplay(); mod8_startAutoplay(); } }); }
 
         mounted = true;
+        // Ensure member hats stay inside during autoplay: wrap the render tick
+        try{
+            if(typeof window.mod8_runOneRoundAndRender==='function' && !window.mod8_runOneRoundAndRender._mod8Wrapped){
+                var __origRun = window.mod8_runOneRoundAndRender;
+                window.mod8_runOneRoundAndRender = function(){
+                    var r = __origRun();
+                    try{ mod8_renderMembersTriangle(); }catch(e){}
+                    return r;
+                };
+                window.mod8_runOneRoundAndRender._mod8Wrapped = true;
+            }
+        }catch(e){}
         // Sync sliders to current state on mount
         try{
             publish && publish('mod8/sync/speed', [mod8_getSpeed()]);
