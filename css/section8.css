@@ -1,1 +1,87 @@
+.mod8-intro{max-width:1080px;margin:0 auto 10px auto;text-align:center}
+.mod8-intro h2{margin:6px 0 4px 0;font-size:24px}
+.mod8-intro p{margin:0 auto;color:#555;max-width:820px}
+.mod8-layout{display:grid;grid-template-columns:560px 520px;gap:16px;justify-content:center}
+.mod8-stage{position:relative;width:560px;height:560px;margin:0 auto}
+.mod8-stage-circle{position:absolute;left:30px;top:30px;width:500px;height:500px;border-radius:50%;border:3px dashed #E0E0E0;box-shadow:0 0 0 4px rgba(0,0,0,0.03) inset}
+.mod8-stage-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center}
+.mod8-center-buttons{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;width:300px;margin:0 auto}
+.mod8-ctrl-btn{font-family:FuturaHandwritten,Arial,sans-serif;font-size:14px;border:2px solid #e3e3e3;border-radius:10px;background:linear-gradient(180deg,#fff,#f6f6f6);cursor:pointer;padding:6px 6px;transition:transform .06s ease, box-shadow .15s ease,border-color .15s ease;color:#333;box-shadow:0 2px 0 0 #d0d0d0}
+.mod8-ctrl-btn:hover{transform:translateY(-1px);box-shadow:0 3px 0 0 #c8c8c8}
+.mod8-ctrl-btn:active{transform:translateY(1px);box-shadow:0 1px 0 0 #c0c0c0}
+.mod8-ctrl-btn:disabled{opacity:.55;cursor:not-allowed;transform:none;box-shadow:0 2px 0 0 #d0d0d0}
+.mod8-ctrl-btn:focus{outline:2px solid #4089DD; outline-offset:2px}
+.mod8-center-info{margin-top:8px}
+.mod8-evolution{width:315px;margin:10px auto 0 auto;text-align:center}
+.mod8-evolution-title{font-size:14px;margin-bottom:6px;color:#333}
+.mod8-evolution-track{position:relative;height:9px;border-radius:6px;background:#f0f2f5;border:2px solid #e3e3e3;overflow:hidden}
+.mod8-evolution-fill{position:absolute;left:0;top:0;height:100%;width:0;background:linear-gradient(90deg,#86c448,#4089dd)}
+.mod8-evolution-flag{position:absolute;top:-12px;left:0;width:0;height:0}
+.mod8-evolution-flag:before{content:"";position:absolute;left:-2px;bottom:0;border-left:2px solid #999;height:14px}
+.mod8-evolution-flag:after{content:"";position:absolute;left:-8px;bottom:11px;border-left:8px solid #e76f51;border-top:5px solid transparent;border-bottom:5px solid transparent}
+.mod8-flag-label{position:absolute;left:-12px;bottom:18px;background:#fff;border:1px solid #ddd;border-radius:6px;padding:2px 5px;font-size:9px;color:#333;white-space:nowrap}
+.mod8-group-node{position:absolute;width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.mod8-group-node .mod8-group-icon{width:40px;height:40px;background:url('../assets/ui/sandbox_hats.png');background-size:auto 100%}
+.mod8-group-node .mod8-group-score{position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);font-weight:bold;font-size:14px}
+.mod8-group-node .mod8-group-score.above{bottom:auto; top:-18px}
+.mod8-member-cloud{position:absolute}
+.mod8-member-wrap{position:absolute}
+.mod8-member{width:25px;height:25px;background:url('../assets/ui/sandbox_hats.png');background-size:auto 100%}
+.mod8-member-badge{position:absolute;top:-10px;right:-10px;background:#fff;border:1px solid #ccc;border-radius:10px;padding:0 4px;font-size:12px;line-height:16px;min-width:16px;text-align:center}
+
+/* peep style (head/body + hat) for denser circle like screenshot */
+/* remove peep style - revert to member badge style */
+.mod8-root{position:relative;display:block;padding:12px;font-family:FuturaHandwritten,Arial,sans-serif}
+.mod8-hidden{display:none}
+.mod8-panel{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:8px 0}
+.mod8-sandbox_tabs{position: relative; background: url('../assets/ui/sandbox_tabs.png'); background-size: auto 100%; width:500px; height:470px; margin:8px auto 0 auto; -webkit-user-select:none; -moz-user-select:none; -ms-user-select:none; user-select:none;}
+.mod8-sandbox_tabs .slider{z-index:2}
+.mod8-sandbox_tabs .slider_knob{cursor:grab}
+.mod8-sandbox_tabs .slider_knob:active{cursor:grabbing}
+.mod8-sandbox_tabs .mod8-hitbox{position:absolute; cursor:pointer; font-size:25px; top:22px}
+.mod8-sandbox_tabs .mod8-hitbox:nth-child(1){ left:30px; width:100px }
+.mod8-sandbox_tabs .mod8-hitbox:nth-child(2){ left:220px; width:100px }
+.mod8-sandbox_tabs .mod8-hitbox:nth-child(3){ left:366px; width:100px }
+.mod8-sandbox_tabs .mod8-hitbox[selected=yes]{text-shadow:0 1px 0 #fff,0 0 6px rgba(64,137,221,.25)}
+.mod8-sandbox_tabs .mod8-sandbox_page{ position:absolute; left:33px; top:80px; width:433px; height:385px }
+.mod8-reset-btn{position:absolute;right:0;bottom:0;margin:4px 4px 6px 0;padding:8px 12px;border:2px solid #e3e3e3;border-radius:12px;background:linear-gradient(180deg,#ffffff,#f4f7ff);box-shadow:0 2px 0 0 #d0d0d0;color:#333;font-family:FuturaHandwritten,Arial,sans-serif;font-size:14px;cursor:pointer;transition:transform .06s ease, box-shadow .15s ease,border-color .15s ease}
+.mod8-reset-btn:hover{transform:translateY(-1px);box-shadow:0 3px 0 0 #c8c8c8}
+.mod8-reset-btn:active{transform:translateY(1px);box-shadow:0 1px 0 0 #c0c0c0}
+.mod8-poplist{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;width:100%}
+.mod8-pop-row{display:flex;align-items:center;justify-content:space-between;border:2px solid #ddd;border-radius:10px;padding:6px 8px;background:#fff}
+.mod8-pop-left{display:flex;align-items:center;gap:8px}
+.mod8-pop-icon{width:40px;height:40px;background-image:url('assets/ui/sandbox_hats.png');background-size:auto 40px}
+.mod8-pop-name{font-size:18px}
+.mod8-pop-right{display:flex;align-items:center;gap:6px}
+.mod8-value{min-width:28px;text-align:center;font-weight:bold}
+.mod8-pop-slider{width:100%}
+.mod8-rules{display:flex;align-items:center;gap:8px}
+.mod8-rules-hint{opacity:.7;font-size:12px}
+.mod8-rules-info{margin-top:6px;opacity:.8}
+.mod8-remaining{margin-left:auto;font-weight:bold}
+.mod8-grid{display:grid;grid-template-columns:repeat(5,1fr);grid-gap:10px;margin-top:8px}
+.mod8-card{border:2px solid #ddd;border-radius:10px;padding:8px;background:#fff}
+.mod8-card.mod8-best{border-color:#2a9d8f;box-shadow:0 0 0 2px rgba(42,157,143,.15) inset}
+.mod8-card.mod8-worst{border-color:#e76f51;box-shadow:0 0 0 2px rgba(231,111,81,.15) inset}
+.mod8-card h4{margin:0 0 6px 0;font-size:16px}
+.mod8-members{display:flex;gap:6px;margin:6px 0}
+.mod8-badge{width:14px;height:14px;border-radius:50%}
+.mod8-score{font-weight:bold;margin-top:4px}
+.mod8-warning{color:#b00020;font-weight:bold}
+@media(max-width:860px){.mod8-grid{grid-template-columns:repeat(2,1fr)}}
+
+/* Better spacing for sidebar and stage on small heights */
+@media(max-height:760px){ .mod8-stage{transform:scale(.9); transform-origin:center top} }
+
+/* Prevent touch scrolling while sliding */
+.slider_knob, .slider{touch-action:none}
+
+/* Segmented toggle for decision mode */
+.mod8-toggle{position:relative;width:240px;height:38px;border:2px solid #e3e3e3;border-radius:20px;background:#fff;box-shadow:inset 0 1px 0 #f1f1f1;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-family:FuturaHandwritten,Arial,sans-serif}
+.mod8-toggle .mod8-toggle-option{flex:1;text-align:center;z-index:2;font-size:16px;user-select:none}
+.mod8-toggle .mod8-toggle-thumb{position:absolute;top:2px;left:2px;width:116px;height:32px;border-radius:16px;background:linear-gradient(180deg,#eaf3ff,#dbeaff);box-shadow:0 2px 4px rgba(64,137,221,.25);transition:left .15s ease}
+.mod8-toggle[data-mode="group"] .mod8-toggle-thumb{left:2px}
+.mod8-toggle[data-mode="individual"] .mod8-toggle-thumb{left:120px}
+.mod8-toggle[data-mode="group"] .mod8-toggle-option[data-key="group"],
+.mod8-toggle[data-mode="individual"] .mod8-toggle-option[data-key="individual"]{color:#4089DD;font-weight:bold}
  
