@@ -35,6 +35,7 @@
 .s9-btn:hover{transform:scale(1.02);background-position:0 -125px}
 .s9-btn:active{transform:scale(.95)}
 .s9-btn:disabled{opacity:.55;cursor:not-allowed;background-position:0 -250px;transform:none}
+.s9-btn:focus,.s9-btn:focus-visible{outline:none;box-shadow:none}
 
 /* (Reverted) Remove sprite-based override: use base button styling above */
 

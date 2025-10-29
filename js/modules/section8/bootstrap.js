@@ -100,14 +100,8 @@
 				try{
 					// unsubscribe previous chain if any
 					if(mod8_nextHandle){ try{ unsubscribe(mod8_nextHandle); }catch(_e){} mod8_nextHandle=null; }
-					var steps=0, maxSteps=10, target='group_intra';
-					mod8_nextHandle = subscribe('slideshow/slideChange', function(currentId){
-						if(currentId===target || steps>=maxSteps){ try{ unsubscribe(mod8_nextHandle); }catch(_e){} mod8_nextHandle=null; return; }
-						steps++;
-						publish('slideshow/next');
-					});
-					// kick it off with first animated step
-					publish('slideshow/next');
+					// Use built-in scratcher transition to animate to Section 9
+					publish('slideshow/scratch', ['group_intra']);
 				}catch(e){ try{ window.location.hash = '#group_intra'; }catch(_e){} }
 			});
 		}
