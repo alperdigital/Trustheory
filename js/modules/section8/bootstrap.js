@@ -29,12 +29,13 @@
                  "<div id=\"mod8-stage\" class=\"mod8-stage\">"+
                     "<div id=\"mod8-stage-circle\" class=\"mod8-stage-circle\"></div>"+
                     "<div class=\"mod8-stage-center\">"+
-                       "<div class=\"mod8-center-buttons\">"+
-                          "<button id=\"mod8-start\" class=\"mod8-ctrl-btn\" aria-label=\"Başlat\">BAŞLAT</button>"+
-                          "<button id=\"mod8-step\" class=\"mod8-ctrl-btn\" aria-label=\"Adım\">ADIM</button>"+
-                          "<button id=\"mod8-stop\" class=\"mod8-ctrl-btn\" aria-label=\"Dur\">DUR</button>"+
-                          "<button id=\"mod8-reset\" class=\"mod8-ctrl-btn\" aria-label=\"Sıfırla\">SIFIRLA</button>"+
-                       "</div>"+
+                    "<div class=\"mod8-center-buttons\">"+
+                    "<button id=\"mod8-start\" class=\"mod8-ctrl-btn\" aria-label=\"Başlat\">BAŞLAT</button>"+
+                    "<button id=\"mod8-step\" class=\"mod8-ctrl-btn\" aria-label=\"Adım\">ADIM</button>"+
+                    "<div id=\"mod8-evolution\" class=\"mod8-evolution\"></div>"+
+                    "<button id=\"mod8-stop\" class=\"mod8-ctrl-btn\" aria-label=\"Dur\">DUR</button>"+
+                    "<button id=\"mod8-reset\" class=\"mod8-ctrl-btn\" aria-label=\"Sıfırla\">SIFIRLA</button>"+
+                    "</div>"+
                        "<div class=\"mod8-center-info\">"+
                           "<span id=\"mod8-total-warning\" class=\"mod8-warning\"></span>"+
                           "<span id=\"mod8-status\"></span>"+

@@ -13,6 +13,8 @@
 .mod8-ctrl-btn:focus{outline:2px solid #4089DD; outline-offset:2px}
 .mod8-center-info{margin-top:8px}
 .mod8-evolution{width:315px;margin:10px auto 0 auto;text-align:center}
+/* when evolution bar is placed inside the center button grid */
+.mod8-center-buttons .mod8-evolution{width:100%;grid-column:1 / -1;margin:6px 0}
 .mod8-evolution-title{font-size:14px;margin-bottom:6px;color:#333}
 .mod8-evolution-track{position:relative;height:9px;border-radius:6px;background:#f0f2f5;border:2px solid #e3e3e3;overflow:hidden}
 .mod8-evolution-fill{position:absolute;left:0;top:0;height:100%;width:0;background:linear-gradient(90deg,#86c448,#4089dd)}
