@@ -20,6 +20,9 @@
                 '<button id="s9-reset" class="s9-btn">SIFIRLA</button>'+
               '</div>'+
               '<div class="s9-center-info"><span id="s9-status"></span></div>'+
+              '<div class="s9-center-next">'+
+                '<button id="s9-next-s9" class="s9-next-btn" aria-label="ya rastgele gruplar?">ya rastgele gruplar?</button>'+
+              '</div>'+
             '</div>'+
           '</div>'+
         '</div>'+
@@ -35,6 +38,7 @@
     b=document.getElementById('s9-stop'); if(b) on(b,'click',function(){ S9_stop(); });
     b=document.getElementById('s9-step'); if(b) on(b,'click',function(){ S9_stepOnce(); });
     b=document.getElementById('s9-reset'); if(b) on(b,'click',function(){ S9_stop(); S9_initState(S9_newSeed()); S9_buildUI(); S9_render(); });
+    b=document.getElementById('s9-next-s9'); if(b) on(b,'click', function(){ try{ publish('slideshow/scratch', ['group_intra']); }catch(e){} });
     mounted=true;
   };
   window.S9_unmount=function(){ if(!mounted) return; try{ S9_stop(); }catch(e){} offAll(); var root=document.getElementById('s9-root'); if(root){ root.innerHTML=''; root.hidden=true; } mounted=false; };
