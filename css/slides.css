@@ -554,10 +554,10 @@ html, body { height:100%; }
 
 /* ===== Section 8 & 9: mobile vertical center (match slideshow center) ===== */
 @media (max-width: 900px){
-  #mod8-root, #s9-root{
+  #mod8-root:not([hidden]), #s9-root:not([hidden]){
     position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
-    display:block; min-height:0; padding:0; box-sizing:border-box;
+    min-height:0; padding:0; box-sizing:border-box;
   }
-  #mod8-root.mod8-mobile-offset{ transform:translate(-50%,-50%) translateY(200px) }
-  #s9-root.s9-mobile-offset{ transform:translate(-50%,-50%) translateY(200px) }
+  #mod8-root.mod8-mobile-offset:not([hidden]){ transform:translate(-50%,-50%) translateY(200px) }
+  #s9-root.s9-mobile-offset:not([hidden]){ transform:translate(-50%,-50%) translateY(200px) }
 }
