@@ -20,8 +20,8 @@
         if(!root){ console.error("mod8-root not found"); return; }
         // Opt-in sprite buttons (revertable via CSS or by removing this class)
         try{ root.classList.add("mod8-sprite"); }catch(e){}
-        // Optional mobile Y-offset helper (disabled by default)
-        // To enable, add 'mod8-mobile-offset' to #mod8-root externally
+        // Revertible mobile Y-offset helper
+        try{ root.classList.add('mod8-mobile-offset'); }catch(e){}
         // Revertible opt-in: lock member hats to strategy frames during updates
         try{ root.classList.add('mod8-lock-hats'); }catch(e){}
         // Revertible opt-in: render all three hats per group using a single group frame
