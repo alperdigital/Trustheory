@@ -89,7 +89,23 @@
             }
         });
         on(document.getElementById("mod8-stop"), "click", function(){ mod8_stopAutoplay(); try{ mod8_renderEvolution(); mod8_renderMembersTriangle(); }catch(e){} });
-        on(document.getElementById("mod8-reset"), "click", function(){ mod8_stopAutoplay(); mod8_initState(); mod8_renderUI(); try{ mod8_renderEvolution(); mod8_renderMembersTriangle(); }catch(e){} });
+        on(document.getElementById("mod8-reset"), "click", function(){
+            mod8_stopAutoplay();
+            mod8_initState();
+            // Re-render and fully rebuild controls so UI reflects defaults
+            mod8_renderUI();
+            try{
+                mod8_buildDistributionControls();
+                mod8_buildPayoffsControls();
+                mod8_buildRulesControls();
+            }catch(e){}
+            try{ mod8_renderEvolution(); mod8_renderMembersTriangle(); }catch(e){}
+            // Resync commonly-used sliders/labels (best-effort)
+            try{
+                publish && publish('mod8/sync/speed', [mod8_getSpeed()]);
+                publish && publish('mod8/sync/noise', [Math.round((window.mod8_state.noise||0)*100)]);
+            }catch(e){}
+        });
 		var speedEl = document.getElementById("mod8-speed");
 		if(speedEl){ on(speedEl, "input", function(e){ speedMs = parseInt(e.target.value,10)||1000; if(autoplayTimer){ mod8_stopAutoplay(); mod8_startAutoplay(); } }); }
 
