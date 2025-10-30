@@ -2,7 +2,7 @@
   window.S9 = window.S9 || {};
   var mounted=false; var listeners=[]; function on(el,ev,fn){ el.addEventListener(ev,fn); listeners.push([el,ev,fn]); }
   function offAll(){ for(var i=0;i<listeners.length;i++){ var l=listeners[i]; try{ l[0].removeEventListener(l[1],l[2]); }catch(e){} } listeners=[]; }
-  window.S9_mount=function(){ if(mounted) return; var root=document.getElementById('s9-root'); if(!root){ console.error('s9-root yok'); return; } root.hidden=false; try{ root.classList.add('s9-sketch'); }catch(e){}
+  window.S9_mount=function(){ if(mounted) return; var root=document.getElementById('s9-root'); if(!root){ console.error('s9-root yok'); return; } root.hidden=false; try{ root.classList.add('s9-sketch'); root.classList.add('s9-mobile-offset'); }catch(e){}
     root.innerHTML=''+
       '<div class="s9-intro">'+
         '<div class="s9-intro-title">9. Bölüm – Grup içi evrim</div>'+
