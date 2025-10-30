@@ -542,3 +542,21 @@ s{
 .credits a:hover{
 	color:#ee5151;
 }
+
+/* ===== Mobile vertical centering helpers (8 & 9 fix) ===== */
+.center-v{ display:flex; flex-direction:column; justify-content:center }
+.vh-100{ min-height:100vh; min-height:100svh; min-height:100dvh }
+.pad-safe{ padding-top:max(env(safe-area-inset-top),12px); padding-left:12px; padding-right:12px; box-sizing:border-box }
+.page-max{ width:100%; max-width:980px; margin:0 auto }
+
+/* Global sanity (harms none) */
+html, body { height:100%; }
+
+/* ===== Section 8 & 9: mobile vertical center ===== */
+@media (max-width: 900px){
+  #mod8-root, #s9-root{
+    display:flex; flex-direction:column; justify-content:center; align-items:center;
+    min-height:100vh; min-height:100svh; min-height:100dvh;
+    padding-top:max(env(safe-area-inset-top),12px); padding-left:12px; padding-right:12px; box-sizing:border-box;
+  }
+}
