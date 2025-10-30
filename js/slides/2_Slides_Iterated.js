@@ -66,6 +66,33 @@ SLIDES.push({
 		_hide(o.buttonCheat); _fadeIn(o.buttonCheat, 150+1200);
 		_hide(o.buttonCooperate); _fadeIn(o.buttonCooperate, 150+1200);
 
+		// Background-load Sections 8 & 9 while Slide 2 is in progress
+		(function(){
+			var files = [
+				"js/modules/section8/state.js?v11",
+				"js/modules/section8/strategies.js?v11",
+				"js/modules/section8/payoffs.js?v11",
+				"js/modules/section8/simulation.js?v11",
+				"js/modules/section8/ui.js?v11",
+				"js/modules/section8/lib/payoffs_ui.js?v11",
+				"js/modules/section8/lib/population_slider.js?v11",
+				"js/modules/section8/bootstrap.js?v11",
+				"section9/js/S9_main.js",
+				"section9/js/S9_model.js",
+				"section9/js/S9_strategies.js",
+				"section9/js/S9_ui.js",
+				"section9/js/S9_payoffs_ui.js"
+			];
+			var seen = {};
+			function addScript(src){
+				if((window.mod8_mount && src.indexOf('js/modules/section8/bootstrap.js')>=0) || (window.S9_mount && src.indexOf('section9/js/S9_main.js')>=0)) return;
+				if(seen[src]) return; seen[src]=true;
+				var s=document.createElement('script'); s.src=src; s.defer=true; s.async=true; document.body.appendChild(s);
+			}
+			if(window.requestIdleCallback){ requestIdleCallback(function(){ for(var i=0;i<files.length;i++) addScript(files[i]); }); }
+			else{ setTimeout(function(){ for(var i=0;i<files.length;i++) addScript(files[i]); }, 1200); }
+		})();
+
 	},
 	onend: function(self){
 		self.remove("topWords");
