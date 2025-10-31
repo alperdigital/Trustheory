@@ -62,8 +62,9 @@ function Button(config){
 		if(self.active) button.removeAttribute("hover");
 	};
 
-	// On click...
-	hitbox.onclick = function(){
+	// Click handler function (shared by click and touch events)
+	var handleClick = function(e){
+		if(e && e.preventDefault) e.preventDefault(); // Prevent double-firing
 
 		if(parseFloat(getComputedStyle(self.dom).opacity)<0.5) return; // DON'T CLICK INVISIBLE BUTTONS
 
@@ -82,8 +83,38 @@ function Button(config){
 			if(config.message) publish(config.message);
 
 		}
-
 	};
+
+	// On click (desktop)
+	hitbox.onclick = handleClick;
+
+	// Touch events for mobile/iPad compatibility
+	var touchStartY = null;
+	var touchStartTime = null;
+	hitbox.addEventListener('touchstart', function(e){
+		if(self.active && !self.dom.hasAttribute('deactivated')){
+			touchStartY = e.touches[0].clientY;
+			touchStartTime = Date.now();
+			self.dom.setAttribute('hover', 'yes'); // Visual feedback
+		}
+	}, {passive: true});
+	
+	hitbox.addEventListener('touchend', function(e){
+		if(!self.active || self.dom.hasAttribute('deactivated')) return;
+		
+		var touchEndY = e.changedTouches[0].clientY;
+		var touchDuration = Date.now() - (touchStartTime || Date.now());
+		var touchDistance = Math.abs(touchEndY - (touchStartY || touchEndY));
+		
+		// Only trigger if touch was quick and didn't scroll much (prevent scroll interference)
+		if(touchDuration < 300 && touchDistance < 10){
+			e.preventDefault();
+			handleClick(e);
+		}
+		self.dom.removeAttribute('hover');
+		touchStartY = null;
+		touchStartTime = null;
+	});
 
 	// Activate/Deactivate
 	self.active = true;

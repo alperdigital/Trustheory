@@ -220,6 +220,10 @@ s{
 	position: absolute;
 	width:195px; height:55px;
 	cursor: pointer;
+	-webkit-tap-highlight-color: rgba(0,0,0,0.1);
+	tap-highlight-color: rgba(0,0,0,0.1);
+	touch-action: manipulation;
+	-webkit-touch-callout: none;
 }
 .button[hover=yes]{
 	z-index: 100;
@@ -252,6 +256,10 @@ s{
 }
 .button[size=short] #hitbox{
 	width:115px;
+	-webkit-tap-highlight-color: rgba(0,0,0,0.1);
+	tap-highlight-color: rgba(0,0,0,0.1);
+	touch-action: manipulation;
+	-webkit-touch-callout: none;
 }
 .button[size=long]{
 	transform-origin: 172.5px 27.5px;
@@ -267,6 +275,10 @@ s{
 }
 .button[size=long] #hitbox{
 	width:345px;
+	-webkit-tap-highlight-color: rgba(0,0,0,0.1);
+	tap-highlight-color: rgba(0,0,0,0.1);
+	touch-action: manipulation;
+	-webkit-touch-callout: none;
 }
 .button:active{
     transform: scale(0.95, 0.95);
