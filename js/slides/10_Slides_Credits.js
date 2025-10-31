@@ -5,7 +5,7 @@ SLIDES.push({
 		self.add({ id:"bg", type:"Background", color:"#111" });
 
 		// Visual: fades in
-		self.add({ id:"vision", type:"ImageBox", src:"assets/ch11/prophecy.png", x:110, y:40, width:740, height:360 });
+		self.add({ id:"vision", type:"ImageBox", src:"assets/ch11/prophecy.webp", x:110, y:40, width:740, height:360 });
 		_hide(self.objects.vision); _fadeIn(self.objects.vision, 1200);
 
 		// Title line
