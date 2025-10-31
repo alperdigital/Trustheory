@@ -20,7 +20,7 @@ SLIDES.push({
 			text:"Devamı gelecek ..." });
 
 		// Support / Contact
-		self.add({ id:"support", type:"TextBox", x:0, y:518, width:960, height:40, align:"center", size:16, color:"#fff",
-			text:"Destek olarak bu gibi projelerin devamının gelmesini istersen &amp; benimle çalışmak istersen bana buradan ulaşabilirsin. <a href=\"https://wa.me/905071353025\" target=\"_blank\">wa.me/905071353025</a>" });
+		self.add({ id:"support", type:"TextBox", x:0, y:430, width:960, height:100, align:"center", size:16, color:"#fff",
+			text:"<br><br><br><br><br>Destek olarak bu gibi projelerin devamının gelmesini istersen &amp; benimle çalışmak istersen bana buradan ulaşabilirsin. <strong>Alperdigital:</strong> <a href=\"https://wa.me/905071353025\" target=\"_blank\" style=\"color:#2a9d8f\">wa.me/905071353025</a>" });
 	}
 });
