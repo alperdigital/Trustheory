@@ -222,7 +222,6 @@ s{
 	cursor: pointer;
 	-webkit-tap-highlight-color: rgba(0,0,0,0.1);
 	tap-highlight-color: rgba(0,0,0,0.1);
-	touch-action: manipulation;
 	-webkit-touch-callout: none;
 }
 .button[hover=yes]{
@@ -258,7 +257,6 @@ s{
 	width:115px;
 	-webkit-tap-highlight-color: rgba(0,0,0,0.1);
 	tap-highlight-color: rgba(0,0,0,0.1);
-	touch-action: manipulation;
 	-webkit-touch-callout: none;
 }
 .button[size=long]{
@@ -277,7 +275,6 @@ s{
 	width:345px;
 	-webkit-tap-highlight-color: rgba(0,0,0,0.1);
 	tap-highlight-color: rgba(0,0,0,0.1);
-	touch-action: manipulation;
 	-webkit-touch-callout: none;
 }
 .button:active{

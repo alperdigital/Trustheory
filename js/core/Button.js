@@ -63,10 +63,16 @@ function Button(config){
 	};
 
 	// Click handler function (shared by click and touch events)
+	var isHandling = false; // Flag to prevent double-firing
 	var handleClick = function(e){
-		if(e && e.preventDefault) e.preventDefault(); // Prevent double-firing
-
-		if(parseFloat(getComputedStyle(self.dom).opacity)<0.5) return; // DON'T CLICK INVISIBLE BUTTONS
+		// Prevent double-firing
+		if(isHandling) return;
+		isHandling = true;
+		
+		if(parseFloat(getComputedStyle(self.dom).opacity)<0.5){
+			isHandling = false;
+			return; // DON'T CLICK INVISIBLE BUTTONS
+		}
 
 		if(self.active){
 
@@ -83,14 +89,20 @@ function Button(config){
 			if(config.message) publish(config.message);
 
 		}
+		
+		// Reset flag after a short delay to allow legitimate separate clicks
+		setTimeout(function(){ isHandling = false; }, 300);
 	};
 
-	// On click (desktop)
-	hitbox.onclick = handleClick;
+	// On click (desktop/mouse)
+	hitbox.onclick = function(e){
+		handleClick(e);
+	};
 
-	// Touch events for mobile/iPad compatibility
+	// Touch events for mobile/iPad/touchscreen compatibility
 	var touchStartY = null;
 	var touchStartTime = null;
+	
 	hitbox.addEventListener('touchstart', function(e){
 		if(self.active && !self.dom.hasAttribute('deactivated')){
 			touchStartY = e.touches[0].clientY;
@@ -100,7 +112,10 @@ function Button(config){
 	}, {passive: true});
 	
 	hitbox.addEventListener('touchend', function(e){
-		if(!self.active || self.dom.hasAttribute('deactivated')) return;
+		if(!self.active || self.dom.hasAttribute('deactivated')){
+			self.dom.removeAttribute('hover');
+			return;
+		}
 		
 		var touchEndY = e.changedTouches[0].clientY;
 		var touchDuration = Date.now() - (touchStartTime || Date.now());
@@ -108,13 +123,14 @@ function Button(config){
 		
 		// Only trigger if touch was quick and didn't scroll much (prevent scroll interference)
 		if(touchDuration < 300 && touchDistance < 10){
-			e.preventDefault();
+			// Don't preventDefault - let both touch and click events work
+			// Flag will prevent double-firing
 			handleClick(e);
 		}
 		self.dom.removeAttribute('hover');
 		touchStartY = null;
 		touchStartTime = null;
-	});
+	}, {passive: true});
 
 	// Activate/Deactivate
 	self.active = true;
