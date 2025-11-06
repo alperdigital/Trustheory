@@ -32,7 +32,7 @@ open http://localhost:8000
 ### GitHub Pages
 
 Proje otomatik olarak GitHub Pages'de yayınlanır:
-**https://alperdigital.github.io/trusttheory/**
+**https://alperdigital.github.io/Trustheory/**
 
 ## 📚 İçerik
 
@@ -73,10 +73,6 @@ Bu proje açık kaynaklıdır. Katkılarınızı bekliyoruz:
 3. Commit yapın (`git commit -m 'Add amazing feature'`)
 4. Push yapın (`git push origin feature/amazing-feature`)
 5. Pull Request oluşturun
-
-## 📄 Lisans
-
-Bu proje orijinal "The Evolution of Trust" projesinin Türkçe çevirisidir. Orijinal proje MIT lisansı altındadır.
 
 ## 👨‍💻 Geliştirici
 
